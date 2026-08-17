@@ -25,12 +25,12 @@ class Candidate extends Person {
 
     @Override
     void showDetails() {
-        println "=== Candidato(a): ${name} ==="
-        println "Idade: ${age} anos | CPF: ${cpf}"
-        println "E-mail: ${email}"
-        println "Local: ${state} - CEP: ${cep}"
-        println "Descrição: ${description}"
-        println "Competências: ${skills.join(', ')}"
+        println "=== Candidate: ${name} ==="
+        println "Age: ${age} years old | CPF: ${cpf}"
+        println "Email: ${email}"
+        println "State: ${state} - CEP: ${cep}"
+        println "Descrption: ${description}"
+        println "Skills: ${skills.join(', ')}"
         println "==============================\n"
     }
 }
