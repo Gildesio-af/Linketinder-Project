@@ -4,6 +4,7 @@ import zg.acelera.domain.Candidate;
 import zg.acelera.domain.Skill;
 
 record CandidateUpdateDTO (
+        String cpf,
         String name,
         String email,
         Integer age,
