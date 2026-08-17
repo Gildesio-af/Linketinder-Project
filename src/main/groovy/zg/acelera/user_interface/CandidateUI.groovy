@@ -1,7 +1,7 @@
 package zg.acelera.user_interface
 
-import zg.acelera.dto.CandidateDTO
-import zg.acelera.dto.CandidateUpdateDTO
+import zg.acelera.dto.candidate.CandidateDTO
+import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.service.CandidateService
 
 class CandidateUI {

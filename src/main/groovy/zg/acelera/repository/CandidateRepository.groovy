@@ -5,8 +5,8 @@ import zg.acelera.domain.IPerson
 import zg.acelera.domain.Skill
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import zg.acelera.dto.CandidateDTO
-import zg.acelera.dto.CandidateUpdateDTO
+import zg.acelera.dto.candidate.CandidateDTO
+import zg.acelera.dto.candidate.CandidateUpdateDTO
 
 import java.nio.file.Paths
 
