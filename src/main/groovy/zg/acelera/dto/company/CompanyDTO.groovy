@@ -7,8 +7,8 @@ record CompanyDTO(String cnpj, String name, String corporateEmail,
                   String state, String cep, String description, Set<String> skills) {
 
     public CompanyDTO() {
-        if (cnpj == null || cnpj.trim().isEmpty() || cnpj.length() != 11)
-            throw new IllegalArgumentException("Please provide a valid CPF with 11 digits.")
+        if (cnpj == null || cnpj.trim().isEmpty() || cnpj.length() != 14)
+            throw new IllegalArgumentException("Please provide a valid CPF with 14 digits.")
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Please provide a valid name.")
         if (corporateEmail == null || corporateEmail.trim().isEmpty())
