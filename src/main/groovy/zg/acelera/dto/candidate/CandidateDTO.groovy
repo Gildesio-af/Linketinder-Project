@@ -1,11 +1,12 @@
-package zg.acelera.dto
+package zg.acelera.dto.candidate
 
 import groovy.transform.builder.Builder
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.Skill
 
 @Builder
-record CandidateDTO(String cpf, String name, String email, Integer age, String state, String cep, String description, Set<String> skills) {
+record CandidateDTO(String cpf, String name, String email, Integer age,
+                    String state, String cep, String description, Set<String> skills) {
     public CandidateDTO {
         if (cpf == null || cpf.trim().isEmpty() || cpf.length() != 11)
             throw new IllegalArgumentException("Please provide a valid CPF with 11 digits.")

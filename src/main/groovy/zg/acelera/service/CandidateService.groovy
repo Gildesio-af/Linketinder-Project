@@ -1,8 +1,8 @@
 package zg.acelera.service
 
 import zg.acelera.domain.IPerson
-import zg.acelera.dto.CandidateDTO
-import zg.acelera.dto.CandidateUpdateDTO
+import zg.acelera.dto.candidate.CandidateDTO
+import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.repository.CandidateRepository
 import zg.acelera.repository.ICandidateRepository
 import zg.acelera.domain.Skill

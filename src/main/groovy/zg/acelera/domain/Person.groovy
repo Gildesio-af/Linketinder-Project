@@ -6,12 +6,12 @@ abstract class Person implements IPerson {
     String state
     String cep
     String description
-    Set<IPerson> liked = [] as HashSet<IPerson>
+    Set<String> liked = [] as HashSet<String>
     Set<Skill> skills = [] as HashSet<Skill>
 
     @Override
-    void addSkill(Skill skill) {
-        if(skill)
-            skills.add(skill)
+    void like(String id) {
+        if (id)
+            liked += id
     }
 }

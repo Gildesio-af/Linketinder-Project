@@ -1,4 +1,4 @@
-package zg.acelera.dto
+package zg.acelera.dto.candidate
 
 import zg.acelera.domain.Candidate;
 import zg.acelera.domain.Skill;

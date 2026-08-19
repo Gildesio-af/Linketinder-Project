@@ -5,11 +5,10 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.builder.Builder
 
 @Canonical
-@EqualsAndHashCode(includes = ['cpf'])
+@EqualsAndHashCode(includes = ['cnpj'])
 @Builder(includeSuperProperties = true)
-class Candidate extends Person {
-    String cpf
-    int age
+class Company extends Person{
+    String cnpj
 
     @Override
     void dislike(IPerson person) {
@@ -19,12 +18,12 @@ class Candidate extends Person {
 
     @Override
     void showDetails() {
-        println "=== Candidate: ${name} ==="
-        println "Age: ${age} years old | CPF: ${cpf}"
-        println "Email: ${email}"
-        println "State: ${state} - CEP: ${cep}"
-        println "Descrption: ${description}"
-        println "Skills: ${skills.join(', ')}"
+        println "=== Company(a): ${name} ==="
+        println "CNPJ: ${cnpj}"
+        println "Corporate email: ${email}"
+        println "Place: ${state} - CEP: ${cep}"
+        println "Description: ${description}"
+        println "Desired Skills: ${skills.join(', ')}"
         println "==============================\n"
     }
 }
