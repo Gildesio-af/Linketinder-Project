@@ -1,0 +1,67 @@
+[
+    {
+        "cpf": "01234567890",
+        "name": "Sandubinha",
+        "email": "sandubinha@acelera.zg.com",
+        "age": 25,
+        "state": "GO",
+        "cep": "10000000",
+        "description": "Sandubinha desbravador do Java e Groovy",
+        "skills": [
+            "PYTHON",
+            "JAVA"
+        ],
+        "liked": [
+            "12345678901234"
+        ]
+    },
+    {
+        "cpf": "01234567891",
+        "name": "Pão na Chapa",
+        "email": "paochapa@acelera.zg.com",
+        "age": 18,
+        "state": "CE",
+        "cep": "10000000",
+        "description": "O melhor pão na chapa",
+        "skills": [
+            "PYTHON"
+        ],
+        "liked": [
+            "01234567891236"
+        ]
+    },
+    {
+        "cpf": "01234567892",
+        "name": "Goku",
+        "email": "goku@gmail.com",
+        "age": 35,
+        "state": "JP",
+        "cep": "12345678",
+        "description": "Gosto sempre de novos desafios e evoluir com eles",
+        "skills": [
+            "PHP",
+            "KOTLIN",
+            "JAVA"
+        ],
+        "liked": [
+            "01234567891237"
+        ]
+    },
+    {
+        "cpf": "01234567893",
+        "name": "Lia Script",
+        "email": "lia.script@acelera.zg.com",
+        "age": 29,
+        "state": "SP",
+        "cep": "20000000",
+        "description": "Desenvolvedora focada em Java, Kotlin e automacao",
+        "skills": [
+            "JAVA",
+            "KOTLIN",
+            "PYTHON"
+        ],
+        "liked": [
+            "01234567891235"
+        ]
+    }
+]

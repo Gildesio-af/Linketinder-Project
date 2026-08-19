@@ -1,0 +1,75 @@
+[
+    {
+        "cnpj": "12345678901234",
+        "name": "Sanduba Grelhado",
+        "email": "sandubag@gmail.com",
+        "state": "CE",
+        "cep": "23456784",
+        "description": "Os melhores sandu\u00edches voc\u00ea encontra aqui",
+        "skills": [
+            "PYTHON",
+            "JAVA"
+        ],
+        "liked": [
+            "01234567890"
+        ]
+    },
+    {
+        "cnpj": "01234567891234",
+        "name": "Sanduba Grelhado 2",
+        "email": "sandubag2@gmail.com",
+        "state": "CE",
+        "cep": "23456784",
+        "description": "Os melhores sandu\u00edches voc\u00ea encontra aqui no segundo sanduba",
+        "skills": [
+        "JAVASCRIPT",
+        "JAVA"
+    ],
+        "liked": []
+    },
+    {
+        "cnpj": "01234567891235",
+        "name": "Byte Bakery",
+        "email": "bytebakery@acelera.zg.com",
+        "state": "SP",
+        "cep": "20000001",
+        "description": "Produtos digitais com foco em entregas consistentes",
+        "skills": [
+            "JAVA",
+            "KOTLIN"
+        ],
+        "liked": [
+            "01234567893"
+        ]
+    },
+    {
+        "cnpj": "01234567891236",
+        "name": "Cloud Pao",
+        "email": "cloudpao@acelera.zg.com",
+        "state": "CE",
+        "cep": "20000002",
+        "description": "Equipe especializada em automacao e backend",
+        "skills": [
+            "PYTHON",
+            "JAVA"
+        ],
+        "liked": [
+            "01234567891"
+        ]
+    },
+    {
+        "cnpj": "01234567891237",
+        "name": "Dev Chapa",
+        "email": "devchapa@acelera.zg.com",
+        "state": "RJ",
+        "cep": "20000003",
+        "description": "Time orientado a desenvolvimento rapido e seguro",
+        "skills": [
+            "JAVA",
+            "PHP"
+        ],
+        "liked": [
+            "01234567892"
+        ]
+    }
+]
