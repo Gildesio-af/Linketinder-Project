@@ -12,5 +12,6 @@ interface ICompanyRepository {
     List<IPerson> findBySkill(Skill skill)
     Company save(CompanyDTO user)
     Company update(CompanyUpdateDTO user)
+    void update(Company company)
     void delete(String cnpj)
 }

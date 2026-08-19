@@ -12,5 +12,6 @@ interface ICandidateRepository {
     List<IPerson> findBySkill(Skill skill)
     Candidate save(CandidateDTO user)
     Candidate update(CandidateUpdateDTO user)
+    void update(Candidate candidate)
     void delete(String cpf)
 }

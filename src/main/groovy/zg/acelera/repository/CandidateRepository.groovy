@@ -1,6 +1,7 @@
 package zg.acelera.repository
 
 import zg.acelera.domain.Candidate
+import zg.acelera.domain.Company
 import zg.acelera.domain.IPerson
 import zg.acelera.domain.Skill
 import groovy.json.JsonBuilder
@@ -37,6 +38,7 @@ class CandidateRepository implements ICandidateRepository {
 
         jsonList.each { map ->
             Set<Skill> loadedSkills = map.skills?.collect { Skill.valueOf(it.toString()) } as HashSet
+            Set<String> loadedLikes = map.liked ? (map.liked as HashSet) : new HashSet<String>()
 
             candidates += Candidate.builder()
                     .name(map.name)
@@ -47,6 +49,7 @@ class CandidateRepository implements ICandidateRepository {
                     .cpf(map.cpf)
                     .age(map.age)
                     .skills(loadedSkills)
+                    .liked(loadedLikes)
                     .build()
         }
 
@@ -66,7 +69,8 @@ class CandidateRepository implements ICandidateRepository {
                     state: c.state,
                     cep: c.cep,
                     description: c.description,
-                    skills: c.skills.collect { it.name() }
+                    skills: c.skills.collect { it.name() },
+                    liked: c.liked
             ]
         }
 
@@ -106,6 +110,15 @@ class CandidateRepository implements ICandidateRepository {
         rewriteFile(all)
 
         return all[index] as Candidate
+    }
+
+    @Override
+    void update(Candidate candidate) {
+        List<IPerson> all = findAll()
+        int index = all.findIndexOf { ((Candidate) it).cpf == candidate.cpf}
+
+        all[index] = candidate
+        rewriteFile(all)
     }
 
     @Override

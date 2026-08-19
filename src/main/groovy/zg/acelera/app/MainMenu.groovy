@@ -2,9 +2,11 @@ package zg.acelera.app
 
 import zg.acelera.service.CandidateService
 import zg.acelera.service.CompanyService
+import zg.acelera.service.MatchService
 import zg.acelera.user_interface.CandidateUI
 import zg.acelera.user_interface.CompanyUI
 import zg.acelera.user_interface.InputReader
+import zg.acelera.user_interface.MatchUI
 
 class MainMenu {
     static InputReader inputReader = new InputReader()
@@ -14,6 +16,9 @@ class MainMenu {
 
     static CompanyService companyService = new CompanyService()
     static CompanyUI companyUI = new CompanyUI(companyService, inputReader)
+
+    static MatchService matchService = new MatchService()
+    static MatchUI matchUI = new MatchUI(matchService, inputReader)
 
     static void startApplication() {
         boolean running = true
@@ -25,6 +30,7 @@ class MainMenu {
             ========================================
             1. Candidate Area
             2. Company Area
+            3. Login (Match System)
             0. Exit System
             ========================================
             """
@@ -36,6 +42,9 @@ class MainMenu {
                     break
                 case "2":
                     companyUI.showMenu()
+                    break
+                case "3":
+                    matchUI.showMenu()
                     break
                 case "0":
                     println "Exiting the system. Goodbye!"

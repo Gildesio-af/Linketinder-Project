@@ -2,6 +2,7 @@ package zg.acelera.repository
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import zg.acelera.domain.Candidate
 import zg.acelera.domain.Company
 import zg.acelera.domain.IPerson
 import zg.acelera.domain.Skill
@@ -37,6 +38,7 @@ class CompanyRepository implements ICompanyRepository {
 
         jsonList.each { map ->
             Set<Skill> loadedSkills = map.skills?.collect { Skill.valueOf(it.toString()) } as HashSet
+            Set<String> loadedLikes = map.liked ? (map.liked as HashSet) : new HashSet<String>()
 
             companies += Company.builder()
                     .name(map.name)
@@ -46,6 +48,7 @@ class CompanyRepository implements ICompanyRepository {
                     .description(map.description)
                     .cnpj(map.cnpj)
                     .skills(loadedSkills)
+                    .liked(loadedLikes)
                     .build()
         }
 
@@ -64,7 +67,8 @@ class CompanyRepository implements ICompanyRepository {
                     state: c.state,
                     cep: c.cep,
                     description: c.description,
-                    skills: c.skills.collect { it.name() }
+                    skills: c.skills.collect { it.name() },
+                    liked: c.liked
             ]
         }
 
@@ -115,6 +119,15 @@ class CompanyRepository implements ICompanyRepository {
         rewriteFile(all)
 
         existing
+    }
+
+    @Override
+    void update(Company company) {
+        List<IPerson> all = findAll()
+        int index = all.findIndexOf {((Company) it).cnpj == company.cnpj}
+
+        all[index] = company
+        rewriteFile(all)
     }
 
     @Override
