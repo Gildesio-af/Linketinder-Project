@@ -12,12 +12,6 @@ class Candidate extends Person {
     int age
 
     @Override
-    void like(IPerson person) {
-        if(person)
-            liked += person
-    }
-
-    @Override
     void dislike(IPerson person) {
         if(person && liked.contains(person))
             liked -= person

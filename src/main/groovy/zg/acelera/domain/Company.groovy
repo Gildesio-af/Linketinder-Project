@@ -11,12 +11,6 @@ class Company extends Person{
     String cnpj
 
     @Override
-    void like(IPerson person) {
-        if(person)
-            liked += person
-    }
-
-    @Override
     void dislike(IPerson person) {
         if(person && liked.contains(person))
             liked -= person

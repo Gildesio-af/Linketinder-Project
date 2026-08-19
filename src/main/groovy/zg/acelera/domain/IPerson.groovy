@@ -6,11 +6,9 @@ interface IPerson {
     String getState()
     String getCep()
     String getDescription()
-    Set<IPerson> getLiked()
+    Set<String> getLiked()
     Set<String> getSkills()
-    void like(IPerson person)
+    void like(String id)
     void dislike(IPerson person)
     void showDetails()
-
-    void addSkill(Skill skill)
 }
