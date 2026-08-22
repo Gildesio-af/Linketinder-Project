@@ -10,8 +10,8 @@ import zg.acelera.domain.Skill
 class CandidateService {
     private final ICandidateRepository repository
 
-    CandidateService() {
-        this.repository = new CandidateRepository()
+    CandidateService(ICandidateRepository candidateRepository = new CandidateRepository()) {
+        this.repository = candidateRepository
     }
 
     void listAllCandidates() {
