@@ -1,5 +1,7 @@
 # Linketinder
 
+Name: Gildésio Araújo Félix
+
 Sistema em **Groovy**, executado em console, para cadastro de candidatos e empresas, busca por habilidades e criação de matches entre perfis com interesse mútuo.
 
 ## Funcionalidades
