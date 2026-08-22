@@ -1,8 +1,10 @@
 package zg.acelera.dto.candidate
 
+import groovy.transform.builder.Builder
 import zg.acelera.domain.Candidate;
 import zg.acelera.domain.Skill;
 
+@Builder
 record CandidateUpdateDTO (
         String cpf,
         String name,
