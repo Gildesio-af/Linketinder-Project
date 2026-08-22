@@ -12,11 +12,12 @@ import zg.acelera.dto.company.CompanyUpdateDTO
 import java.nio.file.Paths
 
 class CompanyRepository implements ICompanyRepository {
-    private static final String FILE_NAME = "companies.json"
+    private final String candidateFileName
     private final File file
 
-    CompanyRepository() {
-        this.file = Paths.get(FILE_NAME).toFile()
+    CompanyRepository(String fileName = "companies.json") {
+        this.candidateFileName = fileName
+        this.file = Paths.get(candidateFileName).toFile()
         initializeFile()
     }
 

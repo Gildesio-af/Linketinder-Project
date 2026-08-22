@@ -1,8 +1,10 @@
 package zg.acelera.dto.company
 
+import groovy.transform.builder.Builder
 import zg.acelera.domain.Company
 import zg.acelera.domain.Skill
 
+@Builder
 record CompanyDTO(String cnpj, String name, String corporateEmail,
                   String state, String cep, String description, Set<String> skills) {
 

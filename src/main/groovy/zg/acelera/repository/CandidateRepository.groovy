@@ -12,11 +12,12 @@ import zg.acelera.dto.candidate.CandidateUpdateDTO
 import java.nio.file.Paths
 
 class CandidateRepository implements ICandidateRepository {
-    private static final String USER_FILE_NAME = "candidates.json"
+    private final String userFileName;
     private final File file
 
-    CandidateRepository() {
-        this.file = Paths.get(USER_FILE_NAME).toFile()
+    CandidateRepository(String fileName = "candidates.json") {
+        userFileName = fileName
+        this.file = Paths.get(userFileName).toFile()
         initializeFile()
     }
 
