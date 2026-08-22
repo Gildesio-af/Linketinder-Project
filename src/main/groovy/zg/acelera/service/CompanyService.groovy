@@ -10,8 +10,8 @@ import zg.acelera.domain.Skill
 class CompanyService {
     private final ICompanyRepository repository
 
-    CompanyService() {
-        this.repository = new CompanyRepository()
+    CompanyService(ICompanyRepository repository) {
+        this.repository = repository
     }
 
     void listAllCompanies() {
