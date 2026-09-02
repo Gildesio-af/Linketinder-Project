@@ -19,8 +19,14 @@
     letter-spacing: -0.65px;
 }
 
-.logo-font {
+.logo-font-m {
     font: 600 24px/32px 'Inter', sans-serif;
+    color: var(--strong-green);
+    letter-spacing: -0.6px;
+}
+
+.logo-font-g {
+    font: 600 36px/39px 'Inter', sans-serif;
     color: var(--strong-green);
     letter-spacing: -0.6px;
 }
@@ -54,4 +60,13 @@
 .footer-font {
     font: 400 12px/12px 'Roboto', sans-serif;
     color: var(--dark-green);
+}
+
+.div-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 10px;
+    background-color: var(--strong-green);
 }

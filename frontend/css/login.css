@@ -1,0 +1,151 @@
+body {
+    background-color: #F8F9FA;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 0 30px;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+}
+
+.login-card {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 48px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.title-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.toggle-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--dark-gray-font);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+    background-color: var(--white-font, #FFFFFF);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+    color: var(--dark-font);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-password {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #F1F3F5;
+    border-radius: 8px;
+    padding: 0 16px;
+    height: 48px;
+    gap: 12px;
+}
+
+.input-icon, .eye-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+}
+
+.eye-icon {
+    cursor: pointer;
+}
+
+.input-wrapper input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: var(--dark-font);
+}
+
+.input-wrapper input::placeholder {
+    color: #A0AAB2;
+}
+
+.submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #17B276;
+    border: none;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 8px;
+}
+
+.submit-btn:hover {
+    background-color: #149f69;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 16px;
+    margin-bottom: 24px;
+}
+
+.register-link a {
+    text-decoration: none;
+}
+
+footer {
+    text-align: center;
+    padding: 32px 24px;
+}
