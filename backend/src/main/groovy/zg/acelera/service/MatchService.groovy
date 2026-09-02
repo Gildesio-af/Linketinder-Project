@@ -61,13 +61,13 @@ class MatchService {
 
         if (currentUser instanceof Candidate) {
             likedProfiles = potentials.findAll { targetsId.contains(((Company) it).cnpj) }
-            for( Company target : likedProfiles) {
+            for( Company target : (likedProfiles as List<Company>)) {
                 currentUser.like(target.cnpj)
             }
             candidateRepository.update(currentUser as Candidate)
         } else if (currentUser instanceof Company) {
             likedProfiles = potentials.findAll { targetsId.contains(((Candidate) it).cpf) }
-            for( Candidate target : likedProfiles) {
+            for(Candidate target : (likedProfiles as List<Candidate>)) {
                 currentUser.like(target.cpf)
             }
             companyRepository.update(currentUser as Company)

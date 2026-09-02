@@ -1,18 +1,17 @@
 package zg.acelera.repository
 
-import zg.acelera.domain.Candidate
-import zg.acelera.domain.Company
-import zg.acelera.domain.IPerson
-import zg.acelera.domain.Skill
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
+import zg.acelera.domain.Candidate
+import zg.acelera.domain.IPerson
+import zg.acelera.domain.Skill
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 
 import java.nio.file.Paths
 
 class CandidateRepository implements ICandidateRepository {
-    private final String userFileName;
+    private final String userFileName
     private final File file
 
     CandidateRepository(String fileName = "candidates.json") {
