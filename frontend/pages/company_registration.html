@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Cadastro de Empresa – Linketinder</title>
+</head>
+
+<body class="company-reg-body">
+
+    <header class="company-reg-header">
+        <div class="div-logo">
+            <img src="../assets/company-white.svg" alt="Logo da empresa">
+        </div>
+        <h1 class="title-font">Cadastro de empresa</h1>
+        <p class="description-m">Ache os melhores profissionais para sua empresa</p>
+    </header>
+
+    <main class="company-reg-card">
+        <section class="reg-section">
+            <div class="field-group">
+                <label class="description-sm" for="corporate-email">Email corporativo</label>
+                <input class="reg-input" type="email" id="corporate-email" name="corporate-email"
+                    placeholder="rh@company.com" autocomplete="email">
+            </div>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <label class="description-sm" for="password">Senha</label>
+                    <div>
+                        <input class="reg-input" type="password" id="password" name="password" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="description-sm" for="confirm-password">Confirme a senha</label>
+                    <div>
+                        <input class="reg-input" type="password" id="confirm-password" name="confirm-password"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label class="description-sm" for="company-description">Sobre a empresa</label>
+                <textarea class="reg-input textarea" id="company-description" name="company-description"
+                    placeholder="Conte-nos mais sobre sua missão e valores..."></textarea>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="hidden reg-section first-job-section">
+            <div class="reg-section-title logo-font-m">
+                <img src="../assets/job.svg" alt="Ícone de vaga">
+                Primeira Vaga
+            </div>
+
+            <div class="field-group">
+                <label class="description-sm" for="job-title">Nome da vaga</label>
+                <input class="reg-input" type="text" id="job-title" name="job-title"
+                    placeholder="Ex: Desenvolvedor Frontend Sênior">
+            </div>
+
+            <div class="field-group">
+                <label class="description-sm" for="job-title">Competências procuradas</label>
+                <div class="skills-container" id="skills-container">
+                    <span class="skill-tag" id="tag-react">
+                        React
+                        <button type="button" aria-label="Remover React">×</button>
+                    </span>
+                    <span class="skill-tag" id="tag-typescript">
+                        TypeScript
+                        <button type="button" aria-label="Remover TypeScript">×</button>
+                    </span>
+                    <input class="skill-input" type="text" id="skill-input" placeholder="Spring Boot...">
+                    <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                        <img src="../assets/plus.svg" alt="Adicionar">
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <button class="btn-company-register label-font-m" type="submit" id="btn-register-company">
+            Cadastrar Empresa
+        </button>
+
+        <div class="login-link">
+            <a href="#">
+                Já tenho conta
+                <img src="../assets/right-arrow-green.svg" alt="Seta" width="16" height="16">
+            </a>
+        </div>
+
+    </main>
+</body>
+
+</html>
