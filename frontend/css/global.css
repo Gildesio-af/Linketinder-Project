@@ -8,9 +8,11 @@
     --dark-green: #416656;
     --strong-green: #006C49;
     --light-green: #ADEDD3;
+    --light-gray: #dde2e3;
     --dark-font: #191C1D;
     --dark-gray-font: #3C4A42;
     --white-font: #FFFFFF;
+    --light-bg: #f4f4f4;
 }
 
 .title-font {
@@ -37,29 +39,58 @@
 }
 
 .description-sm {
-    font: 500 14px/21px 'Roboto', sans-serif;
+    font: 500 18px/21px 'Roboto', sans-serif;
     color: var(--dark-gray-font);
 }
 
 .label-font-m {
-    font: 600 14px/14px 'Roboto', sans-serif;
+    font: 600 18px/14px 'Roboto', sans-serif;
     color: var(--white-font);
     letter-spacing: 0.28px;
 }
 
 .label-font-s {
-    font: 500 12px/12px 'Roboto', sans-serif;
-    color: var(--dark-gray-font);
+    font: 500 16px/12px 'Roboto', sans-serif;
+    color: var(--white-font);
 }
 
 .location-font {
-    font: 400 12px/18px 'Roboto', sans-serif;
+    font: 400 14px/18px 'Roboto', sans-serif;
     color: var(--strong-green);
 }
 
 .footer-font {
-    font: 400 12px/12px 'Roboto', sans-serif;
+    font: 400 16px/12px 'Roboto', sans-serif;
     color: var(--dark-green);
+}
+
+.company-font {
+    font: 500 18px/18px 'Roboto', sans-serif;
+    color: var(--dark-gray-font);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.match-rate-font {
+    font: 400 14px/18px 'Roboto', sans-serif;
+    color: var(--strong-green);
+}
+
+.nav-font {
+    font: 600 16px/16px 'Inter', sans-serif;
+    color: var(--dark-gray-font);
+    letter-spacing: -0.28px;
+}
+
+.nav-font-selected {
+    font: 600 18px/18px 'Inter', sans-serif;
+    color: var(--strong-green);
+    letter-spacing: -0.28px;
+}
+
+.job-title-font {
+    font: 600 22px/18px 'Inter', sans-serif;
+    color: var(--dark-gray-font);
 }
 
 .div-logo {
@@ -68,5 +99,14 @@
     justify-content: center;
     padding: 12px;
     border-radius: 10px;
+    background-color: var(--strong-green);
+}
+
+.div-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 50%;
     background-color: var(--strong-green);
 }
