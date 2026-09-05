@@ -1,11 +1,11 @@
-body {
-    background-color: #F8F9FA;
+.login-body {
+    background-color: var(--light-bg);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
-header {
+.login-header {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,7 +122,7 @@ form {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background-color: #17B276;
+    background-color: var(--strong-green);
     border: none;
     border-radius: 8px;
     padding: 16px;
