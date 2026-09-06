@@ -22,6 +22,21 @@
     letter-spacing: -0.65px;
 }
 
+.sub-title-white {
+    font: 500 20px/28px 'Inter', sans-serif;
+    color: var(--white-font);
+}
+
+.sub-title {
+    font: 700 20px/28px 'Inter', sans-serif;
+    color: var(--dark-font);
+}
+
+.white-font-g {
+    font: 700 32px/39px 'Roboto', sans-serif;
+    color: var(--white-font);  
+}
+
 .logo-font-m {
     font: 600 24px/32px 'Inter', sans-serif;
     color: var(--strong-green);
@@ -90,6 +105,11 @@
 }
 
 .job-title-font {
+    font: 600 22px/18px 'Inter', sans-serif;
+    color: var(--dark-gray-font);
+}
+
+.candidate-name-font {
     font: 600 22px/18px 'Inter', sans-serif;
     color: var(--dark-gray-font);
 }
