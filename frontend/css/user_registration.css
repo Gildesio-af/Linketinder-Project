@@ -1,0 +1,69 @@
+.user-reg-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../assets/Overlay+Blur.svg');
+    background-repeat: no-repeat;
+}
+
+.user-reg-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px 48px 20px 48px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 8px 40px rgba(0, 108, 73, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    border-top: 4px solid var(--strong-green);
+    gap: 0;
+}
+
+.user-reg-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding-bottom: 16px;
+    padding-top: 12px;
+}
+
+.div-user-logo {
+    padding: 18px 19px;
+}
+
+.user-skills-section {
+    background-color: var(--light-gray-form);
+    border-left: 4px solid var(--strong-green);
+    padding: 24px;
+    border-radius: 8px;
+}
+
+.user-skills-section .reg-input,
+.user-skills-section .skills-container {
+    background-color: #fff;
+}
+
+.btn-user-register {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--strong-green);
+    color: var(--white-font);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.btn-user-register:hover {
+    background-color: var(--strong-green);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 108, 73, 0.35);
+}
+
+.btn-user-register:active {
+    transform: translateY(0);
+}

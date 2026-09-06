@@ -132,7 +132,7 @@ form {
 }
 
 .submit-btn:hover {
-    background-color: #149f69;
+    background-color: var(--strong-green);
 }
 
 .register-link {

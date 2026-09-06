@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Cadastro de Candidato – Linketinder</title>
+</head>
+
+<body class="user-reg-body">
+
+    <header class="user-reg-header">
+        <div class="div-logo div-user-logo">
+            <img src="../assets/user.svg" alt="Ícone de usuário">
+        </div>
+        <h1 class="title-font">Cadastro de candidato</h1>
+        <p class="description-m">Encontre as melhores empresas e vagas</p>
+    </header>
+
+    <main class="user-reg-card">
+        <form id="form-user-registration">
+            <section class="reg-section">
+                <div class="field-group">
+                    <label class="description-sm" for="work-email">Email de trabalho</label>
+                    <input class="reg-input" type="email" id="work-email" name="work-email"
+                        placeholder="email@gmail.com" autocomplete="email" required>
+                </div>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="password">Senha</label>
+                        <div>
+                            <input class="reg-input" type="password" id="password" name="password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="confirm-password">Confirme a senha</label>
+                        <div>
+                            <input class="reg-input" type="password" id="confirm-password" name="confirm-password"
+                                placeholder="••••••••" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="learning-description">Descrição de aprendizado</label>
+                    <textarea class="reg-input textarea" id="learning-description" name="learning-description"
+                        placeholder="Conte-nos sobre o que você está aprendendo e seus objetivos..."></textarea>
+                </div>
+            </section>
+            <div class="section-divider"></div>
+            <section class="reg-section user-skills-section">
+                <div class="reg-section-title logo-font-m">
+                    <img src="../assets/plus.svg" alt="Ícone de competências">
+                    Competências
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="skill-input">Suas principais competências (Skills)</label>
+                    <div class="skills-container" id="skills-container">
+                        <span class="skill-tag" id="tag-react">
+                            React
+                            <button type="button" aria-label="Remover React">×</button>
+                        </span>
+                        <span class="skill-tag" id="tag-typescript">
+                            TypeScript
+                            <button type="button" aria-label="Remover TypeScript">×</button>
+                        </span>
+                        <input class="skill-input" type="text" id="skill-input" placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <button class="btn-user-register label-font-m" type="submit" id="btn-register-user">
+                Cadastrar Candidato
+            </button>
+        </form>
+    </main>
+
+</body>
+
+</html>
