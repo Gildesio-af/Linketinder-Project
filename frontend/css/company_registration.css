@@ -5,6 +5,7 @@
     justify-content: center;
     background-image: url('../assets/Overlay+Blur.svg');
     background-repeat: no-repeat;
+    height: 100vh;
 }
 
 .company-reg-card {
@@ -45,7 +46,6 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 20px;
 }
 
 .reg-section-title {
@@ -53,11 +53,6 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 4px;
-}
-
-.reg-section-title img {
-    width: 20px;
-    height: 20px;
 }
 
 .field-group {
@@ -92,7 +87,7 @@
 
 .reg-input.textarea {
     resize: vertical;
-    min-height: 100px;
+    min-height: 80px;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -150,14 +145,8 @@
     border: none;
     outline: none;
     background: transparent;
-    font: 400 14px/20px 'Roboto', sans-serif;
-    color: var(--dark-font);
     min-width: 120px;
     flex: 1;
-}
-
-.skill-input::placeholder {
-    color: #a0aab2;
 }
 
 .add-skill-btn {
@@ -188,7 +177,6 @@
 .section-divider {
     height: 1px;
     background-color: var(--light-gray);
-    margin: 4px 0 16px;
 }
 
 .btn-company-register {
