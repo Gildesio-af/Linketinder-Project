@@ -19,9 +19,42 @@
         <nav>
             <a href="#" class="nav-font-selected">Vagas disponíveis</a>
             <a href="#" class="nav-font">Sair</a>
-            <a href="#" class="div-profile">
-                <img src="../assets/user.svg" alt="Ícone de perfil">
-            </a>
+            <div class="profile-container">
+                <a href="#" class="div-profile" id="profileBtn">
+                    <img src="../assets/user.svg" alt="Ícone de perfil">
+                </a>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="info-group">
+                        <span class="info-label description-sm">Nome</span>
+                        <span class="description-sm">João da Silva</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Idade</span>
+                        <span class="description-sm">28</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Email de trabalho</span>
+                        <span class="description-sm">joao.silva@email.com</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Localização</span>
+                        <span class="description-sm">São Paulo - SP</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Descrição de aprendizado</span>
+                        <span class="description-sm">Focado em aprimorar habilidades em desenvolvimento web.</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Competências</span>
+                        <ul class="dropdown-skills-list label-font-s">
+                            <li>React</li>
+                            <li>TypeScript</li>
+                            <li>Node.js</li>
+                        </ul>
+                    </div>
+                    <button class="btn-update-data label-font-m">Atualizar dados</button>
+                </div>
+            </div>
         </nav>
     </header>
     <main class="job-main">
@@ -156,6 +189,24 @@
             <p class="footer-font">&copy; 2024 Linketinder. High-Trust Anonymous Matchmaking.</p>
         </span>
     </footer>
+    <script>
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        profileBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Fecha o dropdown se clicar fora dele
+        window.addEventListener('click', function(event) {
+            if (!event.target.closest('.profile-container')) {
+                if (profileDropdown.classList.contains('show')) {
+                    profileDropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -1,6 +1,6 @@
 .jobs-header {
     position: relative;
-    z-index: 1;
+    z-index: 10;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -195,4 +195,78 @@
     padding: 24px 40px;
     background-color: var(--light-bg);
     border-top: 2px solid var(--light-gray);
+}
+
+.profile-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    background-color: var(--white-font);
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 20px;
+    width: 320px;
+    z-index: 10;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-dropdown.show {
+    display: flex;
+}
+
+.profile-dropdown .info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-dropdown .info-label {
+    font-weight: bold;
+    color: var(--dark-green);
+}
+
+.btn-update-data {
+    margin-top: 12px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--strong-green);
+    color: var(--white-font);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.btn-update-data:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-skills-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.dropdown-skills-list li {
+    background-color: var(--strong-green);
+    padding: 4px 10px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-skills-list li:hover {
+    transform: scale(1.08);
 }
