@@ -131,3 +131,7 @@
     border-radius: 50%;
     background-color: var(--strong-green);
 }
+
+label:hover {
+    cursor: pointer;
+}

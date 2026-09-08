@@ -5,13 +5,12 @@
     justify-content: center;
     background-image: url('../assets/Overlay+Blur.svg');
     background-repeat: no-repeat;
-    height: 100vh;
 }
 
 .company-reg-card {
     background-color: #fff;
     border-radius: 10px;
-    padding: 20px 48px 20px 48px;
+    padding: 18px 48px 10px 48px;
     width: 100%;
     max-width: 560px;
     box-shadow: 0 8px 40px rgba(0, 108, 73, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -26,7 +25,6 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 8px;
     padding-bottom: 16px;
     padding-top: 12px;
 }
@@ -34,7 +32,7 @@
 .first-job-section {
     background-color: var(--light-gray-form);
     border-left: 4px solid var(--strong-green);
-    padding: 24px;
+    padding: 18px;
     border-radius: 8px;
 }
 .first-job-section .reg-input,
@@ -45,7 +43,7 @@
 .reg-section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .reg-section-title {
@@ -72,7 +70,6 @@
     padding: 12px 14px;
     border: 1.5px solid var(--light-gray);
     border-radius: 8px;
-    font: 400 14px/20px 'Roboto', sans-serif;
     color: var(--dark-font);
     background-color: var(--light-gray-form);
     outline: none;
@@ -88,7 +85,6 @@
 .reg-input.textarea {
     resize: vertical;
     min-height: 80px;
-    font-family: 'Roboto', sans-serif;
 }
 
 .skills-container {
@@ -210,7 +206,6 @@
     align-items: center;
     gap: 6px;
     text-decoration: none;
-    font: 500 14px/20px 'Roboto', sans-serif;
     color: var(--strong-green);
     transition: opacity 0.2s ease;
 }

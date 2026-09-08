@@ -22,6 +22,11 @@
         <form id="form-company-registration">
             <section class="reg-section">
                 <div class="field-group">
+                    <label class="description-sm" for="corporate-name">Nome da Empresa</label>
+                    <input class="reg-input" type="text" id="corporate-name" name="corporate-name"
+                        placeholder="Nome corporativo" required>
+                </div>
+                <div class="field-group">
                     <label class="description-sm" for="corporate-email">Email corporativo</label>
                     <input class="reg-input" type="email" id="corporate-email" name="corporate-email"
                         placeholder="rh@company.com" autocomplete="email" required>
@@ -59,7 +64,7 @@
                         placeholder="Ex: Desenvolvedor Frontend Sênior">
                 </div>
                 <div class="field-group">
-                    <label class="description-sm" for="job-title">Competências procuradas</label>
+                    <label class="description-sm" for="skill-input">Competências procuradas</label>
                     <div class="skills-container" id="skills-container">
                         <span class="skill-tag" id="tag-react">
                             React
