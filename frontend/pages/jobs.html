@@ -52,7 +52,7 @@
                             <li>Node.js</li>
                         </ul>
                     </div>
-                    <button class="btn-update-data label-font-m">Atualizar dados</button>
+                    <button id="btnUpdateData" class="btn-update-data label-font-m">Atualizar dados</button>
                 </div>
             </div>
         </nav>
@@ -184,6 +184,62 @@
             </div>
         </div>
     </main>
+
+    <!-- Update Modal -->
+    <div id="updateModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="title-font" style="margin-bottom: 20px;">Atualizar Dados do Candidato</h2>
+            <form id="form-update-user">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="update-name">Nome</label>
+                        <input class="reg-input" type="text" id="update-name" value="João da Silva">
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="update-age">Idade</label>
+                        <input class="reg-input" type="number" id="update-age" value="28">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="update-email">Email de trabalho</label>
+                        <input class="reg-input" type="email" id="update-email" value="joao.silva@email.com">
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="update-place">Localização</label>
+                        <input class="reg-input" type="text" id="update-place" value="São Paulo - SP">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="update-description">Descrição de aprendizado</label>
+                    <textarea class="reg-input textarea" id="update-description" style="min-height: 80px;">Focado em aprimorar habilidades em desenvolvimento web.</textarea>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="update-skills-input">Competências</label>
+                    <div class="skills-container" id="update-skills-container">
+                        <span class="skill-tag">
+                            React
+                            <button type="button" aria-label="Remover React">×</button>
+                        </span>
+                        <span class="skill-tag">
+                            TypeScript
+                            <button type="button" aria-label="Remover TypeScript">×</button>
+                        </span>
+                        <span class="skill-tag">
+                            Node.js
+                            <button type="button" aria-label="Remover Node.js">×</button>
+                        </span>
+                        <input class="skill-input" type="text" id="update-skills-input" placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn-user-register label-font-m" style="margin-top: 16px; width: 100%;" id="saveUpdateBtn">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
     <footer class="job-footer">
         <span>
             <p class="footer-font">&copy; 2024 Linketinder. High-Trust Anonymous Matchmaking.</p>
@@ -192,18 +248,39 @@
     <script>
         const profileBtn = document.getElementById('profileBtn');
         const profileDropdown = document.getElementById('profileDropdown');
+        const btnUpdateData = document.getElementById('btnUpdateData');
+        const updateModal = document.getElementById('updateModal');
+        const closeModal = document.querySelector('.close-modal');
+        const saveUpdateBtn = document.getElementById('saveUpdateBtn');
 
         profileBtn.addEventListener('click', function(event) {
             event.preventDefault();
             profileDropdown.classList.toggle('show');
         });
 
-        // Fecha o dropdown se clicar fora dele
+        btnUpdateData.addEventListener('click', function(event) {
+            event.preventDefault();
+            profileDropdown.classList.remove('show');
+            updateModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', function() {
+            updateModal.style.display = 'none';
+        });
+
+        saveUpdateBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            updateModal.style.display = 'none';
+        });
+
         window.addEventListener('click', function(event) {
-            if (!event.target.closest('.profile-container')) {
+            if (!event.target.closest('.profile-container') && !event.target.closest('.modal-content')) {
                 if (profileDropdown.classList.contains('show')) {
                     profileDropdown.classList.remove('show');
                 }
+            }
+            if (event.target === updateModal) {
+                updateModal.style.display = 'none';
             }
         });
     </script>

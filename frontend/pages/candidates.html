@@ -209,8 +209,25 @@
                     <textarea class="reg-input textarea" id="update-description" style="min-height: 80px;">Focada em desenvolver soluções inovadoras para o mercado de tecnologia.</textarea>
                 </div>
                 <div class="field-group">
-                    <label class="description-sm" for="update-skills">Competências procuradas (separadas por vírgula)</label>
-                    <input class="reg-input" type="text" id="update-skills" value="React, TypeScript, Spring Boot">
+                    <label class="description-sm" for="update-skills-input">Competências procuradas</label>
+                    <div class="skills-container" id="update-skills-container">
+                        <span class="skill-tag">
+                            React
+                            <button type="button" aria-label="Remover React">×</button>
+                        </span>
+                        <span class="skill-tag">
+                            TypeScript
+                            <button type="button" aria-label="Remover TypeScript">×</button>
+                        </span>
+                        <span class="skill-tag">
+                            Spring Boot
+                            <button type="button" aria-label="Remover Spring Boot">×</button>
+                        </span>
+                        <input class="skill-input" type="text" id="update-skills-input" placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
                 </div>
                 <button type="button" class="btn-company-register label-font-m" style="margin-top: 16px; width: 100%; border: none; padding: 14px; border-radius: 8px; background-color: var(--strong-green); color: white; cursor: pointer;" id="saveUpdateBtn">Salvar Alterações</button>
             </form>
