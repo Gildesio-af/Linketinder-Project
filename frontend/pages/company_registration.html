@@ -21,44 +21,38 @@
     <main class="company-reg-card">
         <form id="form-company-registration">
             <section class="reg-section">
-                <div class="field-row">
-                    <div class="field-group">
-                        <label class="description-sm" for="corporate-name">Nome da Empresa</label>
-                        <input class="reg-input" type="text" id="corporate-name" name="corporate-name"
-                            placeholder="Nome corporativo" required>
-                    </div>
-                    <div class="field-group">
-                        <label class="description-sm" for="cnpj">CNPJ</label>
-                        <input class="reg-input" type="text" id="cnpj" name="cnpj"
-                            placeholder="12345678901234" required>
+                <div class="field-group">
+                    <label class="description-sm" for="corporate-name">Nome da Empresa</label>
+                    <input class="reg-input" type="text" id="corporate-name" name="corporate-name"
+                        placeholder="Nome corporativo" required>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="cnpj">CNPJ</label>
+                    <input class="reg-input" type="text" id="cnpj" name="cnpj"
+                        placeholder="CNPJ apenas números" required>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="corporate-email">Email corporativo</label>
+                    <input class="reg-input" type="email" id="corporate-email" name="corporate-email"
+                        placeholder="rh@company.com" autocomplete="email" required>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="c-place">Localização</label>
+                    <div>
+                        <input class="reg-input" type="text" id="c-place" name="c-place" placeholder="Cidade - UF" required>
                     </div>
                 </div>
-                <div class="field-row">
-                    <div class="field-group">
-                        <label class="description-sm" for="corporate-email">Email corporativo</label>
-                        <input class="reg-input" type="email" id="corporate-email" name="corporate-email"
-                            placeholder="rh@company.com" autocomplete="email" required>
-                    </div>
-                    <div class="field-group">
-                        <label class="description-sm" for="place">Localização</label>
-                        <div>
-                            <input class="reg-input" type="text" id="place" name="place" placeholder="Cidade - UF" required>
-                        </div>
+                <div class="field-group">
+                    <label class="description-sm" for="c-password">Senha</label>
+                    <div>
+                        <input class="reg-input" type="password" id="c-password" name="c-password" placeholder="••••••••" required>
                     </div>
                 </div>
-                <div class="field-row">
-                    <div class="field-group">
-                        <label class="description-sm" for="password">Senha</label>
-                        <div>
-                            <input class="reg-input" type="password" id="password" name="password" placeholder="••••••••" required>
-                        </div>
-                    </div>
-                    <div class="field-group">
-                        <label class="description-sm" for="confirm-password">Confirme a senha</label>
-                        <div>
-                            <input class="reg-input" type="password" id="confirm-password" name="confirm-password"
-                                placeholder="••••••••" required>
-                        </div>
+                <div class="field-group">
+                    <label class="description-sm" for="c-confirm-password">Confirme a senha</label>
+                    <div>
+                        <input class="reg-input" type="password" id="c-confirm-password" name="c-confirm-password"
+                            placeholder="••••••••" required>
                     </div>
                 </div>
                 <div class="field-group">
@@ -67,8 +61,8 @@
                         placeholder="Conte-nos mais sobre sua missão e valores..." required></textarea>
                 </div>
             </section>
-            <div class="section-divider"></div>
-            <section class="hidden reg-section first-job-section">
+            <!-- <div class="section-divider"></div>
+            <section class=" reg-section first-job-section">
                 <div class="reg-section-title logo-font-m">
                     <img src="../assets/job.svg" alt="Ícone de vaga">
                     Primeira Vaga
@@ -95,12 +89,15 @@
                         </button>
                     </div>
                 </div>
-            </section>
+            </section> -->
             <button class="btn-company-register label-font-m" type="submit" id="btn-register-company">
                 Cadastrar Empresa
             </button>
-    </form>
+        </form>
     </main>
+    
+    <script type="module" src="../ts/pages/company/CompanyRegistration.js"></script>
+    <script type="module" src="../ts/services/tag/TagsService.js"></script>
 </body>
 
 </html>

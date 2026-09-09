@@ -84,7 +84,7 @@
 
 .reg-input.textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
 }
 
 .skills-container {
