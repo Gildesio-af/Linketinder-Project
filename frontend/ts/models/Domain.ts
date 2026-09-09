@@ -5,7 +5,6 @@ export interface User {
     confirmPassword?: string;
     description: string;
     localization: string;
-    skills?: string[];
 }
 
 export interface Company extends User {
@@ -15,6 +14,7 @@ export interface Company extends User {
 export interface Candidate extends User {
     cpf: string;
     age: number;
+    skills?: string[];
 }
 
 export interface Job {
@@ -22,6 +22,7 @@ export interface Job {
     description: string;
     salary: number;
     location: string;
+    skills?: string[];
 }
     
     
