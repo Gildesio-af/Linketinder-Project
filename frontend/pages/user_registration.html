@@ -31,6 +31,10 @@
                         <input class="reg-input" type="number" id="age" name="age" placeholder="Sua idade" required>
                     </div>
                 </div>
+                <div class="field-group">
+                    <input class="reg-input" type="text" id="cpf" name="cpf" placeholder="CPF  apenas números" required>
+                    <label class="description-sm" for="cpf">CPF</label>
+                    </div>
                 <div class="field-row">
                     <div class="field-group">
                         <label class="description-sm" for="work-email">Email de trabalho</label>
@@ -72,16 +76,8 @@
                 <div class="field-group">
                     <label class="description-sm" for="skill-input">Suas principais competências (Skills)</label>
                     <div class="skills-container" id="skills-container">
-                        <span class="skill-tag" id="tag-react">
-                            React
-                            <button type="button" aria-label="Remover React">×</button>
-                        </span>
-                        <span class="skill-tag" id="tag-typescript">
-                            TypeScript
-                            <button type="button" aria-label="Remover TypeScript">×</button>
-                        </span>
                         <input class="skill-input" type="text" id="skill-input" placeholder="Adicionar competência...">
-                        <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                        <button id="add-skill-btn" class="add-skill-btn" type="button" aria-label="Adicionar skill">
                             <img src="../assets/plus.svg" alt="Adicionar">
                         </button>
                     </div>
@@ -92,7 +88,8 @@
             </button>
         </form>
     </main>
-
+    <script type="module" src="../ts/pages/user_registration/UserRegistration.js"></script>
+    <script type="module" src="../ts/services/TagsService.js"></script>
 </body>
 
 </html>
