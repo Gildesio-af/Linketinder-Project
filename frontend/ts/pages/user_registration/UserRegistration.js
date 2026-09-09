@@ -1,4 +1,4 @@
-import { StorageService } from "../../services/StorageService.js";
+import { StorageService } from "../../services/storage/StorageService.js";
 import { skillsArray } from "../../services/tag/TagsService.js";
 const formRegistration = document.getElementById("form-user-registration");
 if (formRegistration) {

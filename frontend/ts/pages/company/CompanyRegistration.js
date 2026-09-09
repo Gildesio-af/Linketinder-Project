@@ -1,4 +1,4 @@
-import { StorageService } from "../../services/StorageService.js";
+import { StorageService } from "../../services/storage/StorageService.js";
 const formRegistration = document.getElementById('form-company-registration');
 if (formRegistration) {
     formRegistration.addEventListener('submit', (event) => {

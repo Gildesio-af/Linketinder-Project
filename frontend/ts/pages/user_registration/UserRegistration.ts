@@ -1,5 +1,5 @@
 import type { Candidate } from "../../models/Domain.js";
-import { StorageService } from "../../services/storage/StorageService.jsrvice.js";
+import { StorageService } from "../../services/storage/StorageService.js";
 import { skillsArray } from "../../services/tag/TagsService.js"
 
 const formRegistration = document.getElementById("form-user-registration") as HTMLFormElement | null;

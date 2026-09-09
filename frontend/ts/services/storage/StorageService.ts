@@ -1,10 +1,11 @@
-import type { Candidate, Company, Job } from "../../models/Domain";
+import type { User, Candidate, Company, Job } from "../../models/Domain";
 
 export class StorageService {
     private static KEYS = {
         CANDIDATES: "lt_candidates",
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
+        CURRENT_USER: "lt_current_user"
     }
 
     static getCandidates(): Candidate[] {
@@ -107,5 +108,18 @@ export class StorageService {
         const filtered = jobs.filter(j => j.name !== job.name);
 
         localStorage.setItem(this.KEYS.JOBS, JSON.stringify(filtered));
+    }
+
+    static getCurrentUser(): User | null {
+        const data = localStorage.getItem(this.KEYS.CURRENT_USER);
+        return data ? JSON.parse(data) : null;
+    }
+
+    static setCurrentUser(user: User): void {
+        localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(user));
+    }
+
+    static deleteCurrentUser(): void {
+        localStorage.removeItem(this.KEYS.CURRENT_USER);
     }
 }

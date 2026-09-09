@@ -3,6 +3,7 @@ export class StorageService {
         CANDIDATES: "lt_candidates",
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
+        CURRENT_USER: "lt_current_user"
     };
     static getCandidates() {
         const data = localStorage.getItem(this.KEYS.CANDIDATES);
@@ -78,6 +79,16 @@ export class StorageService {
         const jobs = this.getJobs();
         const filtered = jobs.filter(j => j.name !== job.name);
         localStorage.setItem(this.KEYS.JOBS, JSON.stringify(filtered));
+    }
+    static getCurrentUser() {
+        const data = localStorage.getItem(this.KEYS.CURRENT_USER);
+        return data ? JSON.parse(data) : null;
+    }
+    static setCurrentUser(user) {
+        localStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(user));
+    }
+    static deleteCurrentUser() {
+        localStorage.removeItem(this.KEYS.CURRENT_USER);
     }
 }
 //# sourceMappingURL=StorageService.js.map
