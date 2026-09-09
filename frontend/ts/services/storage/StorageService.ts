@@ -1,4 +1,4 @@
-import  type { Candidate, Company , Job } from "../models/Domain";
+import type { Candidate, Company, Job } from "../../models/Domain";
 
 export class StorageService {
     private static KEYS = {
@@ -14,16 +14,16 @@ export class StorageService {
 
     static saveCandidate(candidate: Candidate): void {
         const candidates = this.getCandidates();
-        
-        if (candidates.some(c => c.email === candidate.email || c.cpf === candidate.cpf)) 
+
+        if (candidates.some(c => c.email === candidate.email || c.cpf === candidate.cpf))
             throw new Error("User already exists with the email or CPF provided.");
-        
+
         candidates.push(candidate)
-        
+
         localStorage.setItem(this.KEYS.CANDIDATES, JSON.stringify(candidates))
     }
 
-    static updateCandidate(candidate: Candidate) : Candidate {
+    static updateCandidate(candidate: Candidate): Candidate {
         const candidates = this.getCandidates();
         const index = candidates.findIndex(c => c.cpf === candidate.cpf);
 
@@ -49,7 +49,7 @@ export class StorageService {
     static saveCompany(company: Company): void {
         const companies = this.getCompanies();
 
-        if (companies.some(c => c.email === company.email || c.cnpj === company.cnpj)) 
+        if (companies.some(c => c.email === company.email || c.cnpj === company.cnpj))
             throw new Error("User already exists with the email or CNPJ provided.");
 
         companies.push(company);
@@ -57,7 +57,7 @@ export class StorageService {
         localStorage.setItem(this.KEYS.COMPANIES, JSON.stringify(companies));
     }
 
-    static updateCompany(company: Company) : Company {
+    static updateCompany(company: Company): Company {
         const companies = this.getCompanies();
         const index = companies.findIndex(c => c.cnpj === company.cnpj);
 
@@ -83,7 +83,7 @@ export class StorageService {
     static saveJob(job: Job): void {
         const jobs = this.getJobs();
 
-        if (jobs.some(j => j.name === job.name)) 
+        if (jobs.some(j => j.name === job.name))
             throw new Error("Job already exists with the name provided.");
 
         jobs.push(job);
@@ -91,7 +91,7 @@ export class StorageService {
         localStorage.setItem(this.KEYS.JOBS, JSON.stringify(jobs));
     }
 
-    static updateJob(job: Job) : Job {
+    static updateJob(job: Job): Job {
         const jobs = this.getJobs();
         const index = jobs.findIndex(j => j.name === job.name);
 

@@ -1,4 +1,4 @@
-import { StorageService } from "../../services/StorageService.js";
+import { StorageService } from "../../services/storage/StorageService.js";
 import type { Company } from "../../models/Domain.js";
 
 const formRegistration = document.getElementById('form-company-registration') as HTMLFormElement;

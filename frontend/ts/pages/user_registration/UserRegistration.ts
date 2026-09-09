@@ -1,5 +1,5 @@
 import type { Candidate } from "../../models/Domain.js";
-import { StorageService } from "../../services/StorageService.js";
+import { StorageService } from "../../services/storage/StorageService.jsrvice.js";
 import { skillsArray } from "../../services/tag/TagsService.js"
 
 const formRegistration = document.getElementById("form-user-registration") as HTMLFormElement | null;
@@ -19,7 +19,7 @@ if (formRegistration) {
 
         if (password !== newPassword) {
             alert("As senhas não coincidem!");
-            return; 
+            return;
         }
 
         const newCandidate: Candidate = {
@@ -30,7 +30,7 @@ if (formRegistration) {
             localization: localization,
             password: password,
             description: description,
-            skills: skillsArray 
+            skills: skillsArray
         };
 
         try {
