@@ -15,42 +15,35 @@
             <span class="logo-font-g">Linketinder</span>
         </div>
         <nav>
-            <a href="#" class="nav-font-selected">Candidatos</a>
-            <a href="#" class="nav-font">Sair</a>
+            <button class="nav-font-selected" id="candidates">Candidatos</button>
+            <button class="nav-font" id="company-logout">Sair</button>
             <div class="profile-container">
-                <a href="#" class="div-profile" id="profileBtn">
+                <button class="div-profile" id="profile-btn">
                     <img style="transform: scale(0.75);" src="../assets/company-white.svg" alt="Ícone de perfil empresa">
-                </a>
-                <div class="profile-dropdown" id="profileDropdown">
+                </button>
+                <div class="profile-dropdown" id="profile-dropdown">
                     <div class="info-group">
                         <span class="info-label description-sm">Nome da Empresa</span>
-                        <span class="description-sm">Empresa Tech S/A</span>
+                        <span id="company-dp-name" class="description-sm"></span>
                     </div>
                     <div class="info-group">
                         <span class="info-label description-sm">CNPJ</span>
-                        <span class="description-sm">12.345.678/0001-90</span>
+                        <span id="company-dp-cnpj" class="description-sm"></span>
                     </div>
                     <div class="info-group">
                         <span class="info-label description-sm">Email corporativo</span>
-                        <span class="description-sm">rh@empresa.com</span>
+                        <span id="company-dp-email" class="description-sm"></span>
                     </div>
                     <div class="info-group">
                         <span class="info-label description-sm">Localização</span>
-                        <span class="description-sm">São Paulo - SP</span>
+                        <span id="company-dp-location" class="description-sm"></span>
                     </div>
                     <div class="info-group">
                         <span class="info-label description-sm">Sobre a empresa</span>
-                        <span class="description-sm">Focada em desenvolver soluções inovadoras para o mercado de tecnologia.</span>
+                        <span id="company-dp-description" class="description-sm"></span>
                     </div>
-                    <div class="info-group">
-                        <span class="info-label description-sm">Competências procuradas</span>
-                        <ul class="dropdown-skills-list label-font-s">
-                            <li>React</li>
-                            <li>TypeScript</li>
-                            <li>Spring Boot</li>
-                        </ul>
-                    </div>
-                    <button id="btnUpdateData" class="btn-update-data label-font-m">Atualizar dados</button>
+                    <button id="btn-update-data" class="btn-update-data label-font-m">Atualizar dados</button>
+                    <button id="btn-delete-company" class="label-font-m">Excluir Conta</button>
                 </div>
             </div>
         </nav>
@@ -71,144 +64,65 @@
                 <div class="metric-item">
                     <div class="metric-header">
                         <span class="metric-label">Taxa de Resposta</span>
-                        <span>68%</span>
+                        <span id="response-rate-text">68%</span>
                     </div>
                     <div class="progress-track">
-                        <div class="progress-fill" style="width: 68%;"></div>
+                        <div id="response-rate-fill" class="progress-fill" style="width: 68%;"></div>
                     </div>
                 </div>
                 <div class="metric-item">
                     <div class="metric-header">
                         <span class="metric-label">Matches Feitos</span>
-                        <span>142</span>
+                        <span id="matches-made-text">142</span>
                     </div>
                     <div class="progress-track">
-                        <div class="progress-fill" style="width: 47%;"></div>
+                        <div id="matches-made-fill" class="progress-fill" style="width: 47%;"></div>
                     </div>
                 </div>
             </div>
             <span>
                 <div class="green-card">
                     <h2 class="sub-title-white">Total de Perfis Ativos</h2>
-                    <p class="white-font-g">500</p>
+                    <p id="qt-active-profiles" class="white-font-g">500</p>
                 </div>
             </span>
         </div>
-        <aside class="candidates-panel">
-            <div class="candidate-card">
-                <div class="candidate-header">
-                    <div class="candidate-avatar">
-                        <img src="../assets/user.svg" alt="Avatar do candidato">
-                    </div>
-                    <h2 class="candidate-name-font">Candidato #001</h2>
-                </div>
-                
-                <div class="candidate-education">
-                    <h3 class="sub-title">Descrição</h3>
-                    <p class="description-sm">Analista e Desenvolvedor de Sistemas</p>
-                </div>
-
-                <ul class="candidate-skills label-font-s">
-                    <li>TypeScript</li>
-                    <li>React</li>
-                    <li>Figma</li>
-                </ul>
-
-                <div class="candidate-actions">
-                    <button class="btn-interest">
-                        <img src="../assets/heart-outline.svg" alt="Coração outline" width="24" height="24">
-                        Demonstrar Interesse
-                    </button>
-                </div>
-            </div>
+        <aside id="candidates-panel" class="candidates-panel">
             
-            <div class="candidate-card">
-                <div class="candidate-header">
-                    <div class="candidate-avatar">
-                        <img src="../assets/user.svg" alt="Avatar do candidato">
-                    </div>
-                    <h2 class="candidate-name-font">Candidato #002</h2>
-                </div>
-                
-                <div class="candidate-education">
-                    <h3 class="sub-title">Descrição</h3>
-                    <p class="description-sm">Analista e Desenvolvedor de Sistemas</p>
-                </div>
-
-                <ul class="candidate-skills label-font-s">
-                    <li>Java</li>
-                    <li>Spring Boot</li>
-                    <li>PostgreSQL</li>
-                </ul>
-
-                <div class="candidate-actions">
-                    <button class="btn-interest">
-                        <img src="../assets/heart-outline.svg" alt="Coração outline" width="24" height="24">
-                        Demonstrar Interesse
-                    </button>
-                </div>
-            </div>
-
-            <div class="candidate-card">
-                <div class="candidate-header">
-                    <div class="candidate-avatar">
-                        <img src="../assets/user.svg" alt="Avatar do candidato">
-                    </div>
-                    <h2 class="candidate-name-font">Candidato #003</h2>
-                </div>
-                
-                <div class="candidate-education">
-                    <h3 class="sub-title">Descrição</h3>
-                    <p class="description-sm">Analista e Desenvolvedor de Sistemas</p>
-                </div>
-
-                <ul class="candidate-skills label-font-s">
-                    <li>Python</li>
-                    <li>Django</li>
-                    <li>Docker</li>
-                </ul>
-
-                <div class="candidate-actions">
-                    <button class="btn-interest">
-                        <img src="../assets/heart-outline.svg" alt="Coração outline" width="24" height="24">
-                        Demonstrar Interesse
-                    </button>
-                </div>
-            </div>
         </aside>
     </main>
 
 
-    <div id="updateModal" class="modal-overlay">
+    <div id="company-update-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 class="title-font" style="margin-bottom: 20px;">Atualizar Dados da Empresa</h2>
             <form id="form-update-company">
                 <div class="field-row">
                     <div class="field-group">
-                        <label class="description-sm" for="update-name">Nome da Empresa</label>
-                        <input class="reg-input" type="text" id="update-name" value="Empresa Tech S/A">
+                        <label class="description-sm" for="company-update-name">Nome da Empresa</label>
+                        <input class="reg-input" type="text" id="company-update-name" value="Empresa Tech S/A">
                     </div>
                     <div class="field-group">
-                        <label class="description-sm" for="update-cnpj">CNPJ</label>
-                        <input class="reg-input" type="text" id="update-cnpj" value="12.345.678/0001-90">
+                        <label class="description-sm" for="company-update-cnpj">CNPJ</label>
+                        <input class="reg-input" type="text" id="company-update-cnpj" value="12.345.678/0001-90">
                     </div>
                 </div>
                 <div class="field-row">
                     <div class="field-group">
-                        <label class="description-sm" for="update-email">Email corporativo</label>
-                        <input class="reg-input" type="email" id="update-email" value="rh@empresa.com">
+                        <label class="description-sm" for="company-update-email">Email corporativo</label>
+                        <input class="reg-input" type="email" id="company-update-email" value="rh@empresa.com">
                     </div>
                     <div class="field-group">
-                        <label class="description-sm" for="update-place">Localização</label>
-                        <input class="reg-input" type="text" id="update-place" value="São Paulo - SP">
+                        <label class="description-sm" for="company-update-place">Localização</label>
+                        <input class="reg-input" type="text" id="company-update-place" value="São Paulo - SP">
                     </div>
                 </div>
                 <div class="field-group">
-                    <label class="description-sm" for="update-description">Sobre a empresa</label>
-                    <textarea class="reg-input textarea" id="update-description" style="min-height: 80px;">Focada em desenvolver soluções inovadoras para o mercado de tecnologia.</textarea>
+                    <label class="description-sm" for="company-update-description">Sobre a empresa</label>
+                    <textarea class="reg-input textarea" id="company-update-description">Focada em desenvolver soluções inovadoras para o mercado de tecnologia.</textarea>
                 </div>
-                <div class="field-group">
+                <!-- <div class="field-group">
                     <label class="description-sm" for="update-skills-input">Competências procuradas</label>
                     <div class="skills-container" id="update-skills-container">
                         <span class="skill-tag">
@@ -228,8 +142,8 @@
                             <img src="../assets/plus.svg" alt="Adicionar">
                         </button>
                     </div>
-                </div>
-                <button type="button" class="btn-company-register label-font-m" style="margin-top: 16px; width: 100%; border: none; padding: 14px; border-radius: 8px; background-color: var(--strong-green); color: white; cursor: pointer;" id="saveUpdateBtn">Salvar Alterações</button>
+                </div> -->
+                <button type="submit" class="btn-company-register label-font-m" id="company-update-btn">Salvar Alterações</button>
             </form>
         </div>
     </div>
@@ -242,10 +156,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../ts/graphic.js"></script>
-    
+    <script type="module" src="../ts/pages/candidates/Candidates.js"></script>
     <!-- test -->
-    <script>
-        const profileBtn = document.getElementById('profileBtn');
+    <!-- <script>   
+        const profileBtn = document.getElementById('profile-btn');
         const profileDropdown = document.getElementById('profileDropdown');
         const btnUpdateData = document.getElementById('btnUpdateData');
         const updateModal = document.getElementById('updateModal');
@@ -282,6 +196,6 @@
                 updateModal.style.display = 'none';
             }
         });
-    </script>
+    </script> -->
 </body>
 </html>

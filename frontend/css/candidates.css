@@ -27,14 +27,26 @@
         align-items: center;
         gap: 24px;
 
-        &>a {
-            text-decoration: none;
+        &>button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
             transition: all 0.2s ease;
             padding: 4px;
 
             &:hover {
                 transform: scale(1.1);
             }
+        }
+    }
+
+    & #profile-btn {
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: scale(1.1);
         }
     }
 }
@@ -284,4 +296,17 @@
 
 .close-modal:hover {
     color: var(--strong-green);
+}
+
+#btn-delete-company {
+    background-color: var(--red);
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.05);
+        transition: 0.2s all ease;
+    }
 }
