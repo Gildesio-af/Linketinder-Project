@@ -4,6 +4,8 @@ const profileBtn = document.getElementById("profile-btn");
 const btnUpdateData = document.getElementById("btn-update-data");
 const btnLogout = document.getElementById("company-logout");
 const btnDeleteCompany = document.getElementById("btn-delete-company");
+const btnCandidates = document.getElementById("candidates");
+const btnMyMatches = document.getElementById("my-matches-company");
 // Elements profile dropdown
 const profileDropdown = document.getElementById("profile-dropdown");
 const companyDpName = document.getElementById("company-dp-name");
@@ -185,4 +187,60 @@ export function renderCandidates() {
     });
 }
 renderCandidates();
+btnCandidates.addEventListener('click', () => {
+    btnCandidates.className = 'nav-font-selected';
+    btnMyMatches.className = 'nav-font';
+    renderCandidates();
+});
+btnMyMatches.addEventListener('click', () => {
+    btnMyMatches.className = 'nav-font-selected';
+    btnCandidates.className = 'nav-font';
+    renderMatches();
+});
+export function renderMatches() {
+    if (!candidatesPanel)
+        return;
+    candidatesPanel.innerHTML = '';
+    const currentUser = StorageService.getCurrentUser();
+    const matches = StorageService.getMatches().filter(m => m.cnpj === currentUser.cnpj);
+    const candidates = StorageService.getCandidates();
+    const matchedCandidates = candidates.filter(candidate => matches.some(m => m.cpf === candidate.cpf));
+    if (matchedCandidates.length === 0) {
+        candidatesPanel.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhum match encontrado.</p>';
+        return;
+    }
+    matchedCandidates.forEach((candidate, index) => {
+        const card = document.createElement('div');
+        card.className = 'candidate-card';
+        const skillsHtml = (candidate.skills || [])
+            .map(skill => `<li>${skill}</li>`)
+            .join('');
+        const anonimousNumber = String(index + 1).padStart(3, '0');
+        card.innerHTML = `
+            <div class="candidate-header">
+                <div class="candidate-avatar">
+                    <img src="../assets/user.svg" alt="Avatar do candidato">
+                </div>
+                <h2 class="candidate-name-font">Candidato #${anonimousNumber}</h2>
+            </div>
+            
+            <div class="candidate-education">
+                <h3 class="sub-title">Descrição</h3>
+                <p class="description-sm">${candidate.description}</p>
+            </div>
+
+            <ul class="candidate-skills label-font-s">
+                ${skillsHtml}
+            </ul>
+
+            <div class="candidate-actions">
+                <button class="btn-interest" disabled style="opacity: 0.5;">
+                    <img src="../assets/heart.svg" alt="Coração" width="24" height="24">
+                    Match!
+                </button>
+            </div>
+        `;
+        candidatesPanel.appendChild(card);
+    });
+}
 //# sourceMappingURL=Candidates.js.map

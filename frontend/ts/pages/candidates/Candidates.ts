@@ -7,6 +7,9 @@ const btnUpdateData = document.getElementById("btn-update-data") as HTMLButtonEl
 const btnLogout = document.getElementById("company-logout") as HTMLButtonElement;
 const btnDeleteCompany = document.getElementById("btn-delete-company") as HTMLButtonElement;
 
+const btnCandidates = document.getElementById("candidates") as HTMLButtonElement;
+const btnMyMatches = document.getElementById("my-matches-company") as HTMLButtonElement;
+
 // Elements profile dropdown
 const profileDropdown = document.getElementById("profile-dropdown") as HTMLDivElement;
 const companyDpName = document.getElementById("company-dp-name") as HTMLSpanElement;
@@ -232,5 +235,76 @@ export function renderCandidates() {
 }
 
 renderCandidates();
+
+btnCandidates.addEventListener('click', () => {
+    btnCandidates.className = 'nav-font-selected';
+    btnMyMatches.className = 'nav-font';
+    renderCandidates();
+});
+
+btnMyMatches.addEventListener('click', () => {
+    btnMyMatches.className = 'nav-font-selected';
+    btnCandidates.className = 'nav-font';
+    renderMatches();
+});
+
+export function renderMatches() {
+    if (!candidatesPanel) return;
+
+    candidatesPanel.innerHTML = '';
+    const currentUser: Company = StorageService.getCurrentUser() as Company;
+    
+    const matches = StorageService.getMatches().filter(m => m.cnpj === currentUser.cnpj);
+    const candidates = StorageService.getCandidates();
+    
+    const matchedCandidates = candidates.filter(candidate => 
+        matches.some(m => m.cpf === candidate.cpf)
+    );
+
+    if (matchedCandidates.length === 0) {
+        candidatesPanel.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhum match encontrado.</p>';
+        return;
+    }
+
+    matchedCandidates.forEach((candidate, index) => {
+        const card = document.createElement('div');
+        card.className = 'candidate-card';
+
+        const skillsHtml = (candidate.skills || [])
+            .map(skill => `<li>${skill}</li>`)
+            .join('');
+
+        const anonimousNumber = String(index + 1).padStart(3, '0');
+
+        card.innerHTML = `
+            <div class="candidate-header">
+                <div class="candidate-avatar">
+                    <img src="../assets/user.svg" alt="Avatar do candidato">
+                </div>
+                <h2 class="candidate-name-font">${candidate.name}</h2>
+                <p class="description-sm">${candidate.email}</p>
+            </div>
+            
+            <div class="candidate-education">
+                <h3 class="sub-title">Descrição</h3>
+                <p class="description-sm">${candidate.description}</p>
+            </div>
+
+            <ul class="candidate-skills label-font-s">
+                ${skillsHtml}
+            </ul>
+
+            <div class="candidate-actions">
+                <button class="btn-interest" disabled style="opacity: 0.5;">
+                    <img src="../assets/heart.svg" alt="Coração" width="24" height="24">
+                    Match!
+                </button>
+            </div>
+        `;
+
+        candidatesPanel.appendChild(card);
+    });
+}
+
 
 
