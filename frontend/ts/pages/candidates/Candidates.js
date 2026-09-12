@@ -11,6 +11,7 @@ const companyDpCnpj = document.getElementById("company-dp-cnpj");
 const companyDpEmail = document.getElementById("company-dp-email");
 const companyDpLocation = document.getElementById("company-dp-location");
 const companyDpDescription = document.getElementById("company-dp-description");
+const companyDpSkills = document.getElementById("company-dp-skills");
 // Elements update company modal
 const updateModal = document.getElementById('company-update-modal');
 const formUpdateCompany = document.getElementById('form-update-company');
@@ -53,6 +54,19 @@ profileBtn.addEventListener("click", () => {
     companyDpEmail.textContent = currentUser.email;
     companyDpLocation.textContent = currentUser.localization;
     companyDpDescription.textContent = currentUser.description;
+    companyDpSkills.innerHTML = "";
+    if (currentUser.skills && currentUser.skills.length > 0) {
+        currentUser.skills.forEach(skill => {
+            const li = document.createElement("li");
+            li.textContent = skill;
+            companyDpSkills.appendChild(li);
+        });
+    }
+    else {
+        const li = document.createElement("li");
+        li.textContent = "Nenhuma competência cadastrada";
+        companyDpSkills.appendChild(li);
+    }
 });
 window.addEventListener("click", (event) => {
     const target = event.target;

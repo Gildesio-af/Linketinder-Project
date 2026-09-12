@@ -14,6 +14,7 @@ const companyDpCnpj = document.getElementById("company-dp-cnpj") as HTMLSpanElem
 const companyDpEmail = document.getElementById("company-dp-email") as HTMLSpanElement;
 const companyDpLocation = document.getElementById("company-dp-location") as HTMLSpanElement;
 const companyDpDescription = document.getElementById("company-dp-description") as HTMLSpanElement;
+const companyDpSkills = document.getElementById("company-dp-skills") as HTMLUListElement;
 
 // Elements update company modal
 const updateModal = document.getElementById('company-update-modal') as HTMLDivElement;
@@ -67,6 +68,19 @@ profileBtn.addEventListener("click", () => {
     companyDpEmail.textContent = currentUser.email;
     companyDpLocation.textContent = currentUser.localization;
     companyDpDescription.textContent = currentUser.description;
+
+    companyDpSkills.innerHTML = "";
+    if (currentUser.skills && currentUser.skills.length > 0) {
+        currentUser.skills.forEach(skill => {
+            const li = document.createElement("li");
+            li.textContent = skill;
+            companyDpSkills.appendChild(li);
+        });
+    } else {
+        const li = document.createElement("li");
+        li.textContent = "Nenhuma competência cadastrada";
+        companyDpSkills.appendChild(li);
+    }
 })
 
 window.addEventListener("click", (event: Event) => {
