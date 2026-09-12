@@ -19,7 +19,26 @@ const companyUpdateCnpj = document.getElementById('company-update-cnpj');
 const companyUpdateEmail = document.getElementById('company-update-email');
 const companyUpdateLocation = document.getElementById('company-update-place');
 const companyUpdateDescription = document.getElementById('company-update-description');
+const updateSkillsContainer = document.getElementById('update-skills-container');
+const updateSkillsInput = document.getElementById('update-skills-input');
+const addSkillBtn = document.getElementById('add-skill-btn');
+const closeModalBtn = document.querySelector('.close-modal');
 const candidatesPanel = document.getElementById('candidates-panel');
+let temporarySkills = [];
+function renderSkillsTags() {
+    const tags = updateSkillsContainer.querySelectorAll('.skill-tag');
+    tags.forEach(tag => tag.remove());
+    temporarySkills.forEach(skill => {
+        const span = document.createElement('span');
+        span.className = 'skill-tag';
+        span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
+        span.querySelector('button')?.addEventListener('click', () => {
+            temporarySkills = temporarySkills.filter(s => s !== skill);
+            renderSkillsTags();
+        });
+        updateSkillsContainer.insertBefore(span, updateSkillsInput);
+    });
+}
 profileBtn.addEventListener("click", () => {
     if (profileDropdown.classList.contains("show")) {
         profileDropdown.classList.remove("show");
@@ -42,6 +61,26 @@ window.addEventListener("click", (event) => {
             profileDropdown.classList.remove("show");
         }
     }
+    if (target === updateModal) {
+        updateModal.style.display = 'none';
+    }
+});
+closeModalBtn.addEventListener('click', () => {
+    updateModal.style.display = 'none';
+});
+addSkillBtn.addEventListener('click', () => {
+    const skill = updateSkillsInput.value.trim();
+    if (skill && !temporarySkills.includes(skill)) {
+        temporarySkills.push(skill);
+        renderSkillsTags();
+        updateSkillsInput.value = '';
+    }
+});
+updateSkillsInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        addSkillBtn.click();
+    }
 });
 btnUpdateData.addEventListener('click', () => {
     const currentCmpany = StorageService.getCurrentUser();
@@ -51,6 +90,8 @@ btnUpdateData.addEventListener('click', () => {
     companyUpdateEmail.value = currentCmpany.email;
     companyUpdateLocation.value = currentCmpany.localization;
     companyUpdateDescription.value = currentCmpany.description;
+    temporarySkills = [...(currentCmpany.skills || [])];
+    renderSkillsTags();
 });
 formUpdateCompany.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -61,7 +102,8 @@ formUpdateCompany.addEventListener('submit', (event) => {
         email: companyUpdateEmail.value,
         localization: companyUpdateLocation.value,
         description: companyUpdateDescription.value,
-        likedCandidates: currentCompany.likedCandidates
+        likedCandidates: currentCompany.likedCandidates,
+        skills: temporarySkills
     };
     StorageService.updateCompany(companyUpdated);
     StorageService.setCurrentUser(companyUpdated);
@@ -129,12 +171,4 @@ export function renderCandidates() {
     });
 }
 renderCandidates();
-//     updateModal.style.display = "none";
-// });
-// window.addEventListener("click", (event) => {
-//     if (event.target === updateModal) {
-//         updateModal.style.display = "none";
-//     }
-// });
-// });
 //# sourceMappingURL=Candidates.js.map

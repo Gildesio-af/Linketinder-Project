@@ -122,27 +122,15 @@
                     <label class="description-sm" for="company-update-description">Sobre a empresa</label>
                     <textarea class="reg-input textarea" id="company-update-description">Focada em desenvolver soluções inovadoras para o mercado de tecnologia.</textarea>
                 </div>
-                <!-- <div class="field-group">
+                <div class="field-group">
                     <label class="description-sm" for="update-skills-input">Competências procuradas</label>
                     <div class="skills-container" id="update-skills-container">
-                        <span class="skill-tag">
-                            React
-                            <button type="button" aria-label="Remover React">×</button>
-                        </span>
-                        <span class="skill-tag">
-                            TypeScript
-                            <button type="button" aria-label="Remover TypeScript">×</button>
-                        </span>
-                        <span class="skill-tag">
-                            Spring Boot
-                            <button type="button" aria-label="Remover Spring Boot">×</button>
-                        </span>
                         <input class="skill-input" type="text" id="update-skills-input" placeholder="Adicionar competência...">
-                        <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                        <button class="add-skill-btn" type="button" id="add-skill-btn" aria-label="Adicionar skill">
                             <img src="../assets/plus.svg" alt="Adicionar">
                         </button>
                     </div>
-                </div> -->
+                </div>
                 <button type="submit" class="btn-company-register label-font-m" id="company-update-btn">Salvar Alterações</button>
             </form>
         </div>
@@ -157,45 +145,5 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../ts/graphic.js"></script>
     <script type="module" src="../ts/pages/candidates/Candidates.js"></script>
-    <!-- test -->
-    <!-- <script>   
-        const profileBtn = document.getElementById('profile-btn');
-        const profileDropdown = document.getElementById('profileDropdown');
-        const btnUpdateData = document.getElementById('btnUpdateData');
-        const updateModal = document.getElementById('updateModal');
-        const closeModal = document.querySelector('.close-modal');
-        const saveUpdateBtn = document.getElementById('saveUpdateBtn');
-
-        profileBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            profileDropdown.classList.toggle('show');
-        });
-
-        btnUpdateData.addEventListener('click', function(event) {
-            event.preventDefault();
-            profileDropdown.classList.remove('show');
-            updateModal.style.display = 'block';
-        });
-
-        closeModal.addEventListener('click', function() {
-            updateModal.style.display = 'none';
-        });
-
-        saveUpdateBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            updateModal.style.display = 'none';
-        });
-
-        window.addEventListener('click', function(event) {
-            if (!event.target.closest('.profile-container') && !event.target.closest('.modal-content')) {
-                if (profileDropdown.classList.contains('show')) {
-                    profileDropdown.classList.remove('show');
-                }
-            }
-            if (event.target === updateModal) {
-                updateModal.style.display = 'none';
-            }
-        });
-    </script> -->
 </body>
 </html>

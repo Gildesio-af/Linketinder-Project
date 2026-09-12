@@ -24,7 +24,32 @@ const companyUpdateEmail = document.getElementById('company-update-email') as HT
 const companyUpdateLocation = document.getElementById('company-update-place') as HTMLInputElement;
 const companyUpdateDescription = document.getElementById('company-update-description') as HTMLTextAreaElement;
 
+const updateSkillsContainer = document.getElementById('update-skills-container') as HTMLDivElement;
+const updateSkillsInput = document.getElementById('update-skills-input') as HTMLInputElement;
+const addSkillBtn = document.getElementById('add-skill-btn') as HTMLButtonElement;
+const closeModalBtn = document.querySelector('.close-modal') as HTMLSpanElement;
+
 const candidatesPanel = document.getElementById('candidates-panel') as HTMLElement;
+
+let temporarySkills: string[] = [];
+
+function renderSkillsTags() {
+    const tags = updateSkillsContainer.querySelectorAll('.skill-tag');
+    tags.forEach(tag => tag.remove());
+
+    temporarySkills.forEach(skill => {
+        const span = document.createElement('span');
+        span.className = 'skill-tag';
+        span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
+        
+        span.querySelector('button')?.addEventListener('click', () => {
+            temporarySkills = temporarySkills.filter(s => s !== skill);
+            renderSkillsTags();
+        });
+
+        updateSkillsContainer.insertBefore(span, updateSkillsInput);
+    });
+}
 
 
 profileBtn.addEventListener("click", () => {
@@ -52,6 +77,30 @@ window.addEventListener("click", (event: Event) => {
             profileDropdown.classList.remove("show");
         }
     }
+    
+    if (target === updateModal) {
+        updateModal.style.display = 'none';
+    }
+});
+
+closeModalBtn.addEventListener('click', () => {
+    updateModal.style.display = 'none';
+});
+
+addSkillBtn.addEventListener('click', () => {
+    const skill = updateSkillsInput.value.trim();
+    if (skill && !temporarySkills.includes(skill)) {
+        temporarySkills.push(skill);
+        renderSkillsTags();
+        updateSkillsInput.value = '';
+    }
+});
+
+updateSkillsInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        addSkillBtn.click();
+    }
 });
 
 btnUpdateData.addEventListener('click', () => {
@@ -63,6 +112,9 @@ btnUpdateData.addEventListener('click', () => {
     companyUpdateEmail.value = currentCmpany.email;
     companyUpdateLocation.value = currentCmpany.localization;
     companyUpdateDescription.value = currentCmpany.description;
+    
+    temporarySkills = [...(currentCmpany.skills || [])];
+    renderSkillsTags();
 });
 
 formUpdateCompany.addEventListener('submit', (event) => {
@@ -76,7 +128,8 @@ formUpdateCompany.addEventListener('submit', (event) => {
         email: companyUpdateEmail.value,
         localization: companyUpdateLocation.value,
         description: companyUpdateDescription.value,
-        likedCandidates: currentCompany.likedCandidates
+        likedCandidates: currentCompany.likedCandidates,
+        skills: temporarySkills
     };
 
     StorageService.updateCompany(companyUpdated);
@@ -165,16 +218,5 @@ export function renderCandidates() {
 }
 
 renderCandidates();
-
-
-//     updateModal.style.display = "none";
-// });
-
-// window.addEventListener("click", (event) => {
-//     if (event.target === updateModal) {
-//         updateModal.style.display = "none";
-//     }
-// });
-// });
 
 
