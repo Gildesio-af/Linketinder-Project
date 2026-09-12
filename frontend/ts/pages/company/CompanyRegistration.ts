@@ -1,5 +1,6 @@
 import { StorageService } from "../../services/storage/StorageService.js";
 import type { Company } from "../../models/Domain.js";
+import { skillsArray } from "../../services/tag/TagsService.js";
 
 const formRegistration = document.getElementById('form-company-registration') as HTMLFormElement;
 
@@ -27,7 +28,9 @@ if (formRegistration) {
             localization: place,
             password: password,
             confirmPassword: confirmPassword,
-            description: companyDescription
+            description: companyDescription,
+            skills: skillsArray,
+            likedCandidates: []
         }
 
         try {

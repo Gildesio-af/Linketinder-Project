@@ -24,7 +24,8 @@ if (formRegistration) {
             localization: localization,
             password: password,
             description: description,
-            skills: skillsArray
+            skills: skillsArray,
+            likedJobs: []
         };
         try {
             StorageService.saveCandidate(newCandidate);
