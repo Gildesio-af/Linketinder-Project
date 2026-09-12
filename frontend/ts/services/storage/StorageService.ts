@@ -1,11 +1,12 @@
-import type { User, Candidate, Company, Job } from "../../models/Domain";
+import type { User, Candidate, Company, Job, Match } from "../../models/Domain";
 
 export class StorageService {
     private static KEYS = {
         CANDIDATES: "lt_candidates",
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
-        CURRENT_USER: "lt_current_user"
+        CURRENT_USER: "lt_current_user",
+        MATCHES: "lt_matches"
     }
 
     static getCandidates(): Candidate[] {
@@ -61,8 +62,9 @@ export class StorageService {
     static updateCompany(company: Company): Company {
         const companies = this.getCompanies();
         const index = companies.findIndex(c => c.cnpj === company.cnpj);
-
         if (index == -1) throw new Error("Company not found.");
+
+        company.password = companies[index]?.password || "";
 
         companies[index] = company;
         localStorage.setItem(this.KEYS.COMPANIES, JSON.stringify(companies));
@@ -121,5 +123,48 @@ export class StorageService {
 
     static deleteCurrentUser(): void {
         localStorage.removeItem(this.KEYS.CURRENT_USER);
+    }
+
+    static getTopSkills(limit: number = 5): { name: string, count: number }[] {
+    const candidates: Candidate[] = this.getCandidates();
+    const skillCounts: Record<string, number> = {};
+    const skillNames: Record<string, string> = {};
+
+    candidates.forEach(candidate => {
+        if (candidate.skills && candidate.skills.length > 0) {
+            candidate.skills.forEach(skill => {
+                const cleanSkill = skill.trim(); 
+                const lowerSkill = cleanSkill.toLocaleLowerCase();
+                skillCounts[lowerSkill] = (skillCounts[lowerSkill] || 0) + 1;
+                if (!skillNames[lowerSkill]) {
+                    skillNames[lowerSkill] = cleanSkill;
+                }
+            });
+        }
+    });
+
+    const topSkills = Object.entries(skillCounts)
+        .map(([lowerSkill, count]) => ({ name: skillNames[lowerSkill] as string, count })) 
+        .sort((a, b) => b.count - a.count)         
+        .slice(0, limit);                              
+
+    return topSkills;
+    }
+
+    static getMatches(): Match[] {
+        const data = localStorage.getItem(this.KEYS.MATCHES);
+        return data ? JSON.parse(data) : [];
+    }
+
+    static saveMatch(match: Match): void {
+        const matches = this.getMatches();
+        matches.push(match);
+        localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(matches));
+    }
+
+    static deleteMatch(match: Match): void {
+        const matches = this.getMatches();
+        const filtered = matches.filter(m => m.cnpj !== match.cnpj && m.cpf !== match.cpf);
+        localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(filtered));
     }
 }

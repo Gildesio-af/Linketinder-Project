@@ -3,7 +3,8 @@ export class StorageService {
         CANDIDATES: "lt_candidates",
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
-        CURRENT_USER: "lt_current_user"
+        CURRENT_USER: "lt_current_user",
+        MATCHES: "lt_matches"
     };
     static getCandidates() {
         const data = localStorage.getItem(this.KEYS.CANDIDATES);
@@ -46,6 +47,7 @@ export class StorageService {
         const index = companies.findIndex(c => c.cnpj === company.cnpj);
         if (index == -1)
             throw new Error("Company not found.");
+        company.password = companies[index]?.password || "";
         companies[index] = company;
         localStorage.setItem(this.KEYS.COMPANIES, JSON.stringify(companies));
         return companies[index];
@@ -89,6 +91,42 @@ export class StorageService {
     }
     static deleteCurrentUser() {
         localStorage.removeItem(this.KEYS.CURRENT_USER);
+    }
+    static getTopSkills(limit = 5) {
+        const candidates = this.getCandidates();
+        const skillCounts = {};
+        const skillNames = {};
+        candidates.forEach(candidate => {
+            if (candidate.skills && candidate.skills.length > 0) {
+                candidate.skills.forEach(skill => {
+                    const cleanSkill = skill.trim();
+                    const lowerSkill = cleanSkill.toLocaleLowerCase();
+                    skillCounts[lowerSkill] = (skillCounts[lowerSkill] || 0) + 1;
+                    if (!skillNames[lowerSkill]) {
+                        skillNames[lowerSkill] = cleanSkill;
+                    }
+                });
+            }
+        });
+        const topSkills = Object.entries(skillCounts)
+            .map(([lowerSkill, count]) => ({ name: skillNames[lowerSkill], count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, limit);
+        return topSkills;
+    }
+    static getMatches() {
+        const data = localStorage.getItem(this.KEYS.MATCHES);
+        return data ? JSON.parse(data) : [];
+    }
+    static saveMatch(match) {
+        const matches = this.getMatches();
+        matches.push(match);
+        localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(matches));
+    }
+    static deleteMatch(match) {
+        const matches = this.getMatches();
+        const filtered = matches.filter(m => m.cnpj !== match.cnpj && m.cpf !== match.cpf);
+        localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(filtered));
     }
 }
 //# sourceMappingURL=StorageService.js.map
