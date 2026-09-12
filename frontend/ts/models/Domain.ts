@@ -5,16 +5,18 @@ export interface User {
     confirmPassword?: string;
     description: string;
     localization: string;
+    skills?: string[];
 }
 
 export interface Company extends User {
     cnpj: string;
+    likedCandidates: string[];
 }
 
 export interface Candidate extends User {
     cpf: string;
     age: number;
-    skills?: string[];
+    likedJobs: string[];
 }
 
 export interface Job {
@@ -23,6 +25,11 @@ export interface Job {
     salary: number;
     location: string;
     skills?: string[];
+}
+
+export interface Match {
+    cnpj: string;
+    cpf: string;
 }
     
     
