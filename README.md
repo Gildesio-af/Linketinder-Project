@@ -21,7 +21,7 @@ O projeto possui uma interface web interativa para acesso dos candidatos e empre
 ### Como executar o Front-end
 O front-end não requer processos de build complexos. Basta abrir a pasta `frontend/pages/` e executar o arquivo `login.html` no seu navegador. Para uma melhor experiência e evitar problemas de CORS ao transitar entre módulos locais, é recomendado o uso de um servidor local leve (como o *Live Server* no VS Code ou `python -m http.server`).
 
-## Funcionalidades
+## Funcionalidades do Back-end
 
 ### Candidatos
 
