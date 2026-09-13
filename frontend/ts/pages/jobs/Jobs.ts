@@ -1,5 +1,6 @@
 import { StorageService } from "../../services/storage/StorageService.js";
 import type { Candidate, Company, Job } from "../../models/Domain.js";
+import { MatchService } from "../../services/match/MatchService.js";
 
 const profileBtn = document.getElementById('profileBtn') as HTMLAnchorElement;
 const profileDropdown = document.getElementById('profileDropdown') as HTMLDivElement;
@@ -203,6 +204,17 @@ export function renderJobs() {
                 </button>
             </div>
         `;
+
+        const btnLike = card.querySelector(".btn-like") as HTMLButtonElement;
+
+        btnLike.addEventListener('click', () => {
+            MatchService.registerLikeJob(job.name);
+
+            btnLike.innerHTML = `<img src="../assets/heart.svg" alt="Ícone branco de coração"> Interesse Enviado!`;
+            btnLike.disabled = true;
+            btnLike.style.opacity = '0.5';
+        });
+
         jobsContainer.appendChild(card);
     });
 }

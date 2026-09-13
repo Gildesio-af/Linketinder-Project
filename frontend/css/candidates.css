@@ -228,6 +228,10 @@
     background-color: var(--strong-green);
     padding: 6px 16px;
     border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .candidate-actions {

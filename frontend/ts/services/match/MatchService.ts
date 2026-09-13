@@ -1,5 +1,5 @@
 import { StorageService } from "../storage/StorageService.js";
-import type { Company, Candidate, Match } from "../../models/Domain.js";
+import type { Company, Candidate, Match, Job } from "../../models/Domain.js";
 
 export class MatchService {
     static registerLikeCompany(cpf: string): boolean {
@@ -17,6 +17,27 @@ export class MatchService {
                 StorageService.updateCompany(company);
 
                 return this.saveMatch(company, candidate);
+            }
+        }
+
+        return false;
+    }
+
+    static registerLikeJob(jobName: string): boolean {
+        const candidate: Candidate = StorageService.getCurrentUser() as Candidate;
+        const jobs: Job[] = StorageService.getJobs();
+
+        const job = jobs.find(job => job.name === jobName);
+
+        if(candidate && job) {
+            if(!candidate.likedJobs) 
+                candidate.likedJobs = [];
+
+            if(!candidate.likedJobs.includes(jobName)) {
+                candidate.likedJobs.push(jobName);
+                StorageService.updateCandidate(candidate);
+
+                return true;
             }
         }
 

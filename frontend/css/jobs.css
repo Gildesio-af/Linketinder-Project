@@ -152,6 +152,7 @@
         & ul {
             list-style: none;
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
             padding: 14px 0px;
 
@@ -160,6 +161,10 @@
                 padding: 4px 10px;
                 border-radius: 8px;
                 transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
 
                 &:hover {
                     transform: scale(1.08);
@@ -267,6 +272,10 @@
     padding: 4px 10px;
     border-radius: 8px;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .dropdown-skills-list li:hover {

@@ -15,6 +15,21 @@ export class MatchService {
         }
         return false;
     }
+    static registerLikeJob(jobName) {
+        const candidate = StorageService.getCurrentUser();
+        const jobs = StorageService.getJobs();
+        const job = jobs.find(job => job.name === jobName);
+        if (candidate && job) {
+            if (!candidate.likedJobs)
+                candidate.likedJobs = [];
+            if (!candidate.likedJobs.includes(jobName)) {
+                candidate.likedJobs.push(jobName);
+                StorageService.updateCandidate(candidate);
+                return true;
+            }
+        }
+        return false;
+    }
     static saveMatch(company, candidate) {
         const matches = StorageService.getMatches();
         const existsMatch = matches.some(match => match.cnpj === company.cnpj && match.cpf === candidate.cpf);

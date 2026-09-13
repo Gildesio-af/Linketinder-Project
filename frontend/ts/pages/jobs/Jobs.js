@@ -1,4 +1,5 @@
 import { StorageService } from "../../services/storage/StorageService.js";
+import { MatchService } from "../../services/match/MatchService.js";
 const profileBtn = document.getElementById('profileBtn');
 const profileDropdown = document.getElementById('profileDropdown');
 const btnUpdateData = document.getElementById('btnUpdateData');
@@ -192,6 +193,13 @@ export function renderJobs() {
                 </button>
             </div>
         `;
+        const btnLike = card.querySelector(".btn-like");
+        btnLike.addEventListener('click', () => {
+            MatchService.registerLikeJob(job.name);
+            btnLike.innerHTML = `<img src="../assets/heart.svg" alt="Ícone branco de coração"> Interesse Enviado!`;
+            btnLike.disabled = true;
+            btnLike.style.opacity = '0.5';
+        });
         jobsContainer.appendChild(card);
     });
 }
