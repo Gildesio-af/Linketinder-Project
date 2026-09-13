@@ -19,10 +19,12 @@
         align-items: center;
         gap: 24px;
 
-        &>a {
-            text-decoration: none;
+        & > button, & > a {
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
             transition: all 0.2s ease;
-            padding: 4px;
+            text-decoration: none;
 
             &:hover {
                 transform: scale(1.1);
