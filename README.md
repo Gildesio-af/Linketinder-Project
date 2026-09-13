@@ -2,7 +2,24 @@
 
 Name: Gildésio Araújo Félix
 
-Sistema em **Groovy**, executado em console, para cadastro de candidatos e empresas, busca por habilidades e criação de matches entre perfis com interesse mútuo.
+Sistema desenvolvido para conectar candidatos e empresas através de cadastro, busca por habilidades e criação de matches entre perfis com interesse mútuo. 
+O projeto conta com um **Back-end em Groovy** executado em console e uma **Interface Web (Front-end)** construída com HTML, CSS e TypeScript.
+
+## Front-end (Interface Web)
+
+O projeto possui uma interface web interativa para acesso dos candidatos e empresas, construída com:
+* **HTML5** e **CSS3** (utilizando Flexbox, Grid e variáveis CSS)
+* **TypeScript** (manipulação do DOM, regras de negócio no frontend e tipagem estática)
+* **LocalStorage** para persistência de dados no navegador
+
+### Funcionalidades do Front-end
+* **Login e Cadastro**: Fluxos de autenticação para empresas e candidatos.
+* **Área de Vagas (Candidatos)**: Visualização de vagas, recomendação baseada em competências (skills) e área de "Meus Matches". Os cards de vagas exibem as informações da empresa e suas respectivas exigências, permitindo dar *Like*.
+* **Área de Candidatos (Empresas)**: Painel estilo *dashboard* com métricas e cards de candidatos disponíveis, onde a empresa pode visualizar as skills e manifestar interesse.
+* **Edição de Perfil**: O usuário pode alterar suas informações pessoais, descrição, localização e editar sua lista de competências.
+
+### Como executar o Front-end
+O front-end não requer processos de build complexos. Basta abrir a pasta `frontend/pages/` e executar o arquivo `login.html` no seu navegador. Para uma melhor experiência e evitar problemas de CORS ao transitar entre módulos locais, é recomendado o uso de um servidor local leve (como o *Live Server* no VS Code ou `python -m http.server`).
 
 ## Funcionalidades
 
