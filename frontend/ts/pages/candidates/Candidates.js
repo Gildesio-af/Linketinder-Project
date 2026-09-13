@@ -27,7 +27,20 @@ const updateSkillsInput = document.getElementById('update-skills-input');
 const addSkillBtn = document.getElementById('add-skill-btn');
 const closeModalBtn = document.querySelector('.close-modal');
 const candidatesPanel = document.getElementById('candidates-panel');
+// Elements job create modal
+const btnCreateJob = document.getElementById('job-form-btn');
+const jobCreateModal = document.getElementById('job-create-modal');
+const formCreateJob = document.getElementById('form-create-job');
+const jobCreateTitle = document.getElementById('job-create-title');
+const jobCreateType = document.getElementById('job-create-type');
+const jobCreateLocation = document.getElementById('job-create-location');
+const jobCreateDescription = document.getElementById('job-create-description');
+const jobCreateSkillsContainer = document.getElementById('job-create-skills-container');
+const jobCreateSkillsInput = document.getElementById('job-create-skills-input');
+const jobAddSkillBtn = document.getElementById('job-add-skill-btn');
+const closeJobModalBtn = document.querySelector('.close-modal-job');
 let temporarySkills = [];
+let jobTemporarySkills = [];
 function renderSkillsTags() {
     const tags = updateSkillsContainer.querySelectorAll('.skill-tag');
     tags.forEach(tag => tag.remove());
@@ -40,6 +53,20 @@ function renderSkillsTags() {
             renderSkillsTags();
         });
         updateSkillsContainer.insertBefore(span, updateSkillsInput);
+    });
+}
+function renderJobSkillsTags() {
+    const tags = jobCreateSkillsContainer.querySelectorAll('.skill-tag');
+    tags.forEach(tag => tag.remove());
+    jobTemporarySkills.forEach(skill => {
+        const span = document.createElement('span');
+        span.className = 'skill-tag';
+        span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
+        span.querySelector('button')?.addEventListener('click', () => {
+            jobTemporarySkills = jobTemporarySkills.filter(s => s !== skill);
+            renderJobSkillsTags();
+        });
+        jobCreateSkillsContainer.insertBefore(span, jobCreateSkillsInput);
     });
 }
 profileBtn.addEventListener("click", () => {
@@ -80,9 +107,18 @@ window.addEventListener("click", (event) => {
     if (target === updateModal) {
         updateModal.style.display = 'none';
     }
+    if (target === jobCreateModal) {
+        jobCreateModal.style.display = 'none';
+    }
 });
 closeModalBtn.addEventListener('click', () => {
     updateModal.style.display = 'none';
+});
+btnCreateJob.addEventListener('click', () => {
+    jobCreateModal.style.display = 'block';
+});
+closeJobModalBtn.addEventListener('click', () => {
+    jobCreateModal.style.display = 'none';
 });
 addSkillBtn.addEventListener('click', () => {
     const skill = updateSkillsInput.value.trim();
@@ -96,6 +132,20 @@ updateSkillsInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
         event.preventDefault();
         addSkillBtn.click();
+    }
+});
+jobAddSkillBtn.addEventListener('click', () => {
+    const skill = jobCreateSkillsInput.value.trim();
+    if (skill && !jobTemporarySkills.includes(skill)) {
+        jobTemporarySkills.push(skill);
+        renderJobSkillsTags();
+        jobCreateSkillsInput.value = '';
+    }
+});
+jobCreateSkillsInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        jobAddSkillBtn.click();
     }
 });
 btnUpdateData.addEventListener('click', () => {
@@ -127,6 +177,28 @@ formUpdateCompany.addEventListener('submit', (event) => {
     if (profileDropdown.classList.contains("show"))
         profileDropdown.classList.remove("show");
     alert("Dados atualizados com sucesso");
+});
+formCreateJob.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const job = {
+        name: jobCreateTitle.value,
+        description: jobCreateDescription.value,
+        salary: 0,
+        location: jobCreateLocation.value,
+        skills: jobTemporarySkills,
+        jobType: jobCreateType.value
+    };
+    try {
+        StorageService.saveJob(job);
+        jobCreateModal.style.display = "none";
+        formCreateJob.reset();
+        jobTemporarySkills = [];
+        renderJobSkillsTags();
+        alert("Vaga cadastrada com sucesso!");
+    }
+    catch (e) {
+        alert(e.message);
+    }
 });
 btnLogout.addEventListener('click', () => {
     StorageService.deleteCurrentUser();
@@ -221,7 +293,8 @@ export function renderMatches() {
                 <div class="candidate-avatar">
                     <img src="../assets/user.svg" alt="Avatar do candidato">
                 </div>
-                <h2 class="candidate-name-font">Candidato #${anonimousNumber}</h2>
+                <h2 class="candidate-name-font">${candidate.name}</h2>
+                <p class="description-sm">${candidate.email}</p>
             </div>
             
             <div class="candidate-education">

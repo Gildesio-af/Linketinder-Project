@@ -25,6 +25,7 @@ export interface Job {
     salary: number;
     location: string;
     skills?: string[];
+    jobType?: string;
 }
 
 export interface Match {

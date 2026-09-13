@@ -143,6 +143,47 @@
         </div>
     </div>
 
+    <div id="job-create-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal-job close-modal">&times;</span>
+            <h2 class="title-font" style="margin-bottom: 20px;">Criar Nova Vaga</h2>
+            <form id="form-create-job">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="job-create-title">Título da Vaga</label>
+                        <input class="reg-input" type="text" id="job-create-title" placeholder="Ex: Desenvolvedor Front-end" required>
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="job-create-type">Tipo de Trabalho</label>
+                        <select class="reg-input" id="job-create-type" required style="padding: 0 16px;">
+                            <option value="Remoto">Remoto</option>
+                            <option value="Híbrido">Híbrido</option>
+                            <option value="Presencial">Presencial</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="job-create-location">Localidade</label>
+                    <input class="reg-input" type="text" id="job-create-location" placeholder="Ex: São Paulo - SP ou Remoto" required>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="job-create-description">Descrição</label>
+                    <textarea class="reg-input textarea" id="job-create-description" placeholder="Descreva as responsabilidades e requisitos..." required></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="job-create-skills-input">Competências desejadas</label>
+                    <div class="skills-container" id="job-create-skills-container">
+                        <input class="skill-input" type="text" id="job-create-skills-input" placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" id="job-add-skill-btn" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-company-register label-font-m" id="job-create-btn">Cadastrar Vaga</button>
+            </form>
+        </div>
+    </div>
+
     <footer class="job-footer">
         <span>
             <p class="footer-font">&copy; 2024 Linketinder. High-Trust Anonymous Matchmaking.</p>
