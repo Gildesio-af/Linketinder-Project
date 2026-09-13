@@ -13,7 +13,10 @@ const btnMyMatches = document.getElementById('my-matches-candidate') as HTMLButt
 const btnLogout = document.getElementById('candidate-logout') as HTMLButtonElement;
 
 const jobsContainer = document.getElementById('jobs-container') as HTMLDivElement;
+const btnFilterAllJobs = document.getElementById('filter-all-jobs') as HTMLButtonElement;
+const btnFilterRecommendedJobs = document.getElementById('filter-recommended-jobs') as HTMLButtonElement;
 
+let currentJobFilter: 'all' | 'recommended' = 'all';
 const userDpName = document.getElementById('user-dp-name') as HTMLSpanElement;
 const userDpAge = document.getElementById('user-dp-age') as HTMLSpanElement;
 const userDpEmail = document.getElementById('user-dp-email') as HTMLSpanElement;
@@ -137,10 +140,27 @@ if (jobsContainer) {
 export function renderJobs() {
     if (!jobsContainer) return;
     
-    const jobs = StorageService.getJobs();
+    let jobs = StorageService.getJobs();
+
+    if (currentJobFilter === 'recommended') {
+        const currentUser = StorageService.getCurrentUser() as Candidate;
+        if (currentUser && currentUser.skills) {
+            const userSkills = currentUser.skills.map(s => s.toLowerCase());
+            jobs = jobs.filter(job => {
+                if (!job.skills) return false;
+                return job.skills.some(skill => userSkills.includes(skill.toLowerCase()));
+            });
+        } else {
+            jobs = [];
+        }
+    }
 
     if (jobs.length === 0) {
-        jobsContainer.innerHTML = hardcodedJobsHtml;
+        if (currentJobFilter === 'recommended') {
+            jobsContainer.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhuma vaga recomendada encontrada.</p>';
+        } else {
+            jobsContainer.innerHTML = hardcodedJobsHtml;
+        }
         return;
     }
 
@@ -256,6 +276,20 @@ btnMyMatches?.addEventListener('click', () => {
     if(btnMyMatches) btnMyMatches.className = 'nav-font-selected';
     if(btnJobsAvailable) btnJobsAvailable.className = 'nav-font';
     renderMatches();
+});
+
+btnFilterAllJobs?.addEventListener('click', () => {
+    currentJobFilter = 'all';
+    btnFilterAllJobs.classList.add('btn-selected');
+    btnFilterRecommendedJobs?.classList.remove('btn-selected');
+    renderJobs();
+});
+
+btnFilterRecommendedJobs?.addEventListener('click', () => {
+    currentJobFilter = 'recommended';
+    btnFilterRecommendedJobs.classList.add('btn-selected');
+    btnFilterAllJobs.classList.remove('btn-selected');
+    renderJobs();
 });
 
 renderJobs();
