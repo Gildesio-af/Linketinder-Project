@@ -2,7 +2,24 @@
 
 Name: Gildésio Araújo Félix
 
-Sistema em **Groovy**, executado em console, para cadastro de candidatos e empresas, busca por habilidades e criação de matches entre perfis com interesse mútuo.
+Sistema desenvolvido para conectar candidatos e empresas através de cadastro, busca por habilidades e criação de matches entre perfis com interesse mútuo. 
+O projeto conta com um **Back-end em Groovy** executado em console e uma **Interface Web (Front-end)** construída com HTML, CSS e TypeScript.
+
+## Front-end (Interface Web)
+
+O projeto possui uma interface web interativa para acesso dos candidatos e empresas, construída com:
+* **HTML5** e **CSS3** (utilizando Flexbox, Grid e variáveis CSS)
+* **TypeScript** (manipulação do DOM, regras de negócio no frontend e tipagem estática)
+* **LocalStorage** para persistência de dados no navegador
+
+### Funcionalidades do Front-end
+* **Login e Cadastro**: Fluxos de autenticação para empresas e candidatos.
+* **Área de Vagas (Candidatos)**: Visualização de vagas, recomendação baseada em competências (skills) e área de "Meus Matches". Os cards de vagas exibem as informações da empresa e suas respectivas exigências, permitindo dar *Like*.
+* **Área de Candidatos (Empresas)**: Painel estilo *dashboard* com métricas e cards de candidatos disponíveis, onde a empresa pode visualizar as skills e manifestar interesse.
+* **Edição de Perfil**: O usuário pode alterar suas informações pessoais, descrição, localização e editar sua lista de competências.
+
+### Como executar o Front-end
+O front-end não requer processos de build complexos. Basta abrir a pasta `frontend/pages/` e executar o arquivo `login.html` no seu navegador. Para uma melhor experiência e evitar problemas de CORS ao transitar entre módulos locais, é recomendado o uso de um servidor local leve (como o *Live Server* no VS Code ou `python -m http.server`).
 
 ## Funcionalidades
 
@@ -303,3 +320,19 @@ Essa separação permite manter a **interface**, as **regras de negócio**, a **
 ## Objetivo
 
 O **Linketinder** tem como objetivo simular uma plataforma de conexão entre **profissionais e empresas**, permitindo o gerenciamento dos perfis, a busca por habilidades e a identificação de interesses mútuos por meio do sistema de matches.
+
+## Modelagem de Banco de Dados (PostgreSQL)
+
+O sistema conta com uma modelagem relacional avançada desenvolvida no PostgreSQL, estruturada para garantir a integridade dos dados e facilitar o mapeamento objeto-relacional (ORM) no back-end.
+
+A arquitetura do banco aplica conceitos de normalização (3NF) e herança de tabelas:
+
+* **Especialização de Usuários (Tabelas Vinculadas):** Utiliza uma superclasse `users` para concentrar dados comuns (autenticação e descrição) e subclasses `candidates` e `companies` para armazenar os atributos exclusivos de cada perfil (como CPF e CNPJ).
+* **Normalização de Endereços e Competências:** Entidades como `addresses`, `countries` e `skills` foram isoladas em tabelas independentes, evitando redundância e garantindo a padronização das buscas por localização e habilidades.
+* **Sistema de Vagas (Jobs):** Empresas possuem uma relação de 1:N com vagas, que por sua vez possuem relacionamentos N:N com as competências exigidas.
+* **Lógica de Matches:** O cruzamento de interesses é registrado na tabela `matches`, que consolida o evento triplo: o candidato que demonstrou interesse na vaga e a empresa que demonstrou interesse no candidato.
+
+### Diagrama Entidade-Relacionamento (DER)
+
+Abaixo está a representação visual do banco de dados criado na ferramenta **dbdiagram.io**:
+![Diagrama do Banco de Dados](db/modelagem.png)
