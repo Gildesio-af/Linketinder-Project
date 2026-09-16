@@ -2,7 +2,7 @@ package zg.acelera.dto.candidate
 
 import groovy.transform.builder.Builder
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 
 @Builder
 record CandidateDTO(String cpf, String name, String email, Integer age,
@@ -35,7 +35,7 @@ record CandidateDTO(String cpf, String name, String email, Integer age,
                 .state(state)
                 .cep(cep)
                 .description(description)
-                .skills(skills.collect { Skill.valueOf(it) } as HashSet)
+                .skills(skills.collect { SkillEnum.valueOf(it) } as HashSet)
                 .build()
     }
 }

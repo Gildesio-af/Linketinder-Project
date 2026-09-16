@@ -21,9 +21,10 @@ class Company extends Person{
         println "=== Company(a): ${name} ==="
         println "CNPJ: ${cnpj}"
         println "Corporate email: ${email}"
-        println "Place: ${state} - CEP: ${cep}"
         println "Description: ${description}"
         println "Desired Skills: ${skills.join(', ')}"
+        println("Liked Candidates: ${liked.collect { it.name }.join(', ')}")
+        println("Address: ${address.street}, ${address.number}, ${address.country.name} - ${address.country.code}, ${address.city} ${address.state}, ${address.cep}")
         println "==============================\n"
     }
 }

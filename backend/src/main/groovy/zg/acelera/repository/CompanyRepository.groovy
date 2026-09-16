@@ -2,10 +2,9 @@ package zg.acelera.repository
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
-import zg.acelera.domain.Candidate
 import zg.acelera.domain.Company
 import zg.acelera.domain.IPerson
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.company.CompanyDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
 
@@ -38,7 +37,7 @@ class CompanyRepository implements ICompanyRepository {
         List<IPerson> companies = []
 
         jsonList.each { map ->
-            Set<Skill> loadedSkills = map.skills?.collect { Skill.valueOf(it.toString()) } as HashSet
+            Set<SkillEnum> loadedSkills = map.skills?.collect { SkillEnum.valueOf(it.toString()) } as HashSet
             Set<String> loadedLikes = map.liked ? (map.liked as HashSet) : new HashSet<String>()
 
             companies += Company.builder()
@@ -82,7 +81,7 @@ class CompanyRepository implements ICompanyRepository {
     }
 
     @Override
-    List<IPerson> findBySkill(Skill skill) {
+    List<IPerson> findBySkill(SkillEnum skill) {
         findAll().findAll { it.skills.contains(skill) }
     }
 
@@ -113,7 +112,7 @@ class CompanyRepository implements ICompanyRepository {
         if (user.cep() != null) existing.cep = user.cep()
         if (user.description() != null) existing.description = user.description()
         if (user.skills() != null && !user.skills().isEmpty()) {
-            existing.skills = user.skills().collect { Skill.valueOf(it) } as Set<Skill>
+            existing.skills = user.skills().collect { SkillEnum.valueOf(it) } as Set<SkillEnum>
         }
 
         all[index] = existing

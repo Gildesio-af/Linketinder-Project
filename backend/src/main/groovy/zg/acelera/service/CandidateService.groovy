@@ -5,7 +5,7 @@ import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.repository.CandidateRepository
 import zg.acelera.repository.ICandidateRepository
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 
 class CandidateService {
     private final ICandidateRepository repository
@@ -37,7 +37,7 @@ class CandidateService {
 
     void listCandidatesBySkill(String skillName) {
         try {
-            def skill = Skill.valueOf(skillName.toUpperCase())
+            def skill = SkillEnum.valueOf(skillName.toUpperCase())
             def candidates = repository.findBySkill(skill)
             if (candidates.isEmpty()) {
                 println "No candidates found with the skill: $skillName."

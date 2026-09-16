@@ -5,7 +5,6 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.builder.Builder
 
 @Canonical
-@EqualsAndHashCode(includes = ['cpf'])
 @Builder(includeSuperProperties = true)
 class Candidate extends Person {
     String cpf
@@ -22,9 +21,10 @@ class Candidate extends Person {
         println "=== Candidate: ${name} ==="
         println "Age: ${age} years old | CPF: ${cpf}"
         println "Email: ${email}"
-        println "State: ${state} - CEP: ${cep}"
         println "Descrption: ${description}"
         println "Skills: ${skills.join(', ')}"
+        println("Liked Companies: ${liked.collect { it.name }.join(', ')}")
+        println("Address: ${address.street}, ${address.number}, ${address.country.name} - ${address.country.code}, ${address.city} ${address.state}, ${address.cep}")
         println "==============================\n"
     }
 }

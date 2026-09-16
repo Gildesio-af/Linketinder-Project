@@ -4,7 +4,7 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.IPerson
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 
@@ -37,7 +37,7 @@ class CandidateRepository implements ICandidateRepository {
         List<IPerson> candidates = []
 
         jsonList.each { map ->
-            Set<Skill> loadedSkills = map.skills?.collect { Skill.valueOf(it.toString()) } as HashSet
+            Set<SkillEnum> loadedSkills = map.skills?.collect { SkillEnum.valueOf(it.toString()) } as HashSet
             Set<String> loadedLikes = map.liked ? (map.liked as HashSet) : new HashSet<String>()
 
             candidates += Candidate.builder()
@@ -83,7 +83,7 @@ class CandidateRepository implements ICandidateRepository {
     }
 
     @Override
-    List<IPerson> findBySkill(Skill skill) {
+    List<IPerson> findBySkill(SkillEnum skill) {
         return findAll().findAll { it.skills.contains(skill) }
     }
 

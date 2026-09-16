@@ -3,9 +3,8 @@ package zg.acelera.service
 import zg.acelera.domain.IPerson
 import zg.acelera.dto.company.CompanyDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
-import zg.acelera.repository.CompanyRepository
 import zg.acelera.repository.ICompanyRepository
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 
 class CompanyService {
     private final ICompanyRepository repository
@@ -37,7 +36,7 @@ class CompanyService {
 
     void listCompaniesBySkill(String skillName) {
         try {
-            def skill = Skill.valueOf(skillName.toUpperCase())
+            def skill = SkillEnum.valueOf(skillName.toUpperCase())
             def companies = repository.findBySkill(skill)
             if (companies.isEmpty()) {
                 println "No companies found with the skill: $skillName."

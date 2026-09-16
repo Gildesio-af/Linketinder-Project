@@ -2,7 +2,7 @@ package zg.acelera.dto.candidate
 
 import groovy.transform.builder.Builder
 import zg.acelera.domain.Candidate;
-import zg.acelera.domain.Skill;
+import zg.acelera.domain.SkillEnum;
 
 @Builder
 record CandidateUpdateDTO (
@@ -39,7 +39,7 @@ record CandidateUpdateDTO (
         if (state() != null) candidate.state = state
         if (cep() != null) candidate.cep = cep
         if (description() != null) candidate.description = description
-        if (skills() != null) candidate.skills = skills().collect { Skill.valueOf(it) } as HashSet
+        if (skills() != null) candidate.skills = skills().collect { SkillEnum.valueOf(it) } as HashSet
         candidate
     }
 }

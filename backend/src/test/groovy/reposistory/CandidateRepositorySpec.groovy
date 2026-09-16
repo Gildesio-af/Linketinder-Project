@@ -2,7 +2,7 @@ package reposistory
 
 import spock.lang.Specification
 import spock.lang.TempDir
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.repository.CandidateRepository
@@ -48,7 +48,7 @@ class CandidateRepositorySpec extends Specification{
         result[0].state == "NY"
         result[0].cep == "12345-678"
         result[0].description == "Software Engineer"
-        result[0].skills[0] == Skill.JAVA
+        result[0].skills[0] == SkillEnum.JAVA
         result[0].liked.isEmpty()
     }
 
@@ -125,7 +125,7 @@ class CandidateRepositorySpec extends Specification{
         """
 
         def repository = new CandidateRepository(tempFile.getAbsolutePath())
-        Skill searchedSkill = Skill.JAVA
+        SkillEnum searchedSkill = SkillEnum.JAVA
 
         when:
         def result = repository.findBySkill(searchedSkill)
@@ -140,7 +140,7 @@ class CandidateRepositorySpec extends Specification{
         def candidateRepository = new CandidateRepository(tempFile.getAbsolutePath())
 
         when:
-        def result = candidateRepository.findBySkill(Skill.JAVA)
+        def result = candidateRepository.findBySkill(SkillEnum.JAVA)
 
         then:
         result == []
@@ -173,7 +173,7 @@ class CandidateRepositorySpec extends Specification{
                             .state("a")
                             .cep("12345678")
                             .description("a")
-                            .skills(Set.of(Skill.JAVA))
+                            .skills(Set.of(SkillEnum.JAVA))
                             .build()
 
 
@@ -199,7 +199,7 @@ class CandidateRepositorySpec extends Specification{
                 .state("a")
                 .cep("12345678")
                 .description("a")
-                .skills(Set.of(Skill.JAVA))
+                .skills(Set.of(SkillEnum.JAVA))
                 .build()
         when:
         def result = candidateRepository.save(newCandidate)
@@ -207,7 +207,7 @@ class CandidateRepositorySpec extends Specification{
         result.cpf == newCandidate.cpf()
         result.name == newCandidate.name()
         result.email == newCandidate.email()
-        result.skills[0] == Skill.JAVA
+        result.skills[0] == SkillEnum.JAVA
     }
 
     def "update should update the property provided in CandidateUpdateDTO"() {

@@ -2,7 +2,7 @@ package zg.acelera.dto.company
 
 import groovy.transform.builder.Builder
 import zg.acelera.domain.Company
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 
 @Builder
 record CompanyDTO(String cnpj, String name, String corporateEmail,
@@ -33,7 +33,7 @@ record CompanyDTO(String cnpj, String name, String corporateEmail,
         .state(state)
         .cep(cep)
         .description(description)
-        .skills(skills.collect { Skill.valueOf(it)} as Set<Skill>)
+        .skills(skills.collect { SkillEnum.valueOf(it)} as Set<SkillEnum>)
         .build()
     }
 

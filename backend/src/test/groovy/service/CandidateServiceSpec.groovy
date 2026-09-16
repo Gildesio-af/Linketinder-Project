@@ -1,7 +1,7 @@
 package service
 
 import spock.lang.Specification
-import zg.acelera.domain.Skill
+import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.repository.ICandidateRepository
 import zg.acelera.service.CandidateService
@@ -18,7 +18,7 @@ class CandidateServiceSpec extends Specification {
                 .state("GL")
                 .cep("12345678")
                 .description("Member of the Straw Hat crew")
-                .skills(Set.of(Skill.JAVA, Skill.GO, Skill.CSHARP))
+                .skills(Set.of(SkillEnum.JAVA, SkillEnum.GO, SkillEnum.CSHARP))
                 .build()
 
         ICandidateRepository candidateRepository = Mock()
