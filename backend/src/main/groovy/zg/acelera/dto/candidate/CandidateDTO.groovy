@@ -5,7 +5,7 @@ import zg.acelera.domain.Candidate
 import zg.acelera.domain.SkillEnum
 
 @Builder
-record CandidateDTO(String cpf, String name, String email, Integer age,
+record CandidateDTO(UUID id = null,String cpf, String name, String email, Integer age,
                     String state, String cep, String description, Set<String> skills) {
     public CandidateDTO {
         if (cpf == null || cpf.trim().isEmpty() || cpf.length() != 11)
@@ -32,10 +32,7 @@ record CandidateDTO(String cpf, String name, String email, Integer age,
                 .name(name)
                 .email(email)
                 .age(age)
-                .state(state)
-                .cep(cep)
                 .description(description)
-                .skills(skills.collect { SkillEnum.valueOf(it) } as HashSet)
                 .build()
     }
 }

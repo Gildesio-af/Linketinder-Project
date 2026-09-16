@@ -6,6 +6,7 @@ import zg.acelera.domain.SkillEnum;
 
 @Builder
 record CandidateUpdateDTO (
+        UUID id = null,
         String cpf,
         String name,
         String email,
@@ -36,8 +37,6 @@ record CandidateUpdateDTO (
         if (name() != null) candidate.name = name
         if (email() != null) candidate.email = email
         if (age() != null) candidate.age = age
-        if (state() != null) candidate.state = state
-        if (cep() != null) candidate.cep = cep
         if (description() != null) candidate.description = description
         if (skills() != null) candidate.skills = skills().collect { SkillEnum.valueOf(it) } as HashSet
         candidate

@@ -30,11 +30,7 @@ record CompanyDTO(String cnpj, String name, String corporateEmail,
         .cnpj(cnpj)
         .name(name)
         .email(corporateEmail)
-        .state(state)
-        .cep(cep)
         .description(description)
-        .skills(skills.collect { SkillEnum.valueOf(it)} as Set<SkillEnum>)
         .build()
     }
-
 }
