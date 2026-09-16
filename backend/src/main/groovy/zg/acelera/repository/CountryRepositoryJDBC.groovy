@@ -3,19 +3,18 @@ package zg.acelera.repository
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Country
-import zg.acelera.utils.db.DatabaseManager
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class CountryRepositoryJDBC implements ICountryRepository {
     Sql sql
 
-    CountryRepositoryJDBC(DatabaseManager databaseManager) {
-        this.sql = databaseManager.getSql()
+    CountryRepositoryJDBC(Sql sql) {
+        this.sql = sql
     }
 
     @Override
     Country findById(UUID id) {
-        GroovyRowResult row = sql.firstRow("SELECT * FROM countries WHERE id = ?", [id.toString()])
+        GroovyRowResult row = sql.firstRow("SELECT * FROM countries WHERE id = ?", [id])
         if (row) {
             return  new Country(
                 id: UUID.fromString(row.id.toString()),
