@@ -10,7 +10,7 @@ class DatabaseManager {
 
     private DatabaseManager() {
         def config = new HikariConfig()
-        String dbUrl = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5432/linketinder"
+        String dbUrl = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5433/linketinder"
         String dbUser = System.getenv("DB_USER") ?: "postgres"
         String dbPassword = System.getenv("DB_PASSWORD") ?: "123456"
         config.setJdbcUrl(dbUrl)
