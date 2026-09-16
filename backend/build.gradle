@@ -1,5 +1,12 @@
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-database-postgresql:13.7.0"
+    }
+}
+
 plugins {
     id 'groovy'
+    id("org.flywaydb.flyway") version "13.7.0"
 }
 
 group = 'zg.acelera'
@@ -24,4 +31,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+flyway {
+    url = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5433/postgres"
+    user = System.getenv("DB_USER") ?: "postgres"
+    password = System.getenv("DB_PASSWORD") ?: "123456"
 }
