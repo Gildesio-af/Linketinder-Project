@@ -86,13 +86,11 @@ class AddressService {
         )
     }
 
-    boolean deleteAddress(UUID addressId) {
+    void deleteAddress(UUID addressId) {
         try {
             addressRepository.delete(addressId)
-            return true
         } catch (EntityNotFoundException e) {
             e.printStackTrace()
-            return false
         }
     }
 }

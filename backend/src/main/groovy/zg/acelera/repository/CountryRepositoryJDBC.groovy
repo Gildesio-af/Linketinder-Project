@@ -6,7 +6,7 @@ import zg.acelera.domain.Country
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class CountryRepositoryJDBC implements ICountryRepository {
-    Sql sql
+    final Sql sql
 
     CountryRepositoryJDBC(Sql sql) {
         this.sql = sql
