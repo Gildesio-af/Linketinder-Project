@@ -16,11 +16,12 @@ class Address {
     String neighborhood
     String city
     String state
+    UUID userId
 
     Country country
 
     String toString() {
         return "${street}, ${number} - ${neighborhood}, ${city} - ${state}, ${cep} - ${country?.name}-${country?.code}, " +
-               "\ncomplemento: ${complement}"
+               "\ncomplemento: ${complement ? complement : 'N/A'}"
     }
 }

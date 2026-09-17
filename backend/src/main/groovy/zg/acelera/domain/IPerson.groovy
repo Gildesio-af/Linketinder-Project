@@ -3,7 +3,7 @@ package zg.acelera.domain
 interface IPerson {
     String getName()
     String getEmail()
-    Address getAddress()
+    Set<Address> getAddresses()
     String getDescription()
     Set<Person> getLiked()
     Set<Skill> getSkills()

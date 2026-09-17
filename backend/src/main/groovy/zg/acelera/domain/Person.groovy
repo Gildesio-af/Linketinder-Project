@@ -1,8 +1,10 @@
 package zg.acelera.domain
 
 import groovy.transform.Canonical
+import groovy.transform.EqualsAndHashCode
 
 @Canonical
+@EqualsAndHashCode(includes = ['id'])
 abstract class Person implements IPerson {
     UUID id
     String name
@@ -10,8 +12,8 @@ abstract class Person implements IPerson {
 //    String state
 //    String cep
 
+    Set<Address> addresses = [] as HashSet<Address>
     String description
-    Address address
     Set<Person> liked = [] as HashSet<Person>
     Set<Skill> skills = [] as HashSet<Skill>Skill
 
