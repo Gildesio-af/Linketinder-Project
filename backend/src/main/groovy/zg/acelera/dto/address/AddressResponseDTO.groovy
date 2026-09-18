@@ -17,7 +17,7 @@ record AddressResponseDTO(
         CountryDTO country,
         UUID userId
 ){
-    static AddressResponseDTO fromDomain(Address address) {
+    static AddressResponseDTO fromDomain(Address address, CountryDTO countryDTO ) {
         return new AddressResponseDTO(
                 id: address.id,
                 cep: address.cep,
@@ -27,11 +27,7 @@ record AddressResponseDTO(
                 state: address.state,
                 complement: address.complement,
                 neighborhood: address.neighborhood,
-                country: new CountryDTO(
-                        id: address.country?.id,
-                        name: address.country?.name,
-                        code: address.country?.code
-                ),
+                country: countryDTO,
                 userId: address.userId
         )
     }

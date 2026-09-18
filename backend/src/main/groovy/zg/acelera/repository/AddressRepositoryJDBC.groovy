@@ -32,13 +32,13 @@ class AddressRepositoryJDBC implements IAddressRepository {
     }
 
     @Override
-    Address create(Address address) {
+    Address create(Address address, UUID userID) {
         String insertQuery = """
             INSERT INTO addresses (user_id, cep, street, number, complement, neighborhood, city, state, country_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *
         """
         GroovyRowResult row = sql.firstRow(insertQuery, [
-            address.userId,
+            userID,
             address.cep,
             address.street,
             address.number,
@@ -107,9 +107,7 @@ class AddressRepositoryJDBC implements IAddressRepository {
             neighborhood: row.neighborhood,
             city: row.city,
             state: row.state,
-            country: new Country(id: UUID.fromString(row.country_id.toString()),
-                name: row.name,
-                code: row.code)
+            country: new Country(id: UUID.fromString(row.country_id.toString()))
         )
     }
 }

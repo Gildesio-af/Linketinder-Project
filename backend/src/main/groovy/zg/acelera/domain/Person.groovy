@@ -9,13 +9,12 @@ abstract class Person implements IPerson {
     UUID id
     String name
     String email
-//    String state
-//    String cep
+    String password
 
     Set<Address> addresses = [] as HashSet<Address>
     String description
     Set<Person> liked = [] as HashSet<Person>
-    Set<Skill> skills = [] as HashSet<Skill>Skill
+    Set<Skill> skills = [] as HashSet<Skill>
 
     @Override
     void like(String id) {

@@ -4,65 +4,64 @@ import zg.acelera.domain.Address
 import zg.acelera.dto.address.AddressDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.address.AddressUpdateDTO
+import zg.acelera.dto.country.CountryDTO
 import zg.acelera.repository.IAddressRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class AddressService {
     private final IAddressRepository addressRepository
+    private final CountryService countryService
 
-    AddressService(IAddressRepository addressRepository) {
+    AddressService(IAddressRepository addressRepository, CountryService countryService) {
         this.addressRepository = addressRepository
+        this.countryService = countryService
     }
 
     AddressResponseDTO getAddressById(UUID id) {
-        Address address
+        AddressResponseDTO addressResponse
         try {
-            address = addressRepository.findById(id)
+            Address address = addressRepository.findById(id)
+            CountryDTO countryDTO = countryService.getCountryById(address.country.id)
+            addressResponse = AddressResponseDTO.fromDomain(address, countryDTO)
         } catch (Exception e) {
             e.printStackTrace()
             return null
         }
 
-        return AddressResponseDTO.fromDomain(address)
+        return addressResponse
     }
 
     Set<AddressResponseDTO> getAddressesByUserId(UUID userId) {
-        Set<Address> addresses
+        Set<AddressResponseDTO> addressesResponse = new HashSet<>()
         try {
-            addresses = addressRepository.findByUserId(userId)
+            Set<Address> addresses = addressRepository.findByUserId(userId)
+            addresses.each { address ->
+            CountryDTO countryDTO = countryService.getCountryById(address.country.id)
+            addressesResponse += AddressResponseDTO.fromDomain(address, countryDTO)}
         } catch (Exception e) {
             e.printStackTrace()
             return []
         }
 
-        return addresses.collect { address -> AddressResponseDTO.fromDomain(address) } as Set<AddressResponseDTO>
+        return addressesResponse
     }
 
-    AddressDTO createAddress(AddressDTO addressDTO) {
+    AddressResponseDTO createAddress(AddressDTO addressDTO, UUID userId) {
         Address address = addressDTO.toDomain()
-        Address createdAddress
+        AddressResponseDTO addressResponse
         try {
-            createdAddress = addressRepository.create(address)
+            Address createdAddress = addressRepository.create(address, userId)
+            CountryDTO countryDTO = countryService.getCountryById(createdAddress.country.id)
+            addressResponse = AddressResponseDTO.fromDomain(createdAddress, countryDTO)
         } catch (Exception e) {
             e.printStackTrace()
             return null
         }
 
-        return new AddressDTO(
-            id: createdAddress.id,
-            street: createdAddress.street,
-            cep: createdAddress.cep,
-            number: createdAddress.number,
-            complement: createdAddress.complement,
-            neighborhood: createdAddress.neighborhood,
-            city: createdAddress.city,
-            state: createdAddress.state,
-            countryId: createdAddress.country.id,
-            userId: createdAddress.userId
-        )
+        return addressResponse
     }
 
-    AddressDTO updateAddress(AddressUpdateDTO addressUpdateDTO, UUID addressId) {
+    AddressResponseDTO updateAddress(AddressUpdateDTO addressUpdateDTO, UUID addressId) {
         Address address = addressUpdateDTO.toDomain()
         Address updatedAddress
         try {
@@ -72,18 +71,7 @@ class AddressService {
             return null
         }
 
-        return new AddressDTO(
-            id: updatedAddress.id,
-            street: updatedAddress.street,
-            cep: updatedAddress.cep,
-            number: updatedAddress.number,
-            complement: updatedAddress.complement,
-            neighborhood: updatedAddress.neighborhood,
-            city: updatedAddress.city,
-            state: updatedAddress.state,
-            countryId: updatedAddress.country.id,
-            userId: updatedAddress.userId
-        )
+        return AddressResponseDTO.fromDomain(updatedAddress)
     }
 
     void deleteAddress(UUID addressId) {

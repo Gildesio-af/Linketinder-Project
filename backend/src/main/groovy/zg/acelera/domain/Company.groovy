@@ -9,6 +9,7 @@ import groovy.transform.builder.Builder
 @Builder(includeSuperProperties = true)
 class Company extends Person{
     String cnpj
+    Set<Candidate> likedCandidates = [] as HashSet<Candidate>
 
     @Override
     void dislike(IPerson person) {

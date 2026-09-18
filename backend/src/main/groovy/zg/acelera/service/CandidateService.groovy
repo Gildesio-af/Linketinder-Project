@@ -1,90 +1,92 @@
 package zg.acelera.service
 
+import zg.acelera.domain.Address
+import zg.acelera.domain.Candidate
 import zg.acelera.domain.IPerson
+import zg.acelera.dto.address.AddressDTO
+import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.candidate.CandidateDTO
+import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.repository.CandidateRepository
 import zg.acelera.repository.ICandidateRepository
-import zg.acelera.domain.SkillEnum
+import zg.acelera.utils.exception.EntityNotFoundException
 
 class CandidateService {
     private final ICandidateRepository repository
+    private final AddressService addressService
 
-    CandidateService(ICandidateRepository candidateRepository = new CandidateRepository()) {
+    CandidateService(ICandidateRepository candidateRepository = new CandidateRepository(), AddressService addressService) {
         this.repository = candidateRepository
+        this.addressService = addressService
     }
 
-    void listAllCandidates() {
-        def candidates = repository.findAll()
-        if (candidates.isEmpty()) {
-            println "Any candidates found in the system."
-            return
-        }
-
-        println "--- CANDIDATES LIST ---"
-        candidates.each { it.showDetails() }
-    }
-
-    void listCandidateByCpf(String cpf) {
-        IPerson candidate = repository.findByCpf(cpf)
-        if (candidate) {
-            println("--- CANDIDATE DETAILS ---")
-            candidate.showDetails()
-        } else {
-            println "No candidate found with CPF: $cpf"
+    List<CandidateResponseDTO> listAllCandidates() {
+        List<IPerson> candidates = repository.findAll()
+        return candidates.collect { candidate ->
+            CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
         }
     }
 
-    void listCandidatesBySkill(String skillName) {
+    //TODO: mudar nome do método
+    CandidateResponseDTO listCandidateByCpf(String cpf) {
+        CandidateResponseDTO candidateResponse
         try {
-            def skill = SkillEnum.valueOf(skillName.toUpperCase())
-            def candidates = repository.findBySkill(skill)
-            if (candidates.isEmpty()) {
-                println "No candidates found with the skill: $skillName."
-                return
-            }
-
-            println "--- CANDIDATES WITH SKILL: ${skillName} ---"
-            candidates.each { it.showDetails() }
-        } catch (IllegalArgumentException e) {
+            Candidate candidate = repository.findByCpf(cpf) as Candidate
+            candidateResponse = CandidateResponseDTO.fromDomain(candidate, addressService.getAddressesByUserId(candidate.id))
+        } catch (EntityNotFoundException e) {
             println "Error: ${e.message}"
+            return null
         }
+
+        return candidateResponse
     }
 
-    void registerCandidate(CandidateDTO candidate) {
+    //TODO: mudar nome do método
+    List<CandidateResponseDTO> listCandidatesBySkill(String skillName) {
+        List<CandidateResponseDTO> candidatesResponse
         try {
-            repository.save(candidate)
-            println "Candidate registered successfully!"
-        } catch (IllegalArgumentException e) {
-            println "Error: ${e.message}"
-        }
-    }
-
-    void updateCandidate(CandidateUpdateDTO candidateUpdate) {
-        try {
-            def existingCandidate = repository.findByCpf(candidateUpdate.cpf())
-            if (!existingCandidate) {
-                println "No candidate found with CPF: ${candidateUpdate.cpf()}"
-                return
+            List<IPerson> candidates = repository.findBySkill(skillName)
+            candidatesResponse = candidates.collect { candidate ->
+                CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
             }
-
-            repository.update(candidateUpdate)
-            println "Candidate updated successfully!"
-        } catch (IllegalArgumentException e) {
+        } catch (EntityNotFoundException e) {
             println "Error: ${e.message}"
+            return null
         }
+
+        return candidatesResponse
     }
 
-    void deleteCandidate(String cpf) {
+    CandidateResponseDTO registerCandidate(CandidateDTO candidate, AddressDTO addressDTO) {
+        CandidateResponseDTO candidateResponse
         try {
-            def existingCandidate = repository.findByCpf(cpf)
-            if (!existingCandidate) {
-                println "No candidate found with CPF: $cpf"
-                return
-            }
+            Candidate newCandidate = candidate.toDomain()
+            Candidate candidateSaved = repository.save(newCandidate)
+            AddressResponseDTO newAddress = addressService.createAddress(addressDTO, candidateSaved.id)
+            candidateResponse = CandidateResponseDTO.fromDomain(candidateSaved, newAddress as Set<AddressResponseDTO>)
+        } catch (EntityNotFoundException e) {
+            println "Error: ${e.message}"
+            return null
+        }
+        return candidateResponse
+    }
 
-            repository.delete(cpf)
-            println "Candidate deleted successfully!"
+    CandidateResponseDTO updateCandidate(CandidateUpdateDTO candidateUpdate, UUID userId) {
+        CandidateResponseDTO candidateResponse
+        try {
+            Candidate addressUpdated = repository.update(candidateUpdate.toCandidate() , userId)
+            candidateResponse = CandidateResponseDTO.fromDomain(addressUpdated, addressService.getAddressesByUserId(userId))
+        } catch (EntityNotFoundException e) {
+            println "Error: ${e.message}"
+            return null
+        }
+        return candidateResponse
+    }
+
+    void deleteCandidate(UUID id) {
+        try {
+            repository.delete(id)
         } catch (IllegalArgumentException e) {
             println "Error: ${e.message}"
         }

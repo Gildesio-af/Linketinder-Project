@@ -4,6 +4,7 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.IPerson
+import zg.acelera.domain.Skill
 import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
@@ -25,6 +26,11 @@ class CandidateRepository implements ICandidateRepository {
             file.createNewFile()
             file.text = "[]"
         }
+    }
+
+    @Override
+    IPerson findById(UUID id) {
+        return null
     }
 
     @Override
@@ -83,49 +89,22 @@ class CandidateRepository implements ICandidateRepository {
     }
 
     @Override
-    List<IPerson> findBySkill(SkillEnum skill) {
-        return findAll().findAll { it.skills.contains(skill) }
+    List<IPerson> findBySkill(String skill) {
+        return null
     }
 
     @Override
-    Candidate save(CandidateDTO user) {
-        if (findByCpf(user.cpf()))
-            throw new IllegalArgumentException("Already exists a candidate with this CPF: ${user.cpf()}")
-
-        List<IPerson> all = findAll()
-        all.add(user.toCandidate())
-        rewriteFile(all)
-
-        return user.toCandidate()
+    Candidate save(Candidate user) {
+        return null
     }
 
     @Override
-    Candidate update(CandidateUpdateDTO user) {
-        List<IPerson> all = findAll()
-        int index = all.findIndexOf { ((Candidate) it).cpf == user.cpf() }
-
-        if (index == -1) throw new IllegalArgumentException("Candidate not found with CPF: ${user.cpf()}")
-
-        all[index] = user.updateCandidate(all[index] as Candidate)
-        rewriteFile(all)
-
-        return all[index] as Candidate
+    Candidate update(Candidate user, UUID userId) {
+        return null
     }
 
     @Override
-    void update(Candidate candidate) {
-        List<IPerson> all = findAll()
-        int index = all.findIndexOf { ((Candidate) it).cpf == candidate.cpf}
+    void delete(UUID userId) {
 
-        all[index] = candidate
-        rewriteFile(all)
-    }
-
-    @Override
-    void delete(String cpf) {
-        List<IPerson> all = findAll()
-        if (all.removeIf { ((Candidate) it).cpf == cpf }) {
-            rewriteFile(all)
-        }
     }
 }

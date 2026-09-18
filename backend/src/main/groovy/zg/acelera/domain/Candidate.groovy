@@ -1,14 +1,18 @@
 package zg.acelera.domain
 
 import groovy.transform.Canonical
-import groovy.transform.EqualsAndHashCode
 import groovy.transform.builder.Builder
+
+import java.time.LocalDate
 
 @Canonical
 @Builder(includeSuperProperties = true)
 class Candidate extends Person {
     String cpf
-    int age
+    String lastName
+    LocalDate birthDate
+
+    Set<Job> likedJobs = [] as HashSet<Job>
 
     @Override
     void dislike(IPerson person) {
@@ -19,7 +23,7 @@ class Candidate extends Person {
     @Override
     void showDetails() {
         println "=== Candidate: ${name} ==="
-        println "Age: ${age} years old | CPF: ${cpf}"
+        println "CPF: ${cpf}"
         println "Email: ${email}"
         println "Descrption: ${description}"
         println "Skills: ${skills.join(', ')}"

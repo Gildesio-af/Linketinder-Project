@@ -2,37 +2,48 @@ package zg.acelera.dto.candidate
 
 import groovy.transform.builder.Builder
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.SkillEnum
+import zg.acelera.domain.Skill
+
+import java.time.LocalDate
 
 @Builder
-record CandidateDTO(UUID id = null,String cpf, String name, String email, Integer age,
-                    String state, String cep, String description, Set<String> skills) {
+record CandidateDTO(String cpf,
+                    String name,
+                    String email,
+                    String password,
+                    String description,
+                    String lastName,
+                    LocalDate birthDate,
+                    Set<String> skillsId) {
     public CandidateDTO {
-        if (cpf == null || cpf.trim().isEmpty() || cpf.length() != 11)
+        if (!cpf || cpf.trim().isEmpty() || cpf.length() != 11)
             throw new IllegalArgumentException("Please provide a valid CPF with 11 digits.")
-        if (name == null || name.trim().isEmpty())
+        if (!name || name.trim().isEmpty())
             throw new IllegalArgumentException("Please provide a valid name.")
-        if (email == null || email.trim().isEmpty())
+        if (!email|| email.trim().isEmpty())
             throw new IllegalArgumentException("Please provide a valid email.")
-        if (age == null || age < 0)
-            throw new IllegalArgumentException("Please provide a valid age.")
-        if (state == null || state.trim().isEmpty())
-            throw new IllegalArgumentException("Please provide a valid state.")
-        if (cep == null || cep.trim().isEmpty() || cep.length() != 8)
-            throw new IllegalArgumentException("Please provide a valid CEP.")
-        if (description == null || description.trim().isEmpty())
+        if (!password || password.trim().length() < 6)
+            throw new IllegalArgumentException("Please provide a valid password with at least 6 characters.")
+        if (!description || description.trim().isEmpty())
             throw new IllegalArgumentException("Please provide a valid description.")
-        if (skills == null || skills.isEmpty())
+        if (!lastName || lastName.trim().isEmpty())
+            throw new IllegalArgumentException("Please provide a valid last name.")
+        if (!birthDate)
+            throw new IllegalArgumentException("Please provide a valid birth date.")
+        if (!skillsId || skillsId.isEmpty())
             throw new IllegalArgumentException("Please provide a valid set of skills.")
     }
 
-    Candidate toCandidate() {
+    Candidate toDomain() {
         return Candidate.builder()
                 .cpf(cpf)
                 .name(name)
+                .lastName(lastName)
                 .email(email)
-                .age(age)
+                .password(password)
                 .description(description)
+                .birthDate(birthDate)
+                .skills(skillsId.collect {skillId -> new Skill(id: UUID.fromString(skillId))} as Set)
                 .build()
     }
 }
