@@ -4,19 +4,18 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Company
 import zg.acelera.domain.IPerson
-import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.company.CompanyDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
 
 import java.nio.file.Paths
 
 class CompanyRepository implements ICompanyRepository {
-    private final String candidateFileName
+    private final String companyFileName
     private final File file
 
     CompanyRepository(String fileName = "companies.json") {
-        this.candidateFileName = fileName
-        this.file = Paths.get(candidateFileName).toFile()
+        this.companyFileName = fileName
+        this.file = Paths.get(companyFileName).toFile()
         initializeFile()
     }
 
@@ -28,31 +27,29 @@ class CompanyRepository implements ICompanyRepository {
     }
 
     @Override
+    IPerson findById(UUID id) {
+        return findAll().find { it.id == id }
+    }
+
+    @Override
     List<IPerson> findAll() {
         if (file.text.trim().isEmpty()) return []
 
         def slurper = new JsonSlurper()
         def jsonList = slurper.parse(file)
 
-        List<IPerson> companies = []
-
-        jsonList.each { map ->
-            Set<SkillEnum> loadedSkills = map.skills?.collect { SkillEnum.valueOf(it.toString()) } as HashSet
-            Set<String> loadedLikes = map.liked ? (map.liked as HashSet) : new HashSet<String>()
-
-            companies += Company.builder()
+        return jsonList.collect { map ->
+            Company.builder()
+                    .id(map.id ? UUID.fromString(map.id.toString()) : null)
                     .name(map.name)
                     .email(map.email)
-                    .state(map.state)
-                    .cep(map.cep)
+                    .password(map.password)
                     .description(map.description)
                     .cnpj(map.cnpj)
-                    .skills(loadedSkills)
-                    .liked(loadedLikes)
+                    .skills((map.skills ?: []).collect { skillName -> new zg.acelera.domain.Skill(name: skillName.toString()) } as Set)
+                    .liked((map.liked ?: []) as Set)
                     .build()
         }
-
-        companies
     }
 
     private void rewriteFile(List<IPerson> companies) {
@@ -61,13 +58,13 @@ class CompanyRepository implements ICompanyRepository {
         builder companies.collect { person ->
             def c = (Company) person
             [
+                    id: c.id?.toString(),
                     cnpj: c.cnpj,
                     name: c.name,
                     email: c.email,
-                    state: c.state,
-                    cep: c.cep,
+                    password: c.password,
                     description: c.description,
-                    skills: c.skills.collect { it.name() },
+                    skills: c.skills.collect { it.name ?: it.id?.toString() },
                     liked: c.liked
             ]
         }
@@ -77,63 +74,51 @@ class CompanyRepository implements ICompanyRepository {
 
     @Override
     IPerson findByCnpj(String cnpj) {
-        findAll().find { ((Company) it).cnpj == cnpj }
+        return findAll().find { ((Company) it).cnpj == cnpj }
     }
 
     @Override
-    List<IPerson> findBySkill(SkillEnum skill) {
-        findAll().findAll { it.skills.contains(skill) }
+    List<IPerson> findBySkill(String skill) {
+        return findAll().findAll { it.skills.any { it.name?.equalsIgnoreCase(skill) } }
     }
 
     @Override
-    Company save(CompanyDTO user) {
-        if (findByCnpj(user.cnpj()))
-            throw new IllegalArgumentException("Already exists a company with this CNPJ: ${user.cnpj()}")
-
-        List<IPerson> all = findAll()
-        all.add(user.toCompany())
-        rewriteFile(all)
-
-        user.toCompany()
-    }
-
-    @Override
-    Company update(CompanyUpdateDTO user) {
-        List<IPerson> all = findAll()
-        int index = all.findIndexOf { ((Company) it).cnpj == user.cnpj() }
-
-        if (index == -1) throw new IllegalArgumentException("Company not found with CNPJ: ${user.cnpj()}")
-
-        def existing = all[index] as Company
-
-        if (user.name() != null) existing.name = user.name()
-        if (user.corporateEmail() != null) existing.email = user.corporateEmail()
-        if (user.state() != null) existing.state = user.state()
-        if (user.cep() != null) existing.cep = user.cep()
-        if (user.description() != null) existing.description = user.description()
-        if (user.skills() != null && !user.skills().isEmpty()) {
-            existing.skills = user.skills().collect { SkillEnum.valueOf(it) } as Set<SkillEnum>
+    Company save(Company company) {
+        if (findByCnpj(company.cnpj)) {
+            throw new IllegalArgumentException("Already exists a company with this CNPJ: ${company.cnpj}")
         }
+
+        company.id = company.id ?: UUID.randomUUID()
+        List<IPerson> all = findAll()
+        all.add(company)
+        rewriteFile(all)
+        return company
+    }
+
+    @Override
+    Company update(Company company, UUID userId) {
+        List<IPerson> all = findAll()
+        int index = all.findIndexOf { ((Company) it).id == userId }
+
+        if (index == -1) throw new IllegalArgumentException("Company not found with ID: ${userId}")
+
+        Company existing = all[index] as Company
+        if (company.name) existing.name = company.name
+        if (company.email) existing.email = company.email
+        if (company.password) existing.password = company.password
+        if (company.description) existing.description = company.description
+        if (company.cnpj) existing.cnpj = company.cnpj
+        if (company.skills) existing.skills = company.skills
 
         all[index] = existing
         rewriteFile(all)
-
-        existing
+        return existing
     }
 
     @Override
-    void update(Company company) {
+    void delete(UUID userId) {
         List<IPerson> all = findAll()
-        int index = all.findIndexOf {((Company) it).cnpj == company.cnpj}
-
-        all[index] = company
-        rewriteFile(all)
-    }
-
-    @Override
-    void delete(String cnpj) {
-        List<IPerson> all = findAll()
-        if (all.removeIf { ((Company) it).cnpj == cnpj }) {
+        if (all.removeIf { ((Company) it).id == userId }) {
             rewriteFile(all)
         }
     }
