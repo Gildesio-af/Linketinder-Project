@@ -46,7 +46,7 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
             INNER JOIN candidates ca ON us.id = ca.user_id
             INNER JOIN users_skill usk ON us.id = usk.user_id
             INNER JOIN skills sk ON usk.skill_id = sk.id
-            WHERE sk.name = ?
+            WHERE lower(sk.name) = lower(?)
         """, [skill])
 
         return rows.collect { row -> getCandidateFromRow(row) }
