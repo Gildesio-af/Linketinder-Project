@@ -21,6 +21,13 @@ class SkillRepositoryJDBC implements ISkillRepository {
     }
 
     @Override
+    Set<Skill> findAll() {
+        Set<GroovyRowResult> rows = sql.rows("SELECT * FROM skills")
+
+        return rows.collect {row -> skillFromRow(row)}
+    }
+
+    @Override
     Skill save(Skill skill) {
         GroovyRowResult row = sql.firstRow("INSERT INTO skills (name) VALUES (?) RETURNING *", [skill.name])
         if (row) return skillFromRow(row)

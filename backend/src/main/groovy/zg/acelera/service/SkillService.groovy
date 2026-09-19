@@ -5,6 +5,8 @@ import zg.acelera.dto.skill.SkillDTO
 import zg.acelera.dto.skill.SkillResponseDTO
 import zg.acelera.repository.ISkillRepository
 
+import java.sql.SQLException
+
 class SkillService {
     final ISkillRepository skillRepository
 
@@ -22,6 +24,15 @@ class SkillService {
             return  null
         }
         return  responseDTO
+    }
+
+    Set<Skill> getAllSkills() {
+        try {
+            return  skillRepository.findAll()
+        } catch (SQLException e) {
+            println("Error: ${e.getMessage()}")
+            return []
+        }
     }
 
     SkillResponseDTO createSkill(SkillDTO skillDTO) {
