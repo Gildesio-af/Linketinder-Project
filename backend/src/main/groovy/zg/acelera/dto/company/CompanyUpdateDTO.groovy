@@ -15,7 +15,7 @@ record CompanyUpdateDTO(
         this(cnpj, name, corporateEmail, null, description)
     }
 
-    CompanyUpdateDTO {
+    public CompanyUpdateDTO {
         if (cnpj != null && (cnpj.trim().isEmpty() || cnpj.length() != 14))
             throw new IllegalArgumentException("Please provide a valid CNPJ with 14 digits.")
         if (name != null && name.trim().isEmpty())
