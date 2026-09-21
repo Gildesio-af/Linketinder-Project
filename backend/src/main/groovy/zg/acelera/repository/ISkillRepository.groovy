@@ -4,6 +4,7 @@ import zg.acelera.domain.Skill
 
 interface ISkillRepository {
     Skill findById(UUID id)
+    Skill findByName(String name)
     Set<Skill> findAll()
     Skill save(Skill skill)
     Skill update(Skill skill, UUID id)

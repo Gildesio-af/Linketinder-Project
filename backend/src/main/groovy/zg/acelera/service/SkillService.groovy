@@ -26,9 +26,21 @@ class SkillService {
         return  responseDTO
     }
 
-    Set<Skill> getAllSkills() {
+    SkillResponseDTO getSkillByName(String name) {
+        SkillResponseDTO responseDTO
         try {
-            return  skillRepository.findAll()
+            Skill skill = skillRepository.findByName(name)
+            responseDTO = SkillResponseDTO.fromDomain(skill)
+        } catch (Exception e) {
+            e.printStackTrace()
+            return  null
+        }
+        return  responseDTO
+    }
+
+    Set<SkillResponseDTO> getAllSkills() {
+        try {
+            return  skillRepository.findAll().collect { skill -> SkillResponseDTO.fromDomain(skill) } as Set
         } catch (SQLException e) {
             println("Error: ${e.getMessage()}")
             return []

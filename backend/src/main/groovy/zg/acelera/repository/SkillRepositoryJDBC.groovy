@@ -21,6 +21,14 @@ class SkillRepositoryJDBC implements ISkillRepository {
     }
 
     @Override
+    Skill findByName(String name) {
+        GroovyRowResult row = sql.firstRow("SELECT * FROM skills WHERE lower(name) = lower(?)", [name])
+        if (row) return skillFromRow(row)
+
+        throw new EntityNotFoundException("Skill with name ${name} not found")
+    }
+
+    @Override
     Set<Skill> findAll() {
         Set<GroovyRowResult> rows = sql.rows("SELECT * FROM skills")
 
@@ -46,6 +54,10 @@ class SkillRepositoryJDBC implements ISkillRepository {
     @Override
     void deleteById(UUID id) {
         int rowsAffected = sql.executeUpdate("DELETE FROM skills WHERE id = ?", [id])
+        sql.withTransaction {
+            sql.executeUpdate("DELETE FROM addresses WHERE id IN (SELECT address_id FROM jobs WHERE id = ?)", [id])
+            rowsAffected = sql.executeUpdate("DELETE FROM skills WHERE id = ?", [id])
+        }
         if (rowsAffected == 0) {
             throw new EntityNotFoundException("Skill with id ${id} not found")
         }
