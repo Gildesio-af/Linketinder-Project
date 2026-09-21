@@ -32,6 +32,19 @@ class AddressRepositoryJDBC implements IAddressRepository {
     }
 
     @Override
+    Address findByJobId(UUID jobId) {
+        GroovyRowResult row = sql.firstRow("""
+            SELECT ad.*, co.* FROM addresses AS ad
+            INNER JOIN jobs AS jb ON jb.address_id = ad.id
+            INNER JOIN countries AS co ON ad.country_id = co.id
+            WHERE jb.id = ?
+        """, [jobId])
+        if (row) return createAddressFromRow(row)
+
+        throw new EntityNotFoundException("Address for job with id ${jobId} not found")
+    }
+
+    @Override
     Address create(Address address, UUID userID) {
         String insertQuery = """
             INSERT INTO addresses (user_id, cep, street, number, complement, neighborhood, city, state, country_id)

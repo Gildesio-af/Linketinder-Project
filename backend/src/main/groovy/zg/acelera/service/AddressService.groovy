@@ -46,6 +46,20 @@ class AddressService {
         return addressesResponse
     }
 
+    AddressResponseDTO getAddressByJobId(UUID jobId) {
+        AddressResponseDTO addressResponse
+        try {
+            Address address = addressRepository.findByJobId(jobId)
+            CountryDTO countryDTO = countryService.getCountryById(address.country.id)
+            addressResponse = AddressResponseDTO.fromDomain(address, countryDTO)
+        } catch (Exception e) {
+            e.printStackTrace()
+            return null
+        }
+
+        return addressResponse
+    }
+
     AddressResponseDTO createAddress(AddressDTO addressDTO, UUID userId) {
         Address address = addressDTO.toDomain()
         AddressResponseDTO addressResponse
@@ -63,15 +77,17 @@ class AddressService {
 
     AddressResponseDTO updateAddress(AddressUpdateDTO addressUpdateDTO, UUID addressId) {
         Address address = addressUpdateDTO.toDomain()
-        Address updatedAddress
+        AddressResponseDTO addressResponse
         try {
-            updatedAddress = addressRepository.update(address, addressId)
+            Address updatedAddress = addressRepository.update(address, addressId)
+            CountryDTO countryDTO = countryService.getCountryById(updatedAddress.country.id)
+            addressResponse = AddressResponseDTO.fromDomain(updatedAddress, countryDTO)
         } catch (EntityNotFoundException e) {
             e.printStackTrace()
             return null
         }
 
-        return AddressResponseDTO.fromDomain(updatedAddress)
+        return addressResponse
     }
 
     void deleteAddress(UUID addressId) {
