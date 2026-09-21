@@ -32,6 +32,11 @@ class CompanyRepository implements ICompanyRepository {
     }
 
     @Override
+    Company findByJobId(UUID uuid) {
+        return null
+    }
+
+    @Override
     List<IPerson> findAll() {
         if (file.text.trim().isEmpty()) return []
 

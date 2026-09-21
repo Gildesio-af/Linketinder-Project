@@ -21,10 +21,23 @@ class CompanyRepositoryJDBC implements ICompanyRepository {
             SELECT us.*, co.* FROM users us
             INNER JOIN companies co ON us.id = co.user_id
             WHERE us.id = ?
-        """, [id.toString()])
+        """, [id])
         if (row) return getCompanyFromRow(row)
 
         throw new EntityNotFoundException("Company with ID ${id} not found")
+    }
+
+    @Override
+    Company findByJobId(UUID uuid) {
+        GroovyRowResult row = sql.firstRow("""
+            SELECT us.*, co.* FROM users us
+            INNER JOIN companies co ON us.id = co.user_id
+            INNER JOIN jobs jb ON jb.publisher_id = co.user_id
+            WHERE jb.id = ?
+        """, [uuid])
+        if (row) return getCompanyFromRow(row)
+
+        return null
     }
 
     @Override

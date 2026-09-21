@@ -104,4 +104,14 @@ class CompanyService {
             println "Error: ${e.message}"
         }
     }
+
+    CompanyResponseDTO getCompanyByJobId(UUID uuid) {
+        try {
+            Company company = repository.findByJobId(uuid) as Company
+            return CompanyResponseDTO.fromDomain(company, null)
+        } catch (EntityNotFoundException e) {
+            println "Error: ${e.message}"
+            return null
+        }
+    }
 }
