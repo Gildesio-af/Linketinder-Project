@@ -1,6 +1,7 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Job
+import zg.acelera.dto.address.AddressDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.company.CompanyResponseDTO
 import zg.acelera.dto.job.JobDTO
@@ -18,9 +19,11 @@ class JobService {
     CompanyService companyService
     SkillService skillService
 
-
-    JobService(IJobRepository jobRepository) {
+    JobService(IJobRepository jobRepository, AddressService addressService, CompanyService companyService, SkillService skillService) {
         this.jobRepository = jobRepository
+        this.addressService = addressService
+        this.companyService = companyService
+        this.skillService = skillService
     }
 
     JobMatchResponseDTO getJobByIdToMatch(UUID id) {
@@ -36,6 +39,38 @@ class JobService {
         }
 
         return jobResponse
+    }
+
+    Set<JobResponseDTO> getAllJobs() {
+        Set<JobResponseDTO> jobsResponse = new HashSet<>()
+        try {
+            Set<Job> jobs = jobRepository.findAll()
+            jobs.each { job ->
+                AddressResponseDTO address = addressService.getAddressByJobId(job.id)
+                jobsResponse += JobResponseDTO.fromDomain(job, address)
+            }
+        } catch (Exception e) {
+            println("Error fetching all jobs: ${e.message}")
+            return []
+        }
+
+        return jobsResponse
+    }
+
+    Set<JobResponseDTO> getJobsByPublisher(UUID publisherId) {
+        Set<JobResponseDTO> jobsResponse = new HashSet<>()
+        try {
+            Set<Job> jobs = jobRepository.findByPublisherId(publisherId)
+            jobs.each { job ->
+                AddressResponseDTO address = addressService.getAddressByJobId(job.id)
+                jobsResponse += JobResponseDTO.fromDomain(job, address)
+            }
+        } catch (Exception e) {
+            println("Error fetching jobs by publisher: ${e.message}")
+            return []
+        }
+
+        return jobsResponse
     }
 
     Set<JobResponseDTO> getJobsByName(String name) {
@@ -75,12 +110,31 @@ class JobService {
         List<UUID> skillsIds = getSkillsIdByName(skills)
 
         Job createdJob = jobRepository.create(job, skillsIds)
+
         AddressResponseDTO address = addressService.getAddressByJobId(createdJob.id)
         return JobResponseDTO.fromDomain(createdJob, address)
     }
 
-    JobResponseDTO updateJob(JobUpdateDTO jobUpdateDTO) {
+    JobResponseDTO createJobWithAddress(String title, String description, List<String> skillNames,
+                                         AddressDTO addressDTO, UUID publisherId) {
+        try {
+            AddressResponseDTO addressResponse = addressService.createAddress(addressDTO, publisherId)
+            if (!addressResponse) {
+                println "Error: Could not create job address."
+                return null
+            }
+
+            JobDTO jobDTO = new JobDTO(null, title, description, skillNames, addressResponse.id(), publisherId)
+            return createJob(jobDTO, skillNames)
+        } catch (Exception e) {
+            println "Error creating job: ${e.message}"
+            return null
+        }
+    }
+
+    JobResponseDTO updateJob(JobUpdateDTO jobUpdateDTO, UUID jobId) {
         Job job = jobUpdateDTO.toDomain()
+        job.id = jobId
 
         Job updatedJob = jobRepository.update(job)
         AddressResponseDTO address = addressService.getAddressByJobId(updatedJob.id)

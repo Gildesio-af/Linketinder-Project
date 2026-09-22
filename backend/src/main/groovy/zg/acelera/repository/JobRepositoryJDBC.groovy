@@ -5,6 +5,7 @@ import groovy.sql.Sql
 import zg.acelera.domain.Address
 import zg.acelera.domain.Company
 import zg.acelera.domain.Job
+import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class JobRepositoryJDBC implements IJobRepository {
@@ -16,35 +17,75 @@ class JobRepositoryJDBC implements IJobRepository {
 
     @Override
     Job findById(UUID id) {
-        GroovyRowResult row = sql.firstRow("""
-            SELECT * FROM jobs AS jb WHERE jb.id = ?
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+            WHERE jb.id = ?
         """, [id])
-        if (row) return getJobFromRow(row)
 
-        throw new EntityNotFoundException("Job with ID ${id} not found")
+        if (!rows) {
+            throw new EntityNotFoundException("Job with ID ${id} not found")
+        }
+
+        return getJobsWithSkillsFromRows(rows).first()
+    }
+
+    @Override
+    Set<Job> findAll() {
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name 
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+        """)
+
+        return getJobsWithSkillsFromRows(rows)
     }
 
     @Override
     Set<Job> findByName(String name) {
-        Set<GroovyRowResult> rows = sql.rows("""
-            SELECT * FROM jobs AS jb WHERE lower(jb.name) LIKE lower(?)
-        """, ["%"+ name +"%"])
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+            WHERE lower(jb.name) LIKE lower(?)
+        """, ["%" + name + "%"])
 
-        Set<Job> jobs = rows.collect { row -> getJobFromRow(row) }
-
-        return jobs
+        return getJobsWithSkillsFromRows(rows)
     }
 
     @Override
     Set<Job> findBySkill(String skill) {
-        Set<GroovyRowResult> rows = sql.rows("""
-            SELECT * FROM jobs AS jb
-            INNER JOIN jobs_skill AS js ON js.job_id = jb.id
-            INNER JOIN skills AS sk ON sk.id = js.skill_id
-            WHERE lower(sk.name) = lower(?)
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+            WHERE jb.id IN (
+                SELECT DISTINCT js2.job_id
+                FROM jobs_skill AS js2
+                INNER JOIN skills AS sk2 ON sk2.id = js2.skill_id
+                WHERE lower(sk2.name) = lower(?)
+            )
         """, [skill])
 
-        return rows.collect { row -> getJobFromRow(row) } as Set<Job>
+        return getJobsWithSkillsFromRows(rows)
+    }
+
+    @Override
+    Set<Job> findByPublisherId(UUID publisherId) {
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+            WHERE jb.publisher_id = ?
+        """, [publisherId])
+
+        return getJobsWithSkillsFromRows(rows)
     }
 
     @Override
@@ -55,7 +96,23 @@ class JobRepositoryJDBC implements IJobRepository {
             RETURNING *
         """, [job.name, job.description, job.address.id, job.publisher.id])
 
-        return getJobFromRow(row)
+        if (!row) {
+            return null
+        }
+
+        if (skillIds) {
+            addSkillToJob(UUID.fromString(row.id.toString()), skillIds as Set<UUID>)
+        }
+
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+            WHERE jb.id = ?
+        """, [row.id])
+
+        return getJobsWithSkillsFromRows(rows).first()
     }
 
     @Override
@@ -67,9 +124,19 @@ class JobRepositoryJDBC implements IJobRepository {
             RETURNING *
         """, [job.name, job.description, job.id])
 
-        if (row) return getJobFromRow(row)
+        if (!row) {
+            throw new EntityNotFoundException("Job with ID ${job.id} not found")
+        }
 
-        throw new EntityNotFoundException("Job with ID ${job.id} not found")
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT jb.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM jobs AS jb
+            LEFT JOIN jobs_skill AS js ON js.job_id = jb.id
+            LEFT JOIN skills AS sk ON sk.id = js.skill_id
+            WHERE jb.id = ?
+        """, [row.id])
+
+        return getJobsWithSkillsFromRows(rows).first()
     }
 
     @Override
@@ -86,13 +153,47 @@ class JobRepositoryJDBC implements IJobRepository {
 
     @Override
     void delete(UUID id) {
-        int rowsAffected = sql.executeUpdate("""
-            DELETE FROM jobs WHERE id = ?
-        """, [id])
+        sql.withTransaction {
+            GroovyRowResult row = sql.firstRow("""
+                DELETE FROM jobs WHERE id = ? RETURNING address_id
+            """, [id])
 
-        if (rowsAffected == 0) {
-            throw new EntityNotFoundException("Job with ID ${id} not found")
+            if (row?.address_id) {
+                sql.executeUpdate("""
+                    DELETE FROM addresses WHERE id = ?
+                """, [row.address_id])
+            }
         }
+    }
+
+    private static Set<Job> getJobsWithSkillsFromRows(List<GroovyRowResult> rows) {
+        if (!rows) return [] as Set<Job>
+
+        return rows.groupBy { it.id }.collect { jobId, jobRows ->
+            getJobWithSkillsFromRows(jobRows)
+        } as Set<Job>
+    }
+
+    private static Job getJobWithSkillsFromRows(List<GroovyRowResult> jobRows) {
+        if (!jobRows) return null
+
+        GroovyRowResult firstRow = jobRows.first()
+
+        Job job = getJobFromRow(firstRow)
+
+        Set<Skill> skills = jobRows.findResults { row ->
+            if (row.skill_id) {
+                return new Skill(
+                        id: UUID.fromString(row.skill_id.toString()),
+                        name: row.skill_name.toString()
+                )
+            }
+            return null
+        } as Set<Skill>
+
+        job.desiredSkills = skills
+
+        return job
     }
 
     private static Job getJobFromRow(GroovyRowResult row) {
