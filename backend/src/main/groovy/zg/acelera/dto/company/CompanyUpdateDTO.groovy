@@ -11,10 +11,6 @@ record CompanyUpdateDTO(
         String password,
         String description
 ) {
-    CompanyUpdateDTO(String cnpj, String name, String corporateEmail, String state, String cep, String description, Set<String> skills) {
-        this(cnpj, name, corporateEmail, null, description)
-    }
-
     public CompanyUpdateDTO {
         if (cnpj != null && (cnpj.trim().isEmpty() || cnpj.length() != 14))
             throw new IllegalArgumentException("Please provide a valid CNPJ with 14 digits.")
