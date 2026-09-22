@@ -3,10 +3,11 @@ package zg.acelera.dto.candidate
 import groovy.transform.ImmutableOptions
 import zg.acelera.domain.Candidate
 import zg.acelera.dto.address.AddressResponseDTO
+import zg.acelera.dto.skill.SkillResponseDTO
 
 import java.time.LocalDate
 
-@ImmutableOptions(knownImmutableClasses = [AddressResponseDTO])
+@ImmutableOptions(knownImmutableClasses = [AddressResponseDTO, SkillResponseDTO])
 record CandidateResponseDTO(
         UUID id,
         String name,
@@ -15,9 +16,14 @@ record CandidateResponseDTO(
         String description,
         String cpf,
         LocalDate birthDate,
-        Set<AddressResponseDTO> address
+        Set<AddressResponseDTO> address,
+        Set<SkillResponseDTO> skills
 ) {
     static CandidateResponseDTO fromDomain(Candidate candidate, Set<AddressResponseDTO> addresses) {
+        Set<SkillResponseDTO> skillDTOs = candidate.skills?.collect { skill ->
+            SkillResponseDTO.fromDomain(skill)
+        } as Set<SkillResponseDTO> ?: [] as Set<SkillResponseDTO>
+
         return new CandidateResponseDTO(
                 id: candidate.id,
                 name: candidate.name,
@@ -26,7 +32,8 @@ record CandidateResponseDTO(
                 description: candidate.description,
                 cpf: candidate.cpf,
                 birthDate: candidate.birthDate,
-                address: addresses
+                address: addresses,
+                skills: skillDTOs
         )
     }
 }

@@ -4,6 +4,7 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.IPerson
+import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
 
 import java.time.LocalDate
@@ -17,39 +18,70 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
 
     @Override
     IPerson findById(UUID id) {
-        GroovyRowResult row = sql.firstRow("SELECT * FROM users,  candidates WHERE users.id = candidates.user_id AND users.id = ?", [id.toString()])
-        if (row) return getCandidateFromRow(row)
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM users us
+            INNER JOIN candidates ca ON us.id = ca.user_id
+            LEFT JOIN users_skill usk ON us.id = usk.user_id
+            LEFT JOIN skills sk ON sk.id = usk.skill_id
+            WHERE us.id = ?
+        """, [id])
 
-        throw new EntityNotFoundException("Candidate with ID ${id} not found")
+        if (!rows) {
+            throw new EntityNotFoundException("Candidate with ID ${id} not found")
+        }
+
+        return getCandidatesWithSkillsFromRows(rows).first()
     }
 
     @Override
     List<IPerson> findAll() {
-        List<GroovyRowResult> rows = sql.rows("SELECT * FROM users,  candidates WHERE users.id = candidates.user_id")
-        List<IPerson> candidates = rows.collect { row -> getCandidateFromRow(row) }
-        return candidates
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM users us
+            INNER JOIN candidates ca ON us.id = ca.user_id
+            LEFT JOIN users_skill usk ON us.id = usk.user_id
+            LEFT JOIN skills sk ON sk.id = usk.skill_id
+        """)
+
+        return getCandidatesWithSkillsFromRows(rows).toList()
     }
 
     @Override
     IPerson findByCpf(String cpf) {
-        GroovyRowResult row = sql.firstRow("SELECT * FROM users,  candidates WHERE users.id = candidates.user_id AND candidates.cpf = ?", [cpf])
-        if (row) return getCandidateFromRow(row)
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
+            FROM users us
+            INNER JOIN candidates ca ON us.id = ca.user_id
+            LEFT JOIN users_skill usk ON us.id = usk.user_id
+            LEFT JOIN skills sk ON sk.id = usk.skill_id
+            WHERE ca.cpf = ?
+        """, [cpf])
 
-        throw new EntityNotFoundException("Candidate) with CPF ${cpf} not found")
+        if (!rows) {
+            throw new EntityNotFoundException("Candidate) with CPF ${cpf} not found")
+        }
+
+        return getCandidatesWithSkillsFromRows(rows).first()
     }
 
     @Override
     List<IPerson> findBySkill(String skill) {
         List<GroovyRowResult> rows = sql.rows("""
-            SELECT us.*, ca.*
+            SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
             INNER JOIN candidates ca ON us.id = ca.user_id
-            INNER JOIN users_skill usk ON us.id = usk.user_id
-            INNER JOIN skills sk ON usk.skill_id = sk.id
-            WHERE lower(sk.name) = lower(?)
+            LEFT JOIN users_skill usk ON us.id = usk.user_id
+            LEFT JOIN skills sk ON sk.id = usk.skill_id
+            WHERE us.id IN (
+                SELECT DISTINCT usk2.user_id
+                FROM users_skill usk2
+                INNER JOIN skills sk2 ON sk2.id = usk2.skill_id
+                WHERE lower(sk2.name) = lower(?)
+            )
         """, [skill])
 
-        return rows.collect { row -> getCandidateFromRow(row) }
+        return getCandidatesWithSkillsFromRows(rows).toList()
     }
 
     @Override
@@ -71,7 +103,32 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
                 RETURNING *
             """, [generatedUserId, user.cpf, user.lastName, user.birthDate])
 
+            if (user.skills) {
+                user.skills.each { skill ->
+                    if (skill.id) {
+                        sql.executeInsert("""
+                            INSERT INTO users_skill (user_id, skill_id)
+                            VALUES (?, ?)
+                        """, [generatedUserId, skill.id])
+                    }
+                }
+            }
+
             savedCandidate = getCandidateFromUserRowAndCandidateRow(rowGenericUser, rowCandidate)
+
+            Set<Skill> fullSkills = [] as Set<Skill>
+            if (user.skills) {
+                List<GroovyRowResult> skillRows = sql.rows("""
+                    SELECT sk.id AS skill_id, sk.name AS skill_name
+                    FROM users_skill usk
+                    INNER JOIN skills sk ON sk.id = usk.skill_id
+                    WHERE usk.user_id = ?
+                """, [generatedUserId])
+                fullSkills = skillRows.collect { row ->
+                    new Skill(id: UUID.fromString(row.skill_id.toString()), name: row.skill_name.toString())
+                } as Set<Skill>
+            }
+            savedCandidate.skills = fullSkills
         }
 
         return savedCandidate
@@ -97,6 +154,7 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
             """, [user.lastName, user.birthDate, userId])
 
             updatedCandidate = getCandidateFromUserRowAndCandidateRow(rowGenericUser, rowCandidate)
+            updatedCandidate.skills = user.skills ?: [] as Set<Skill>
         }
 
         return updatedCandidate
@@ -108,6 +166,33 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
             sql.execute("DELETE FROM candidates WHERE user_id = ?", [userId])
             sql.execute("DELETE FROM users WHERE id = ?", [userId])
         }
+    }
+
+    private static Set<Candidate> getCandidatesWithSkillsFromRows(List<GroovyRowResult> rows) {
+        if (!rows) return [] as Set<Candidate>
+
+        return rows.groupBy { it.id }.collect { userId, userRows ->
+            getCandidateWithSkillsFromRows(userRows)
+        } as Set<Candidate>
+    }
+
+    private static Candidate getCandidateWithSkillsFromRows(List<GroovyRowResult> rows) {
+        if (!rows) return null
+
+        Candidate candidate = getCandidateFromRow(rows.first())
+
+        Set<Skill> skills = rows.findResults { row ->
+            if (row.skill_id) {
+                return new Skill(
+                    id: UUID.fromString(row.skill_id.toString()),
+                    name: row.skill_name.toString()
+                )
+            }
+            return null
+        } as Set<Skill>
+
+        candidate.skills = skills
+        return candidate
     }
 
     private static Candidate getCandidateFromRow(GroovyRowResult row) {
