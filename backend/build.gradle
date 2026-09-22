@@ -37,4 +37,10 @@ flyway {
     url = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5433/postgres"
     user = System.getenv("DB_USER") ?: "postgres"
     password = System.getenv("DB_PASSWORD") ?: "123456"
+
+    if (project.hasProperty('env') && project.property('env') == 'dev') {
+        locations = ['classpath:db/migration', 'classpath:db/testdata']
+    } else {
+        locations = ['classpath:db/migration']
+    }
 }
