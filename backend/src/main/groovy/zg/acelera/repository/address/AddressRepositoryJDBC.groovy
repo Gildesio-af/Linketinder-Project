@@ -17,18 +17,20 @@ class AddressRepositoryJDBC implements AddressRepository {
     Address findById(UUID id) {
         GroovyRowResult row = sql.firstRow("SELECT * FROM addresses AS ad, countries WHERE ad.id = ? " +
                 "AND ad.country_id = countries.id", [id])
-        if (row) return createAddressFromRow(row)
 
-        throw new EntityNotFoundException("Address with id ${id} not found")
+        if (!row) throw new EntityNotFoundException("Address with id ${id} not found")
+
+        return createAddressFromRow(row)
     }
 
     @Override
     Set<Address> findByUserId(UUID userId) {
         List<GroovyRowResult> rows = sql.rows("SELECT * FROM addresses, countries WHERE addresses.user_id = ? " +
                 "AND addresses.country_id = countries.id", [userId])
-        if (rows) return rows.collect { row -> createAddressFromRow(row) }
 
-        return [] as Set<Address>
+        if (!rows) return [] as Set<Address>
+
+        return rows.collect { row -> createAddressFromRow(row) }
     }
 
     @Override
@@ -39,9 +41,10 @@ class AddressRepositoryJDBC implements AddressRepository {
             INNER JOIN countries AS co ON ad.country_id = co.id
             WHERE jb.id = ?
         """, [jobId])
-        if (row) return createAddressFromRow(row)
 
-        throw new EntityNotFoundException("Address for job with id ${jobId} not found")
+        if (!row) throw new EntityNotFoundException("Address for job with id ${jobId} not found")
+
+        return createAddressFromRow(row)
     }
 
     @Override
@@ -95,18 +98,17 @@ class AddressRepositoryJDBC implements AddressRepository {
             address.country.id,
             addressId
         ])
-        if (row) return createAddressFromRow(row)
+        if (row) throw new EntityNotFoundException("Address with id ${addressId} not found")
 
-        throw new EntityNotFoundException("Address with id ${addressId} not found")
+        return createAddressFromRow(row)
     }
 
     @Override
     void delete(UUID addressId) {
         String deleteQuery = "DELETE FROM addresses WHERE id = ?"
         int rowsAffected = sql.executeUpdate(deleteQuery, [addressId])
-        if (rowsAffected == 0) {
-            throw new EntityNotFoundException("Address with id ${addressId} not found")
-        }
+
+        if (rowsAffected == 0) throw new EntityNotFoundException("Address with id ${addressId} not found")
     }
 
     private static Address createAddressFromRow(GroovyRowResult row) {
