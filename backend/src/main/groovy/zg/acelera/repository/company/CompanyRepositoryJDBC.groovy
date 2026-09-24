@@ -1,13 +1,13 @@
-package zg.acelera.repository
+package zg.acelera.repository.company
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Company
-import zg.acelera.domain.IPerson
+import zg.acelera.domain.Person
 import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
 
-class CompanyRepositoryJDBC implements ICompanyRepository {
+class CompanyRepositoryJDBC implements CompanyRepository {
     final Sql sql
 
     CompanyRepositoryJDBC(Sql sql) {
@@ -15,7 +15,7 @@ class CompanyRepositoryJDBC implements ICompanyRepository {
     }
 
     @Override
-    IPerson findById(UUID id) {
+    Person findById(UUID id) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -50,7 +50,7 @@ class CompanyRepositoryJDBC implements ICompanyRepository {
     }
 
     @Override
-    List<IPerson> findAll() {
+    List<Person> findAll() {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -62,7 +62,7 @@ class CompanyRepositoryJDBC implements ICompanyRepository {
     }
 
     @Override
-    IPerson findByCnpj(String cnpj) {
+    Person findByCnpj(String cnpj) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -79,7 +79,7 @@ class CompanyRepositoryJDBC implements ICompanyRepository {
     }
 
     @Override
-    List<IPerson> findBySkill(String skill) {
+    List<Person> findBySkill(String skill) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us

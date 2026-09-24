@@ -2,7 +2,7 @@ package zg.acelera.user_interface
 
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.Company
-import zg.acelera.domain.IPerson
+import zg.acelera.domain.Person
 import zg.acelera.service.MatchService
 
 class MatchUI {
@@ -65,7 +65,7 @@ class MatchUI {
 
     private void viewPotentials() {
         println "\n--- POTENTIAL MATCHES ---"
-        List<IPerson> potentials = matchService.getPotentialMatches()
+        List<Person> potentials = matchService.getPotentialMatches()
 
         if (potentials.isEmpty()) {
             println "No profiles available for you at the moment."

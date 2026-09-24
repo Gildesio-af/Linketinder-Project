@@ -1,10 +1,10 @@
 package zg.acelera.utils
 
-import zg.acelera.dto.address.AddressDTO
+import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.country.CountryDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.repository.CountryRepositoryJDBC
-import zg.acelera.repository.SkillRepositoryJDBC
+import zg.acelera.repository.country.CountryRepositoryJDBC
+import zg.acelera.repository.skill.SkillRepositoryJDBC
 import zg.acelera.service.CountryService
 import zg.acelera.service.SkillService
 import zg.acelera.user_interface.InputReader
@@ -52,7 +52,7 @@ class DataManager {
         return selectedNames
     }
 
-    static AddressDTO readAddressData() {
+    static AddressCreateDTO readAddressData() {
         String cep = input.readString("CEP (8 digits): ")
         String street = input.readString("Street: ")
         String number = input.readString("Number: ")
@@ -72,6 +72,6 @@ class DataManager {
         int selectedIndex = countryNames.indexOf(selectedCountry)
         String countryId = countries[selectedIndex].id().toString()
 
-        return new AddressDTO(null, cep, street, number, city, state, complement, neighborhood, countryId, null)
+        return new AddressCreateDTO(null, cep, street, number, city, state, complement, neighborhood, countryId, null)
     }
 }

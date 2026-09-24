@@ -5,12 +5,12 @@ import spock.lang.TempDir
 import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
-import zg.acelera.repository.CandidateRepository
+import zg.acelera.repository.candidate.CandidateRepositoryImpl
 import zg.acelera.domain.Candidate
 
 import java.nio.file.Path
 
-class CandidateRepositorySpec extends Specification{
+class CandidateRepositoryImplSpec extends Specification{
 
     @TempDir
     Path tempDir
@@ -34,7 +34,7 @@ class CandidateRepositorySpec extends Specification{
         ]
         """
 
-        def repository = new CandidateRepository(tempFile.getAbsolutePath())
+        def repository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
 
         when:
         def result = repository.findAll() as List<Candidate>
@@ -55,7 +55,7 @@ class CandidateRepositorySpec extends Specification{
     def "findAll should return an empty list when the file is empty"() {
         given:
         File tempFile = tempDir.resolve("candidates_test.json").toFile()
-        def candidateRepository = new CandidateRepository(tempFile.getAbsolutePath())
+        def candidateRepository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
 
         when:
         def result = candidateRepository.findAll()
@@ -83,7 +83,7 @@ class CandidateRepositorySpec extends Specification{
         ]
         """
 
-        def repository = new CandidateRepository(tempFile.getAbsolutePath())
+        def repository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
         String searchedCpf = "12345678900"
 
         when:
@@ -96,7 +96,7 @@ class CandidateRepositorySpec extends Specification{
     def "findByCpf should return null when the file is empty"() {
         given:
         File tempFile = tempDir.resolve("candidates_test.json").toFile()
-        def candidateRepository = new CandidateRepository(tempFile.getAbsolutePath())
+        def candidateRepository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
 
         when:
         def result = candidateRepository.findByCpf("12345678900")
@@ -124,7 +124,7 @@ class CandidateRepositorySpec extends Specification{
         ]
         """
 
-        def repository = new CandidateRepository(tempFile.getAbsolutePath())
+        def repository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
         SkillEnum searchedSkill = SkillEnum.JAVA
 
         when:
@@ -137,7 +137,7 @@ class CandidateRepositorySpec extends Specification{
     def "findBySkill should return null when the file is empty"() {
         given:
         File tempFile = tempDir.resolve("candidates_test.json").toFile()
-        def candidateRepository = new CandidateRepository(tempFile.getAbsolutePath())
+        def candidateRepository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
 
         when:
         def result = candidateRepository.findBySkill(SkillEnum.JAVA)
@@ -177,7 +177,7 @@ class CandidateRepositorySpec extends Specification{
                             .build()
 
 
-        def repository = new CandidateRepository(tempFile.getAbsolutePath())
+        def repository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
 
         when:
         repository.save(newCandidate)
@@ -189,7 +189,7 @@ class CandidateRepositorySpec extends Specification{
     def "save should return a Candidate when save a new candidate" () {
         given:
         File tempFile = tempDir.resolve("candidates_test.json").toFile()
-        def candidateRepository = new CandidateRepository(tempFile.getAbsolutePath())
+        def candidateRepository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
 
         CandidateDTO newCandidate = CandidateDTO.builder()
                 .cpf("12345678900")
@@ -235,7 +235,7 @@ class CandidateRepositorySpec extends Specification{
                 .description("Your Friendly Neighbourhood")
                 .build()
 
-        def repository = new CandidateRepository(tempFile.getAbsolutePath())
+        def repository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
         when:
         def result = repository.update(updateDTO)
         then:
@@ -262,7 +262,7 @@ class CandidateRepositorySpec extends Specification{
             }
         ]
         """
-        def repository = new CandidateRepository(tempFile.getAbsolutePath())
+        def repository = new CandidateRepositoryImpl(tempFile.getAbsolutePath())
         String cpfToDelete = "12345678900"
         when:
         repository.delete(cpfToDelete)

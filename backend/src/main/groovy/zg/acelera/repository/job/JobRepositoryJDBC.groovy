@@ -1,4 +1,4 @@
-package zg.acelera.repository
+package zg.acelera.repository.job
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -8,7 +8,7 @@ import zg.acelera.domain.Job
 import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
 
-class JobRepositoryJDBC implements IJobRepository {
+class JobRepositoryJDBC implements JobRepository {
     Sql sql
 
     JobRepositoryJDBC(Sql sql) {

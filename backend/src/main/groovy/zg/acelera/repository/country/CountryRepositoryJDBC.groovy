@@ -1,11 +1,11 @@
-package zg.acelera.repository
+package zg.acelera.repository.country
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Country
 import zg.acelera.utils.exception.EntityNotFoundException
 
-class CountryRepositoryJDBC implements ICountryRepository {
+class CountryRepositoryJDBC implements CountryRepository {
     final Sql sql
 
     CountryRepositoryJDBC(Sql sql) {

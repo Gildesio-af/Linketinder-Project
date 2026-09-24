@@ -1,19 +1,17 @@
-package zg.acelera.repository
+package zg.acelera.repository.company
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Company
-import zg.acelera.domain.IPerson
-import zg.acelera.dto.company.CompanyDTO
-import zg.acelera.dto.company.CompanyUpdateDTO
+import zg.acelera.domain.Person
 
 import java.nio.file.Paths
 
-class CompanyRepository implements ICompanyRepository {
+class CompanyRepositoryImpl implements CompanyRepository {
     private final String companyFileName
     private final File file
 
-    CompanyRepository(String fileName = "companies.json") {
+    CompanyRepositoryImpl(String fileName = "companies.json") {
         this.companyFileName = fileName
         this.file = Paths.get(companyFileName).toFile()
         initializeFile()
@@ -27,7 +25,7 @@ class CompanyRepository implements ICompanyRepository {
     }
 
     @Override
-    IPerson findById(UUID id) {
+    Person findById(UUID id) {
         return findAll().find { it.id == id }
     }
 
@@ -37,7 +35,7 @@ class CompanyRepository implements ICompanyRepository {
     }
 
     @Override
-    List<IPerson> findAll() {
+    List<Person> findAll() {
         if (file.text.trim().isEmpty()) return []
 
         def slurper = new JsonSlurper()
@@ -57,7 +55,7 @@ class CompanyRepository implements ICompanyRepository {
         }
     }
 
-    private void rewriteFile(List<IPerson> companies) {
+    private void rewriteFile(List<Person> companies) {
         def builder = new JsonBuilder()
 
         builder companies.collect { person ->
@@ -78,12 +76,12 @@ class CompanyRepository implements ICompanyRepository {
     }
 
     @Override
-    IPerson findByCnpj(String cnpj) {
+    Person findByCnpj(String cnpj) {
         return findAll().find { ((Company) it).cnpj == cnpj }
     }
 
     @Override
-    List<IPerson> findBySkill(String skill) {
+    List<Person> findBySkill(String skill) {
         return findAll().findAll { it.skills.any { it.name?.equalsIgnoreCase(skill) } }
     }
 
@@ -94,7 +92,7 @@ class CompanyRepository implements ICompanyRepository {
         }
 
         company.id = company.id ?: UUID.randomUUID()
-        List<IPerson> all = findAll()
+        List<Person> all = findAll()
         all.add(company)
         rewriteFile(all)
         return company
@@ -102,7 +100,7 @@ class CompanyRepository implements ICompanyRepository {
 
     @Override
     Company update(Company company, UUID userId) {
-        List<IPerson> all = findAll()
+        List<Person> all = findAll()
         int index = all.findIndexOf { ((Company) it).id == userId }
 
         if (index == -1) throw new IllegalArgumentException("Company not found with ID: ${userId}")
@@ -122,7 +120,7 @@ class CompanyRepository implements ICompanyRepository {
 
     @Override
     void delete(UUID userId) {
-        List<IPerson> all = findAll()
+        List<Person> all = findAll()
         if (all.removeIf { ((Company) it).id == userId }) {
             rewriteFile(all)
         }

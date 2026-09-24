@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 @Canonical
 @Builder(includeSuperProperties = true)
-class Candidate extends Person {
+class Candidate extends PersonImpl {
     String cpf
     String lastName
     LocalDate birthDate
@@ -15,7 +15,7 @@ class Candidate extends Person {
     Set<Job> likedJobs = [] as HashSet<Job>
 
     @Override
-    void dislike(IPerson person) {
+    void dislike(Person person) {
         if(person && liked.contains(person))
             liked -= person
     }

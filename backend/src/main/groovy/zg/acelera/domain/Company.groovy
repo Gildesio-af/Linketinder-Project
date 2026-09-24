@@ -7,12 +7,12 @@ import groovy.transform.builder.Builder
 @Canonical
 @EqualsAndHashCode(includes = ['cnpj'])
 @Builder(includeSuperProperties = true)
-class Company extends Person{
+class Company extends PersonImpl{
     String cnpj
     Set<Candidate> likedCandidates = [] as HashSet<Candidate>
 
     @Override
-    void dislike(IPerson person) {
+    void dislike(Person person) {
         if(person && liked.contains(person))
             liked -= person
     }

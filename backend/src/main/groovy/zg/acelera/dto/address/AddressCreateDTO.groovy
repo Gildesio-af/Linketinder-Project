@@ -3,7 +3,7 @@ package zg.acelera.dto.address
 import zg.acelera.domain.Address
 import zg.acelera.domain.Country
 
-record AddressDTO (
+record AddressCreateDTO(
         UUID id,
         String cep,
         String street,
@@ -15,7 +15,7 @@ record AddressDTO (
         String countryId,
         UUID userId
 ) {
-    AddressDTO() {
+    AddressCreateDTO() {
         if (!cep || cep.trim().length() <= 8)
             throw new IllegalArgumentException("CEP must be provided and have at least 8 characters")
         if (!street || street.trim().isEmpty())

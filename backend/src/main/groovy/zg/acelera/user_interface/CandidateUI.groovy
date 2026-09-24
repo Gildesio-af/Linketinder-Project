@@ -1,11 +1,9 @@
 package zg.acelera.user_interface
 
-import zg.acelera.dto.address.AddressDTO
+import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
-import zg.acelera.dto.country.CountryDTO
-import zg.acelera.dto.skill.SkillResponseDTO
 import zg.acelera.service.CandidateService
 import zg.acelera.service.CountryService
 import zg.acelera.service.SkillService
@@ -88,7 +86,7 @@ class CandidateUI {
             CandidateDTO dto = new CandidateDTO(cpf, name, email, password, description, lastName, birthDate, skillIds)
 
             println "\n--- ADDRESS DATA ---"
-            AddressDTO addressDTO = DataManager.readAddressData()
+            AddressCreateDTO addressDTO = DataManager.readAddressData()
 
             CandidateResponseDTO result = candidateService.registerCandidate(dto, addressDTO)
             if (result) {

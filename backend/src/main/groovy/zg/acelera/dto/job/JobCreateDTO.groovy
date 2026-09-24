@@ -5,7 +5,7 @@ import zg.acelera.domain.Company
 import zg.acelera.domain.Job
 import zg.acelera.domain.Skill
 
-record JobDTO (
+record JobCreateDTO(
         UUID id,
         String title,
         String description,
@@ -13,7 +13,7 @@ record JobDTO (
         UUID addressId,
         UUID publisherId
  ) {
-     JobDTO() {
+     JobCreateDTO() {
         if (!title || title().trim().isEmpty())
             throw new IllegalArgumentException("Job title must be provided and cannot be empty")
         if (!description || description().trim().isEmpty())

@@ -1,21 +1,18 @@
-package zg.acelera.repository
+package zg.acelera.repository.candidate
 
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.IPerson
-import zg.acelera.domain.Skill
+import zg.acelera.domain.Person
 import zg.acelera.domain.SkillEnum
-import zg.acelera.dto.candidate.CandidateDTO
-import zg.acelera.dto.candidate.CandidateUpdateDTO
 
 import java.nio.file.Paths
 
-class CandidateRepository implements ICandidateRepository {
+class CandidateRepositoryImpl implements CandidateRepository {
     private final String userFileName
     private final File file
 
-    CandidateRepository(String fileName = "candidates.json") {
+    CandidateRepositoryImpl(String fileName = "candidates.json") {
         userFileName = fileName
         this.file = Paths.get(userFileName).toFile()
         initializeFile()
@@ -29,18 +26,18 @@ class CandidateRepository implements ICandidateRepository {
     }
 
     @Override
-    IPerson findById(UUID id) {
+    Person findById(UUID id) {
         return null
     }
 
     @Override
-    List<IPerson> findAll() {
+    List<Person> findAll() {
         if (file.text.trim().isEmpty()) return []
 
         def slurper = new JsonSlurper()
         def jsonList = slurper.parse(file)
 
-        List<IPerson> candidates = []
+        List<Person> candidates = []
 
         jsonList.each { map ->
             Set<SkillEnum> loadedSkills = map.skills?.collect { SkillEnum.valueOf(it.toString()) } as HashSet
@@ -62,7 +59,7 @@ class CandidateRepository implements ICandidateRepository {
         candidates
     }
 
-    private void rewriteFile(List<IPerson> candidates) {
+    private void rewriteFile(List<Person> candidates) {
         def builder = new JsonBuilder()
 
         builder candidates.collect { person ->
@@ -84,12 +81,12 @@ class CandidateRepository implements ICandidateRepository {
     }
 
     @Override
-    IPerson findByCpf(String cpf) {
+    Person findByCpf(String cpf) {
         return findAll().find { ((Candidate) it).cpf == cpf }
     }
 
     @Override
-    List<IPerson> findBySkill(String skill) {
+    List<Person> findBySkill(String skill) {
         return null
     }
 

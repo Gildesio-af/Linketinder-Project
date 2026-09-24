@@ -5,7 +5,7 @@ import zg.acelera.domain.Company
 import zg.acelera.domain.Skill
 
 @Builder
-record CompanyDTO(
+record CompanyCreateDTO(
         String cnpj,
         String name,
         String email,
@@ -13,7 +13,7 @@ record CompanyDTO(
         String description,
         Set<String> skillsId
 ) {
-    public CompanyDTO {
+    public CompanyCreateDTO {
         if (!cnpj || cnpj.trim().isEmpty() || cnpj.length() != 14)
             throw new IllegalArgumentException("Please provide a valid CNPJ with 14 digits.")
         if (!name || name.trim().isEmpty())

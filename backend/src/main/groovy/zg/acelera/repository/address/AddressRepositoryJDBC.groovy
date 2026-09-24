@@ -1,4 +1,4 @@
-package zg.acelera.repository
+package zg.acelera.repository.address
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -6,7 +6,7 @@ import zg.acelera.domain.Address
 import zg.acelera.domain.Country
 import zg.acelera.utils.exception.EntityNotFoundException
 
-class AddressRepositoryJDBC implements IAddressRepository {
+class AddressRepositoryJDBC implements AddressRepository {
     final Sql sql
 
     AddressRepositoryJDBC(Sql sql) {

@@ -1,7 +1,7 @@
 package user_interface
 
 import spock.lang.Specification
-import zg.acelera.dto.company.CompanyDTO
+import zg.acelera.dto.company.CompanyCreateDTO
 import zg.acelera.user_interface.CompanyUI
 import zg.acelera.user_interface.InputReader
 import zg.acelera.service.CompanyService
@@ -26,7 +26,7 @@ class CompanyUISpec extends Specification{
         viewClass.registerCompany()
 
         then:
-        1 * serviceMock.registerCompany({ CompanyDTO dto ->
+        1 * serviceMock.registerCompany({ CompanyCreateDTO dto ->
             dto.cnpj() == "12345678000199" &&
                     dto.name() == "Tech Corp" &&
                     dto.corporateEmail() == "contact@techcorp.com" &&

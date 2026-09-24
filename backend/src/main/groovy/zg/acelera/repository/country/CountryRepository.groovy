@@ -1,8 +1,8 @@
-package zg.acelera.repository
+package zg.acelera.repository.country
 
 import zg.acelera.domain.Country
 
-interface ICountryRepository {
+interface CountryRepository {
     Country findById(UUID id);
     List<Country> findAll();
 }

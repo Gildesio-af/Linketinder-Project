@@ -1,29 +1,29 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.IPerson
-import zg.acelera.dto.address.AddressDTO
+import zg.acelera.domain.Person
+import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.repository.ICandidateRepository
+import zg.acelera.repository.candidate.CandidateRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class CandidateService {
-    private final ICandidateRepository repository
+    private final CandidateRepository repository
     private final AddressService addressService
     private final SkillService skillService
 
-    CandidateService(ICandidateRepository candidateRepository, AddressService addressService, SkillService skillService) {
+    CandidateService(CandidateRepository candidateRepository, AddressService addressService, SkillService skillService) {
         this.repository = candidateRepository
         this.addressService = addressService
         this.skillService = skillService
     }
 
     List<CandidateResponseDTO> listAllCandidates() {
-        List<IPerson> candidates = repository.findAll()
+        List<Person> candidates = repository.findAll()
         return candidates.collect { candidate ->
             CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
         }
@@ -45,7 +45,7 @@ class CandidateService {
     List<CandidateResponseDTO> listCandidatesBySkill(String skillName) {
         List<CandidateResponseDTO> candidatesResponse
         try {
-            List<IPerson> candidates = repository.findBySkill(skillName)
+            List<Person> candidates = repository.findBySkill(skillName)
             candidatesResponse = candidates.collect { candidate ->
                 CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
             }
@@ -57,7 +57,7 @@ class CandidateService {
         return candidatesResponse
     }
 
-    CandidateResponseDTO registerCandidate(CandidateDTO candidateDTO, AddressDTO addressDTO) {
+    CandidateResponseDTO registerCandidate(CandidateDTO candidateDTO, AddressCreateDTO addressDTO) {
         CandidateResponseDTO candidateResponse
         try {
             Candidate newCandidate = candidateDTO.toDomain()

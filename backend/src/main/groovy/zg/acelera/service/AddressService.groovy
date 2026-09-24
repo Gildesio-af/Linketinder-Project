@@ -1,18 +1,18 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Address
-import zg.acelera.dto.address.AddressDTO
+import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.address.AddressUpdateDTO
 import zg.acelera.dto.country.CountryDTO
-import zg.acelera.repository.IAddressRepository
+import zg.acelera.repository.address.AddressRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class AddressService {
-    private final IAddressRepository addressRepository
+    private final AddressRepository addressRepository
     private final CountryService countryService
 
-    AddressService(IAddressRepository addressRepository, CountryService countryService) {
+    AddressService(AddressRepository addressRepository, CountryService countryService) {
         this.addressRepository = addressRepository
         this.countryService = countryService
     }
@@ -60,7 +60,7 @@ class AddressService {
         return addressResponse
     }
 
-    AddressResponseDTO createAddress(AddressDTO addressDTO, UUID userId) {
+    AddressResponseDTO createAddress(AddressCreateDTO addressDTO, UUID userId) {
         Address address = addressDTO.toDomain()
         AddressResponseDTO addressResponse
         try {

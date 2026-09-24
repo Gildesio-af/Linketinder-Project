@@ -2,13 +2,13 @@ package zg.acelera.service
 
 import zg.acelera.domain.Country
 import zg.acelera.dto.country.CountryDTO
-import zg.acelera.repository.ICountryRepository
+import zg.acelera.repository.country.CountryRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
 class CountryService {
-    private final ICountryRepository countryRepository
+    private final CountryRepository countryRepository
 
-    CountryService(ICountryRepository countryRepository) {
+    CountryService(CountryRepository countryRepository) {
         this.countryRepository = countryRepository
     }
 

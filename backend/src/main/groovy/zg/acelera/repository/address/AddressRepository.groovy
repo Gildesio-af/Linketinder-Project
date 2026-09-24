@@ -1,8 +1,8 @@
-package zg.acelera.repository
+package zg.acelera.repository.address
 
 import zg.acelera.domain.Address
 
-interface IAddressRepository {
+interface AddressRepository {
     Address findById(UUID id)
     Set<Address> findByUserId(UUID userId)
     Address findByJobId(UUID jobId)

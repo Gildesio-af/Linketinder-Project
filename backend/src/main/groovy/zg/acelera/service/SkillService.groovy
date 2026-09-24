@@ -1,16 +1,16 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Skill
-import zg.acelera.dto.skill.SkillDTO
+import zg.acelera.dto.skill.SkillRequestDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.repository.ISkillRepository
+import zg.acelera.repository.skill.SkillRepository
 
 import java.sql.SQLException
 
 class SkillService {
-    final ISkillRepository skillRepository
+    final SkillRepository skillRepository
 
-    SkillService(ISkillRepository skillRepository) {
+    SkillService(SkillRepository skillRepository) {
         this.skillRepository = skillRepository
     }
 
@@ -47,7 +47,7 @@ class SkillService {
         }
     }
 
-    SkillResponseDTO createSkill(SkillDTO skillDTO) {
+    SkillResponseDTO createSkill(SkillRequestDTO skillDTO) {
         Skill skill = skillDTO.toDomain()
         Skill createdSkill
         try {
@@ -59,7 +59,7 @@ class SkillService {
         return SkillResponseDTO.fromDomain(createdSkill)
     }
 
-    SkillResponseDTO updateSkill(SkillDTO skillDTO, UUID id) {
+    SkillResponseDTO updateSkill(SkillRequestDTO skillDTO, UUID id) {
         Skill skill = skillDTO.toDomain()
         skill.setId(id)
         Skill updatedSkill

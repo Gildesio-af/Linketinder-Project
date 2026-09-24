@@ -2,12 +2,12 @@ package reposistory
 
 import spock.lang.Specification
 import spock.lang.TempDir
-import zg.acelera.repository.CompanyRepository
-import zg.acelera.dto.company.CompanyDTO
+import zg.acelera.repository.company.CompanyRepositoryImpl
+import zg.acelera.dto.company.CompanyCreateDTO
 
 import java.nio.file.Path
 
-class CompanyRepositorySpec extends Specification{
+class CompanyRepositoryImplSpec extends Specification{
     @TempDir
     Path tempDir
 
@@ -15,10 +15,10 @@ class CompanyRepositorySpec extends Specification{
         given:
         File tempFile = tempDir.resolve("companies_test.json").toFile()
         tempFile.text = "[]"
-        def repository = new CompanyRepository(tempFile.getAbsolutePath())
+        def repository = new CompanyRepositoryImpl(tempFile.getAbsolutePath())
 
 
-        CompanyDTO newCompany = CompanyDTO.builder()
+        CompanyCreateDTO newCompany = CompanyCreateDTO.builder()
                 .cnpj("12345678000199")
                 .name("Umbrella Corporation")
                 .corporateEmail("umbrella@corporation.com")
@@ -54,9 +54,9 @@ class CompanyRepositorySpec extends Specification{
             }
         ]
         """
-        def repository = new CompanyRepository(tempFile.getAbsolutePath())
+        def repository = new CompanyRepositoryImpl(tempFile.getAbsolutePath())
 
-        CompanyDTO duplicateCompany = CompanyDTO.builder()
+        CompanyCreateDTO duplicateCompany = CompanyCreateDTO.builder()
                 .cnpj("12345678000199")
                 .name("Capsule Corp")
                 .corporateEmail("capsule@corp.com")

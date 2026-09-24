@@ -1,31 +1,30 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Company
-import zg.acelera.domain.IPerson
-import zg.acelera.dto.address.AddressDTO
-import zg.acelera.dto.address.AddressResponseDTO
-import zg.acelera.dto.company.CompanyDTO
+import zg.acelera.domain.Person
+import zg.acelera.dto.address.AddressCreateDTO
+import zg.acelera.dto.company.CompanyCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.repository.ICompanyRepository
+import zg.acelera.repository.company.CompanyRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
 import java.sql.SQLException
 
 class CompanyService {
-    private final ICompanyRepository repository
+    private final CompanyRepository repository
     private final AddressService addressService
     private final SkillService skillService
 
-    CompanyService(ICompanyRepository companyRepository, AddressService addressService, SkillService skillService) {
+    CompanyService(CompanyRepository companyRepository, AddressService addressService, SkillService skillService) {
         this.repository = companyRepository
         this.addressService = addressService
         this.skillService = skillService
     }
 
     List<CompanyResponseDTO> listAllCompanies() {
-        List<IPerson> companies = repository.findAll()
+        List<Person> companies = repository.findAll()
         return companies.collect { company ->
             CompanyResponseDTO.fromDomain(company as Company, addressService.getAddressesByUserId(company.id))
         }
@@ -43,7 +42,7 @@ class CompanyService {
 
     List<CompanyResponseDTO> listCompaniesBySkill(String skillName) {
         try {
-            List<IPerson> companies = repository.findBySkill(skillName)
+            List<Person> companies = repository.findBySkill(skillName)
             return companies.collect { company ->
                 CompanyResponseDTO.fromDomain(company as Company, addressService.getAddressesByUserId(company.id))
             }
@@ -53,7 +52,7 @@ class CompanyService {
         }
     }
 
-    CompanyResponseDTO registerCompany(CompanyDTO companyDTO, AddressDTO addressDTO) {
+    CompanyResponseDTO registerCompany(CompanyCreateDTO companyDTO, AddressCreateDTO addressDTO) {
         try {
             Company newCompany = companyDTO.toDomain()
             Company companySaved = repository.save(newCompany)
@@ -67,7 +66,7 @@ class CompanyService {
         }
     }
 
-    CompanyResponseDTO registerCompany(CompanyDTO companyDTO) {
+    CompanyResponseDTO registerCompany(CompanyCreateDTO companyDTO) {
         return registerCompany(companyDTO, null)
     }
 

@@ -1,8 +1,8 @@
-package zg.acelera.repository
+package zg.acelera.repository.job
 
 import zg.acelera.domain.Job
 
-interface IJobRepository {
+interface JobRepository {
     Job findById(UUID id)
     Set<Job> findAll()
     Set<Job> findByName(String name)

@@ -1,12 +1,9 @@
 package zg.acelera.user_interface
 
-import zg.acelera.dto.address.AddressDTO
+import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
-import zg.acelera.dto.country.CountryDTO
-import zg.acelera.dto.job.JobDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.dto.job.JobUpdateDTO
-import zg.acelera.dto.skill.SkillResponseDTO
 import zg.acelera.service.CompanyService
 import zg.acelera.service.CountryService
 import zg.acelera.service.JobService
@@ -98,7 +95,7 @@ class JobUI {
             }
 
             println "\n--- JOB LOCATION ---"
-            AddressDTO addressDTO = DataManager.readAddressData()
+            AddressCreateDTO addressDTO = DataManager.readAddressData()
 
             JobResponseDTO result = jobService.createJobWithAddress(title, description, skillNames, addressDTO, company.id())
 

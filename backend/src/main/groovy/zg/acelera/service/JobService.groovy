@@ -1,25 +1,25 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Job
-import zg.acelera.dto.address.AddressDTO
+import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.company.CompanyResponseDTO
-import zg.acelera.dto.job.JobDTO
+import zg.acelera.dto.job.JobCreateDTO
 import zg.acelera.dto.job.JobMatchResponseDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.dto.job.JobUpdateDTO
-import zg.acelera.repository.IJobRepository
+import zg.acelera.repository.job.JobRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
 import java.sql.SQLException
 
 class JobService {
-    IJobRepository jobRepository
+    JobRepository jobRepository
     AddressService addressService
     CompanyService companyService
     SkillService skillService
 
-    JobService(IJobRepository jobRepository, AddressService addressService, CompanyService companyService, SkillService skillService) {
+    JobService(JobRepository jobRepository, AddressService addressService, CompanyService companyService, SkillService skillService) {
         this.jobRepository = jobRepository
         this.addressService = addressService
         this.companyService = companyService
@@ -105,7 +105,7 @@ class JobService {
         return jobsResponse
     }
 
-    JobResponseDTO createJob(JobDTO jobDTO, List<String> skills) {
+    JobResponseDTO createJob(JobCreateDTO jobDTO, List<String> skills) {
         Job job = jobDTO.toDomain()
         List<UUID> skillsIds = getSkillsIdByName(skills)
 
@@ -116,7 +116,7 @@ class JobService {
     }
 
     JobResponseDTO createJobWithAddress(String title, String description, List<String> skillNames,
-                                         AddressDTO addressDTO, UUID publisherId) {
+                                        AddressCreateDTO addressDTO, UUID publisherId) {
         try {
             AddressResponseDTO addressResponse = addressService.createAddress(addressDTO, publisherId)
             if (!addressResponse) {
@@ -124,7 +124,7 @@ class JobService {
                 return null
             }
 
-            JobDTO jobDTO = new JobDTO(null, title, description, skillNames, addressResponse.id(), publisherId)
+            JobCreateDTO jobDTO = new JobCreateDTO(null, title, description, skillNames, addressResponse.id(), publisherId)
             return createJob(jobDTO, skillNames)
         } catch (Exception e) {
             println "Error creating job: ${e.message}"

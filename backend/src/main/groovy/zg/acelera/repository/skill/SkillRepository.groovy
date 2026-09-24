@@ -1,8 +1,8 @@
-package zg.acelera.repository
+package zg.acelera.repository.skill
 
 import zg.acelera.domain.Skill
 
-interface ISkillRepository {
+interface SkillRepository {
     Skill findById(UUID id)
     Skill findByName(String name)
     Set<Skill> findAll()

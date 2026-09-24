@@ -2,10 +2,10 @@ package zg.acelera.dto.skill
 
 import zg.acelera.domain.Skill
 
-record SkillDTO(
+record SkillRequestDTO(
         String name
 ) {
-    SkillDTO() {
+    SkillRequestDTO() {
         if (!name || name().trim().isEmpty())
             throw new IllegalArgumentException("Skill name must be provided and cannot be empty")
     }

@@ -3,7 +3,7 @@ package service
 import spock.lang.Specification
 import zg.acelera.domain.SkillEnum
 import zg.acelera.dto.candidate.CandidateDTO
-import zg.acelera.repository.ICandidateRepository
+import zg.acelera.repository.candidate.CandidateRepository
 import zg.acelera.service.CandidateService
 
 class CandidateServiceSpec extends Specification {
@@ -21,7 +21,7 @@ class CandidateServiceSpec extends Specification {
                 .skills(Set.of(SkillEnum.JAVA, SkillEnum.GO, SkillEnum.CSHARP))
                 .build()
 
-        ICandidateRepository candidateRepository = Mock()
+        CandidateRepository candidateRepository = Mock()
         CandidateService service = new CandidateService(candidateRepository)
 
         when:
@@ -33,7 +33,7 @@ class CandidateServiceSpec extends Specification {
 
     def "registerCandidate should do nothing when candidate is null"() {
         given:
-        ICandidateRepository candidateRepository = Mock()
+        CandidateRepository candidateRepository = Mock()
         CandidateService service = new CandidateService(candidateRepository)
 
         when:

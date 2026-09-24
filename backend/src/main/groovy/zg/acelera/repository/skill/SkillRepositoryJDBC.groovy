@@ -1,11 +1,11 @@
-package zg.acelera.repository
+package zg.acelera.repository.skill
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
 
-class SkillRepositoryJDBC implements ISkillRepository {
+class SkillRepositoryJDBC implements SkillRepository {
     final Sql sql
 
     SkillRepositoryJDBC(Sql sql) {

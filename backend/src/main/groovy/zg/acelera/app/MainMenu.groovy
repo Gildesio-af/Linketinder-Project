@@ -1,7 +1,18 @@
 package zg.acelera.app
 
 import groovy.sql.Sql
-import zg.acelera.repository.*
+import zg.acelera.repository.address.AddressRepository
+import zg.acelera.repository.address.AddressRepositoryJDBC
+import zg.acelera.repository.candidate.CandidateRepository
+import zg.acelera.repository.candidate.CandidateRepositoryJDBC
+import zg.acelera.repository.company.CompanyRepository
+import zg.acelera.repository.company.CompanyRepositoryJDBC
+import zg.acelera.repository.country.CountryRepository
+import zg.acelera.repository.country.CountryRepositoryJDBC
+import zg.acelera.repository.job.JobRepository
+import zg.acelera.repository.job.JobRepositoryJDBC
+import zg.acelera.repository.skill.SkillRepository
+import zg.acelera.repository.skill.SkillRepositoryJDBC
 import zg.acelera.service.*
 import zg.acelera.user_interface.CandidateUI
 import zg.acelera.user_interface.CompanyUI
@@ -16,12 +27,12 @@ class MainMenu {
         Sql sql = DatabaseManager.getSql()
         InputReader inputReader = new InputReader()
 
-        ICountryRepository countryRepository = new CountryRepositoryJDBC(sql)
-        IAddressRepository addressRepository = new AddressRepositoryJDBC(sql)
-        ISkillRepository skillRepository = new SkillRepositoryJDBC(sql)
-        ICandidateRepository candidateRepository = new CandidateRepositoryJDBC(sql)
-        ICompanyRepository companyRepository = new CompanyRepositoryJDBC(sql)
-        IJobRepository jobRepository = new JobRepositoryJDBC(sql)
+        CountryRepository countryRepository = new CountryRepositoryJDBC(sql)
+        AddressRepository addressRepository = new AddressRepositoryJDBC(sql)
+        SkillRepository skillRepository = new SkillRepositoryJDBC(sql)
+        CandidateRepository candidateRepository = new CandidateRepositoryJDBC(sql)
+        CompanyRepository companyRepository = new CompanyRepositoryJDBC(sql)
+        JobRepository jobRepository = new JobRepositoryJDBC(sql)
 
         CountryService countryService = new CountryService(countryRepository)
         AddressService addressService = new AddressService(addressRepository, countryService)

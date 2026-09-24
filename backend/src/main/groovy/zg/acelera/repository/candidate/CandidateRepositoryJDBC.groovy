@@ -1,15 +1,15 @@
-package zg.acelera.repository
+package zg.acelera.repository.candidate
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.IPerson
+import zg.acelera.domain.Person
 import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
 
 import java.time.LocalDate
 
-class CandidateRepositoryJDBC implements ICandidateRepository {
+class CandidateRepositoryJDBC implements CandidateRepository {
     final Sql sql
 
     CandidateRepositoryJDBC(Sql sql) {
@@ -17,7 +17,7 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
     }
 
     @Override
-    IPerson findById(UUID id) {
+    Person findById(UUID id) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -35,7 +35,7 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
     }
 
     @Override
-    List<IPerson> findAll() {
+    List<Person> findAll() {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -48,7 +48,7 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
     }
 
     @Override
-    IPerson findByCpf(String cpf) {
+    Person findByCpf(String cpf) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -66,7 +66,7 @@ class CandidateRepositoryJDBC implements ICandidateRepository {
     }
 
     @Override
-    List<IPerson> findBySkill(String skill) {
+    List<Person> findBySkill(String skill) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, ca.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
