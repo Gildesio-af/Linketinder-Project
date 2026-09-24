@@ -5,6 +5,7 @@ import groovy.sql.Sql
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.Person
 import zg.acelera.domain.Skill
+import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 import zg.acelera.utils.mapper.SkillRowMapper
 
@@ -12,9 +13,11 @@ import java.time.LocalDate
 
 class CandidateRepositoryJDBC implements CandidateRepository {
     final Sql sql
+    final SkillRepository skillRepository
 
-    CandidateRepositoryJDBC(Sql sql) {
+    CandidateRepositoryJDBC(Sql sql, SkillRepository skillRepository) {
         this.sql = sql
+        this.skillRepository = skillRepository
     }
 
     @Override
@@ -93,7 +96,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
             savedCandidate = getCandidateFromUserRowAndCandidateRow(GenericUserSavedRow, rowCandidate)
 
-            savedCandidate.skills = fetchFullSkills(generatedUserId)
+            savedCandidate.skills = skillRepository.findByUserId(generatedUserId)findByUserId''
         }
 
         return savedCandidate
@@ -108,7 +111,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             GroovyRowResult rowCandidate = updateCandidate(user, userId)
 
             updatedCandidate = getCandidateFromUserRowAndCandidateRow(rowGenericUser, rowCandidate)
-            updatedCandidate.skills = user.skills ?: [] as Set<Skill>
+            updatedCandidate.skills = skillRepository.findByUserId(userId)
         }
 
         return updatedCandidate
@@ -202,23 +205,5 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             """, [userId, skill.id])
 
         }
-    }
-
-    private Set<Skill> fetchFullSkills(UUID userId) {
-        List<GroovyRowResult> skillRows = sql.rows("""
-                    SELECT sk.id AS skill_id, sk.name AS skill_name
-                    FROM users_skill usk
-                    INNER JOIN skills sk ON sk.id = usk.skill_id
-                    WHERE usk.user_id = ?
-                """, [userId])
-
-        if (!skillRows) return [] as Set<Skill>
-
-        return skillRows.collect { row ->
-            new Skill(
-                    id: UUID.fromString(row.skill_id.toString()),
-                    name: row.skill_name.toString()
-            )
-        } as Set<Skill>
     }
 }

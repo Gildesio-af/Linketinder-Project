@@ -5,14 +5,17 @@ import groovy.sql.Sql
 import zg.acelera.domain.Company
 import zg.acelera.domain.Person
 import zg.acelera.domain.Skill
+import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 import zg.acelera.utils.mapper.SkillRowMapper
 
 class CompanyRepositoryJDBC implements CompanyRepository {
     final Sql sql
+    final SkillRepository skillRepository
 
-    CompanyRepositoryJDBC(Sql sql) {
+    CompanyRepositoryJDBC(Sql sql, SkillRepository skillRepository) {
         this.sql = sql
+        this.skillRepository = skillRepository
     }
 
     @Override
@@ -25,9 +28,8 @@ class CompanyRepositoryJDBC implements CompanyRepository {
             LEFT JOIN skills sk ON sk.id = usk.skill_id
             WHERE us.id = ?
         """, [id])
-        if (!rows) {
-            throw new EntityNotFoundException("Company with ID ${id} not found")
-        }
+
+        if (!rows) throw new EntityNotFoundException("Company with ID ${id} not found")
 
         return getCompaniesWithSkillsFromRows(rows).first()
     }
@@ -43,9 +45,8 @@ class CompanyRepositoryJDBC implements CompanyRepository {
             LEFT JOIN skills sk ON sk.id = usk.skill_id
             WHERE jb.id = ?
         """, [uuid])
-        if (!rows) {
-            return null
-        }
+
+        if (!rows) throw new EntityNotFoundException("Company with Job ID ${uuid} not found")
 
         return getCompaniesWithSkillsFromRows(rows).first()
     }
@@ -59,7 +60,8 @@ class CompanyRepositoryJDBC implements CompanyRepository {
             LEFT JOIN users_skill usk ON us.id = usk.user_id
             LEFT JOIN skills sk ON sk.id = usk.skill_id
         """)
-        return getCompaniesWithSkillsFromRows(rows).toList()
+
+        return getCompaniesWithSkillsFromRows(rows).toList() as List<Person>
     }
 
     @Override
@@ -72,9 +74,8 @@ class CompanyRepositoryJDBC implements CompanyRepository {
             LEFT JOIN skills sk ON sk.id = usk.skill_id
             WHERE co.cnpj = ?
         """, [cnpj])
-        if (!rows) {
-            throw new EntityNotFoundException("Company with CNPJ ${cnpj} not found")
-        }
+
+        if (!rows) throw new EntityNotFoundException("Company with CNPJ ${cnpj} not found")
 
         return getCompaniesWithSkillsFromRows(rows).first()
     }
@@ -94,7 +95,8 @@ class CompanyRepositoryJDBC implements CompanyRepository {
                 WHERE lower(sk2.name) = lower(?)
             )
         """, [skill])
-        return getCompaniesWithSkillsFromRows(rows).toList()
+
+        return getCompaniesWithSkillsFromRows(rows).toList() as List<Person>
     }
 
     @Override
@@ -102,45 +104,13 @@ class CompanyRepositoryJDBC implements CompanyRepository {
         Company savedCompany = null
 
         sql.withTransaction {
-            GroovyRowResult rowGenericUser = sql.firstRow("""
-                INSERT INTO users (name, email, password, description)
-                VALUES (?, ?, ?, ?)
-                RETURNING *
-            """, [company.name, company.email, company.password, company.description])
-
+            GroovyRowResult rowGenericUser = insertInGenericUser(company)
             UUID generatedUserId = UUID.fromString(rowGenericUser.id.toString())
-
-            GroovyRowResult rowCompany = sql.firstRow("""
-                INSERT INTO companies (user_id, cnpj) VALUES (?, ?)
-                RETURNING *
-            """, [generatedUserId, company.cnpj])
-
-            if (company.skills) {
-                company.skills.each { skill ->
-                    if (skill.id) {
-                        sql.executeInsert("""
-                            INSERT INTO users_skill (user_id, skill_id)
-                            VALUES (?, ?)
-                        """, [generatedUserId, skill.id])
-                    }
-                }
-            }
+            GroovyRowResult rowCompany = insertInCompany(generatedUserId, company)
+            insertInUsersSkill(company.skills, generatedUserId)
 
             savedCompany = getCompanyFromUserRowAndCompanyRow(rowGenericUser, rowCompany)
-
-            Set<Skill> fullSkills = [] as Set<Skill>
-            if (company.skills) {
-                List<GroovyRowResult> skillRows = sql.rows("""
-                    SELECT sk.id AS skill_id, sk.name AS skill_name
-                    FROM users_skill usk
-                    INNER JOIN skills sk ON sk.id = usk.skill_id
-                    WHERE usk.user_id = ?
-                """, [generatedUserId])
-                fullSkills = skillRows.collect { row ->
-                    new Skill(id: UUID.fromString(row.skill_id.toString()), name: row.skill_name.toString())
-                } as Set<Skill>
-            }
-            savedCompany.skills = fullSkills
+            savedCompany.skills = skillRepository.findByUserId(generatedUserId)
         }
 
         return savedCompany
@@ -151,22 +121,12 @@ class CompanyRepositoryJDBC implements CompanyRepository {
         Company updatedCompany = null
 
         sql.withTransaction {
-            GroovyRowResult rowGenericUser = sql.firstRow("""
-                UPDATE users
-                SET name = COALESCE(?, name), email = COALESCE(?, email), description = COALESCE(?, description), password = COALESCE(?, password)
-                WHERE id = ?
-                RETURNING *
-            """, [company.name, company.email, company.description, company.password, userId])
+            GroovyRowResult rowGenericUser = updateGenericUser(company, userId)
 
-            GroovyRowResult rowCompany = sql.firstRow("""
-                UPDATE companies
-                SET cnpj = COALESCE(?, cnpj)
-                WHERE user_id = ?
-                RETURNING *
-            """, [company.cnpj, userId])
+            GroovyRowResult rowCompany = updateCompany(company, userId)
 
             updatedCompany = getCompanyFromUserRowAndCompanyRow(rowGenericUser, rowCompany)
-            updatedCompany.skills = company.skills ?: [] as Set<Skill>
+            updatedCompany.skills = skillRepository.findByUserId(userId)
         }
 
         return updatedCompany
@@ -212,5 +172,50 @@ class CompanyRepositoryJDBC implements CompanyRepository {
 
     private static Company getCompanyFromUserRowAndCompanyRow(GroovyRowResult userRow, GroovyRowResult companyRow) {
         return getCompanyFromRow(userRow + companyRow as GroovyRowResult)
+    }
+
+    private GroovyRowResult insertInGenericUser(Company company) {
+        return sql.firstRow("""
+                INSERT INTO users (name, email, password, description)
+                VALUES (?, ?, ?, ?)
+                RETURNING *
+            """, [company.name, company.email, company.password, company.description])
+    }
+
+    private GroovyRowResult insertInCompany(UUID generatedUserId, Company company) {
+        return sql.firstRow("""
+                INSERT INTO companies (user_id, cnpj) VALUES (?, ?)
+                RETURNING *
+            """, [generatedUserId, company.cnpj])
+    }
+
+    private void insertInUsersSkill(Set<Skill> skills, UUID userId) {
+        if (skills) return
+
+        skills.each { skill ->
+            sql.execute("""
+                INSERT INTO users_skill (user_id, skill_id)
+                VALUES (?, ?)
+            """, [userId, skill.id])
+
+        }
+    }
+
+    private GroovyRowResult updateCompany(Company company, UUID userId) {
+        sql.firstRow("""
+                UPDATE companies
+                SET cnpj = COALESCE(?, cnpj)
+                WHERE user_id = ?
+                RETURNING *
+            """, [company.cnpj, userId])
+    }
+
+    private GroovyRowResult updateGenericUser(Company company, UUID userId) {
+        return sql.firstRow("""
+                UPDATE users
+                SET name = COALESCE(?, name), email = COALESCE(?, email), description = COALESCE(?, description), password = COALESCE(?, password)
+                WHERE id = ?
+                RETURNING *
+            """, [company.name, company.email, company.description, company.password, userId])
     }
 }

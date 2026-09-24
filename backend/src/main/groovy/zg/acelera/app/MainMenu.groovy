@@ -30,8 +30,8 @@ class MainMenu {
         CountryRepository countryRepository = new CountryRepositoryJDBC(sql)
         AddressRepository addressRepository = new AddressRepositoryJDBC(sql)
         SkillRepository skillRepository = new SkillRepositoryJDBC(sql)
-        CandidateRepository candidateRepository = new CandidateRepositoryJDBC(sql)
-        CompanyRepository companyRepository = new CompanyRepositoryJDBC(sql)
+        CandidateRepository candidateRepository = new CandidateRepositoryJDBC(sql, skillRepository)
+        CompanyRepository companyRepository = new CompanyRepositoryJDBC(sql, skillRepository)
         JobRepository jobRepository = new JobRepositoryJDBC(sql)
 
         CountryService countryService = new CountryService(countryRepository)
