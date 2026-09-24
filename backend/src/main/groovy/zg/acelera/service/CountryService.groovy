@@ -13,29 +13,15 @@ class CountryService {
     }
 
     CountryDTO getCountryById(UUID id) {
-        Country country
-        try {
-            country = countryRepository.findById(id)
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace()
-            return null
-        }
+        Country country = countryRepository.findById(id)
 
-        return new CountryDTO(
-            id: country.id,
-            name: country.name,
-            code: country.code
-        )
+        return CountryDTO.fromDomain(country)
     }
 
     List<CountryDTO> getAllCountries() {
         List<Country> countries = countryRepository.findAll()
-        return countries.collect { country ->
-            new CountryDTO(
-                id: country.id,
-                name: country.name,
-                code: country.code
-            )
-        }
+        return countries.collect { country -> CountryDTO.fromDomain(country)}
     }
+
+    private CountryDTO
 }

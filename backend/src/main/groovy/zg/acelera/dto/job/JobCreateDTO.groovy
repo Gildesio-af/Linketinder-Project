@@ -6,11 +6,9 @@ import zg.acelera.domain.Job
 import zg.acelera.domain.Skill
 
 record JobCreateDTO(
-        UUID id,
         String title,
         String description,
         List<String> skills,
-        UUID addressId,
         UUID publisherId
  ) {
      JobCreateDTO() {

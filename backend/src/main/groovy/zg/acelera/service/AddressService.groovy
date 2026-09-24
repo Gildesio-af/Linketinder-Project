@@ -18,83 +18,45 @@ class AddressService {
     }
 
     AddressResponseDTO getAddressById(UUID id) {
-        AddressResponseDTO addressResponse
-        try {
-            Address address = addressRepository.findById(id)
-            CountryDTO countryDTO = countryService.getCountryById(address.country.id)
-            addressResponse = AddressResponseDTO.fromDomain(address, countryDTO)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return null
-        }
-
-        return addressResponse
+        Address address = addressRepository.findById(id)
+        CountryDTO countryDTO = countryService.getCountryById(address.country.id)
+        return AddressResponseDTO.fromDomain(address, countryDTO)
     }
 
     Set<AddressResponseDTO> getAddressesByUserId(UUID userId) {
         Set<AddressResponseDTO> addressesResponse = new HashSet<>()
-        try {
-            Set<Address> addresses = addressRepository.findByUserId(userId)
-            addresses.each { address ->
+        Set<Address> addresses = addressRepository.findByUserId(userId)
+        addresses.each { address ->
             CountryDTO countryDTO = countryService.getCountryById(address.country.id)
-            addressesResponse += AddressResponseDTO.fromDomain(address, countryDTO)}
-        } catch (Exception e) {
-            e.printStackTrace()
-            return []
+            addressesResponse += AddressResponseDTO.fromDomain(address, countryDTO)
         }
 
         return addressesResponse
     }
 
     AddressResponseDTO getAddressByJobId(UUID jobId) {
-        AddressResponseDTO addressResponse
-        try {
-            Address address = addressRepository.findByJobId(jobId)
-            CountryDTO countryDTO = countryService.getCountryById(address.country.id)
-            addressResponse = AddressResponseDTO.fromDomain(address, countryDTO)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return null
-        }
-
-        return addressResponse
+        Address address = addressRepository.findByJobId(jobId)
+        CountryDTO countryDTO = countryService.getCountryById(address.country.id)
+        return AddressResponseDTO.fromDomain(address, countryDTO)
     }
 
     AddressResponseDTO createAddress(AddressCreateDTO addressDTO, UUID userId) {
         Address address = addressDTO.toDomain()
-        AddressResponseDTO addressResponse
-        try {
-            Address createdAddress = addressRepository.create(address, userId)
-            CountryDTO countryDTO = countryService.getCountryById(createdAddress.country.id)
-            addressResponse = AddressResponseDTO.fromDomain(createdAddress, countryDTO)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return null
-        }
 
-        return addressResponse
+        Address createdAddress = addressRepository.create(address, userId)
+        CountryDTO countryDTO = countryService.getCountryById(createdAddress.country.id)
+        return AddressResponseDTO.fromDomain(createdAddress, countryDTO)
     }
 
     AddressResponseDTO updateAddress(AddressUpdateDTO addressUpdateDTO, UUID addressId) {
         Address address = addressUpdateDTO.toDomain()
-        AddressResponseDTO addressResponse
-        try {
-            Address updatedAddress = addressRepository.update(address, addressId)
-            CountryDTO countryDTO = countryService.getCountryById(updatedAddress.country.id)
-            addressResponse = AddressResponseDTO.fromDomain(updatedAddress, countryDTO)
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace()
-            return null
-        }
 
-        return addressResponse
+        Address updatedAddress = addressRepository.update(address, addressId)
+        CountryDTO countryDTO = countryService.getCountryById(updatedAddress.country.id)
+        return AddressResponseDTO.fromDomain(updatedAddress, countryDTO)
     }
 
     void deleteAddress(UUID addressId) {
-        try {
-            addressRepository.delete(addressId)
-        } catch (EntityNotFoundException e) {
-            e.printStackTrace()
-        }
+        addressRepository.delete(addressId)
     }
 }

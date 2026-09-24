@@ -8,6 +8,7 @@ import zg.acelera.repository.company.CompanyRepositoryImpl
 import zg.acelera.repository.candidate.CandidateRepository
 import zg.acelera.repository.company.CompanyRepository
 
+//TODO: refactor class to use JDBC repositories on challenge
 class MatchService {
     private final CandidateRepository candidateRepository
     private final CompanyRepository companyRepository

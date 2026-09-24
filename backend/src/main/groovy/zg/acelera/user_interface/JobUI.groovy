@@ -2,6 +2,7 @@ package zg.acelera.user_interface
 
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
+import zg.acelera.dto.job.JobCreateDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.dto.job.JobUpdateDTO
 import zg.acelera.service.CompanyService
@@ -94,10 +95,12 @@ class JobUI {
                 return
             }
 
+            JobCreateDTO newJob = new JobCreateDTO(title, description, skillNames, company.id())
+
             println "\n--- JOB LOCATION ---"
             AddressCreateDTO addressDTO = DataManager.readAddressData()
 
-            JobResponseDTO result = jobService.createJobWithAddress(title, description, skillNames, addressDTO, company.id())
+            JobResponseDTO result = jobService.createJob(newJob, addressDTO)
 
             if (result) {
                 println "\nJob created successfully!"

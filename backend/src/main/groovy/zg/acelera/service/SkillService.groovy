@@ -15,68 +15,37 @@ class SkillService {
     }
 
     SkillResponseDTO getSkillById(UUID id) {
-        SkillResponseDTO responseDTO
-        try {
-            Skill skill = skillRepository.findById(id)
-            responseDTO = SkillResponseDTO.fromDomain(skill)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return  null
-        }
-        return  responseDTO
+        Skill skill = skillRepository.findById(id)
+
+        return SkillResponseDTO.fromDomain(skill)
     }
 
     SkillResponseDTO getSkillByName(String name) {
-        SkillResponseDTO responseDTO
-        try {
-            Skill skill = skillRepository.findByName(name)
-            responseDTO = SkillResponseDTO.fromDomain(skill)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return  null
-        }
-        return  responseDTO
+        Skill skill = skillRepository.findByName(name)
+
+        return SkillResponseDTO.fromDomain(skill)
     }
 
     Set<SkillResponseDTO> getAllSkills() {
-        try {
-            return  skillRepository.findAll().collect { skill -> SkillResponseDTO.fromDomain(skill) } as Set
-        } catch (SQLException e) {
-            println("Error: ${e.getMessage()}")
-            return []
-        }
+        return  skillRepository.findAll().collect { skill -> SkillResponseDTO.fromDomain(skill) } as Set
     }
 
     SkillResponseDTO createSkill(SkillRequestDTO skillDTO) {
-        Skill skill = skillDTO.toDomain()
-        Skill createdSkill
-        try {
-            createdSkill = skillRepository.save(skill)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return null
-        }
+        Skill newSkill = skillDTO.toDomain()
+        Skill createdSkill = skillRepository.save(newSkill)
+
         return SkillResponseDTO.fromDomain(createdSkill)
     }
 
-    SkillResponseDTO updateSkill(SkillRequestDTO skillDTO, UUID id) {
+    SkillResponseDTO updateSkill(SkillRequestDTO skillDTO) {
         Skill skill = skillDTO.toDomain()
-        skill.setId(id)
-        Skill updatedSkill
-        try {
-            updatedSkill = skillRepository.update(skill, id)
-        } catch (Exception e) {
-            e.printStackTrace()
-            return null
-        }
+
+        Skill updatedSkill = skillRepository.update(skill, skill.id)
+
         return SkillResponseDTO.fromDomain(updatedSkill)
     }
 
     void deleteSkill(UUID id) {
-        try {
-            skillRepository.deleteById(id)
-        } catch (Exception e) {
-            e.printStackTrace()
-        }
+        skillRepository.deleteById(id)
     }
 }

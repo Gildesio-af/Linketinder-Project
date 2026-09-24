@@ -27,109 +27,69 @@ class JobService {
     }
 
     JobMatchResponseDTO getJobByIdToMatch(UUID id) {
-        JobMatchResponseDTO jobResponse
-        try {
-            Job job = jobRepository.findById(id)
-            AddressResponseDTO address = addressService.getAddressByJobId(job.id)
-            CompanyResponseDTO company = companyService.getCompanyByJobId(job.id)
-            jobResponse = JobMatchResponseDTO.fromDomain(job, address, company)
-        } catch (EntityNotFoundException e) {
-            println("Job not found: ${e.message}")
-            return null
-        }
+        Job searchedJob = jobRepository.findById(id)
+        AddressResponseDTO address = addressService.getAddressByJobId(searchedJob.id)
+        CompanyResponseDTO company = companyService.getCompanyByJobId(searchedJob.id)
+        JobMatchResponseDTO jobResponse = JobMatchResponseDTO.fromDomain(searchedJob, address, company)
 
         return jobResponse
     }
 
     Set<JobResponseDTO> getAllJobs() {
-        Set<JobResponseDTO> jobsResponse = new HashSet<>()
-        try {
-            Set<Job> jobs = jobRepository.findAll()
-            jobs.each { job ->
-                AddressResponseDTO address = addressService.getAddressByJobId(job.id)
-                jobsResponse += JobResponseDTO.fromDomain(job, address)
-            }
-        } catch (Exception e) {
-            println("Error fetching all jobs: ${e.message}")
-            return []
-        }
+        Set<Job> allJobsSearched = jobRepository.findAll()
+
+        Set<JobResponseDTO> jobsResponse = allJobsSearched.collect { job ->
+            AddressResponseDTO address = addressService.getAddressByJobId(job.id)
+            JobResponseDTO.fromDomain(job, address)
+        } as Set<JobResponseDTO>
 
         return jobsResponse
     }
 
     Set<JobResponseDTO> getJobsByPublisher(UUID publisherId) {
-        Set<JobResponseDTO> jobsResponse = new HashSet<>()
-        try {
-            Set<Job> jobs = jobRepository.findByPublisherId(publisherId)
-            jobs.each { job ->
-                AddressResponseDTO address = addressService.getAddressByJobId(job.id)
-                jobsResponse += JobResponseDTO.fromDomain(job, address)
-            }
-        } catch (Exception e) {
-            println("Error fetching jobs by publisher: ${e.message}")
-            return []
-        }
+        Set<Job> jobsByPublisher = jobRepository.findByPublisherId(publisherId)
+
+        Set<JobResponseDTO> jobsResponse = jobsByPublisher.collect { job ->
+            AddressResponseDTO address = addressService.getAddressByJobId(job.id)
+            JobResponseDTO.fromDomain(job, address)
+        } as Set<JobResponseDTO>
 
         return jobsResponse
     }
 
     Set<JobResponseDTO> getJobsByName(String name) {
-        Set<JobResponseDTO> jobsResponse = new HashSet<>()
-        try {
-            Set<Job> jobs = jobRepository.findByName(name)
-            jobs.each { job ->
-                AddressResponseDTO address = addressService.getAddressByJobId(job.id)
-                jobsResponse += JobResponseDTO.fromDomain(job, address)
-            }
-        } catch (SQLException e) {
-            println("Error fetching jobs by name: ${e.message}")
-            return []
-        }
+        Set<Job> jobsByName = jobRepository.findByName(name)
+
+        Set<JobResponseDTO> jobsResponse = jobsByName.collect { job ->
+            AddressResponseDTO address = addressService.getAddressByJobId(job.id)
+            JobResponseDTO.fromDomain(job, address)
+        } as Set<JobResponseDTO>
 
         return jobsResponse
     }
 
     Set<JobResponseDTO> getJobsBySkill(String skill) {
-        Set<JobResponseDTO> jobsResponse = new HashSet<>()
-        try {
-            Set<Job> jobs = jobRepository.findBySkill(skill)
-            jobs.each { job ->
+        Set<Job> jobsBySkill = jobRepository.findBySkill(skill)
+
+        Set<JobResponseDTO> jobsResponse = jobsBySkill.collect { job ->
                 AddressResponseDTO address = addressService.getAddressByJobId(job.id)
-                jobsResponse += JobResponseDTO.fromDomain(job, address)
+                JobResponseDTO.fromDomain(job, address)
             }
-        } catch (SQLException e) {
-            println("Error fetching jobs by skill: ${e.message}")
-            return []
-        }
 
         return jobsResponse
     }
 
-    JobResponseDTO createJob(JobCreateDTO jobDTO, List<String> skills) {
-        Job job = jobDTO.toDomain()
-        List<UUID> skillsIds = getSkillsIdByName(skills)
 
-        Job createdJob = jobRepository.create(job, skillsIds)
+    JobResponseDTO createJob(JobCreateDTO newJob, AddressCreateDTO newAddress) {
+        AddressResponseDTO addressResponse = addressService.createAddress(newAddress, newJob.publisherId())
+        if (!addressResponse) throw new IllegalStateException("Failed to create address for the job.")
 
-        AddressResponseDTO address = addressService.getAddressByJobId(createdJob.id)
-        return JobResponseDTO.fromDomain(createdJob, address)
-    }
+        Job jobDomain = newJob.toDomain()
+        List<UUID> skillsIds = getSkillsIdByName(newJob.skills())
 
-    JobResponseDTO createJobWithAddress(String title, String description, List<String> skillNames,
-                                        AddressCreateDTO addressDTO, UUID publisherId) {
-        try {
-            AddressResponseDTO addressResponse = addressService.createAddress(addressDTO, publisherId)
-            if (!addressResponse) {
-                println "Error: Could not create job address."
-                return null
-            }
+        Job createdJob = jobRepository.create(jobDomain, skillsIds)
 
-            JobCreateDTO jobDTO = new JobCreateDTO(null, title, description, skillNames, addressResponse.id(), publisherId)
-            return createJob(jobDTO, skillNames)
-        } catch (Exception e) {
-            println "Error creating job: ${e.message}"
-            return null
-        }
+        return JobResponseDTO.fromDomain(createdJob, addressResponse)
     }
 
     JobResponseDTO updateJob(JobUpdateDTO jobUpdateDTO, UUID jobId) {
@@ -147,11 +107,7 @@ class JobService {
     }
 
     void deleteJob(UUID id) {
-        try {
-            jobRepository.delete(id)
-        } catch (SQLException e) {
-            println("Error deleting job: ${e.message}")
-        }
+        jobRepository.delete(id)
     }
 
     private List<UUID> getSkillsIdByName(List<String> skillNames) {
@@ -159,5 +115,4 @@ class JobService {
             skillService.getSkillByName(skillName)
         } .collect { it.id() }
     }
-
 }

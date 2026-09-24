@@ -23,98 +23,67 @@ class CandidateService {
     }
 
     List<CandidateResponseDTO> listAllCandidates() {
-        List<Person> candidates = repository.findAll()
-        return candidates.collect { candidate ->
+        List<Person> allCandidates = repository.findAll()
+        return allCandidates.collect { candidate ->
             CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
         }
     }
 
     CandidateResponseDTO listCandidateByCpf(String cpf) {
         CandidateResponseDTO candidateResponse
-        try {
-            Candidate candidate = repository.findByCpf(cpf) as Candidate
-            candidateResponse = CandidateResponseDTO.fromDomain(candidate, addressService.getAddressesByUserId(candidate.id))
-        } catch (EntityNotFoundException e) {
-            println "Error: ${e.message}"
-            return null
-        }
+        Candidate searchedCandidate = repository.findByCpf(cpf) as Candidate
+        candidateResponse = CandidateResponseDTO.fromDomain(searchedCandidate, addressService.getAddressesByUserId(searchedCandidate.id))
 
         return candidateResponse
     }
 
     List<CandidateResponseDTO> listCandidatesBySkill(String skillName) {
-        List<CandidateResponseDTO> candidatesResponse
-        try {
-            List<Person> candidates = repository.findBySkill(skillName)
-            candidatesResponse = candidates.collect { candidate ->
-                CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
-            }
-        } catch (EntityNotFoundException e) {
-            println "Error: ${e.message}"
-            return null
+        List<Person> candidates = repository.findBySkill(skillName)
+
+        List<CandidateResponseDTO> candidateResponseDTOS = candidates.collect { candidate ->
+            CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
         }
 
-        return candidatesResponse
+        return candidateResponseDTOS
     }
 
     CandidateResponseDTO registerCandidate(CandidateDTO candidateDTO, AddressCreateDTO addressDTO) {
         CandidateResponseDTO candidateResponse
-        try {
-            Candidate newCandidate = candidateDTO.toDomain()
-            Candidate candidateSaved = repository.save(newCandidate)
-            AddressResponseDTO newAddress = addressService.createAddress(addressDTO, candidateSaved.id)
-            candidateResponse = CandidateResponseDTO.fromDomain(candidateSaved, [newAddress] as Set<AddressResponseDTO>)
-        } catch (Exception e) {
-            println "Error: ${e.message}"
-            return null
-        }
+        Candidate newCandidate = candidateDTO.toDomain()
+        Candidate candidateSaved = repository.save(newCandidate)
+        AddressResponseDTO newAddress = addressService.createAddress(addressDTO, candidateSaved.id)
+        candidateResponse = CandidateResponseDTO.fromDomain(candidateSaved, [newAddress] as Set<AddressResponseDTO>)
+
         return candidateResponse
     }
 
     Set<String> resolveSkillNamesToIds(Set<String> skillNames) {
         return skillNames.collect { name ->
             SkillResponseDTO skill = skillService.getSkillByName(name)
+
             if (!skill) throw new EntityNotFoundException("Skill '${name}' not found in the database.")
+
             return skill.id().toString()
         } as Set<String>
     }
 
-    CandidateResponseDTO updateCandidate(CandidateUpdateDTO candidateUpdate, UUID userId) {
+    CandidateResponseDTO updateCandidate(CandidateUpdateDTO candidateUpdate) {
         CandidateResponseDTO candidateResponse
-        try {
-            Candidate updatedCandidate = repository.update(candidateUpdate.toCandidate(), userId)
-            candidateResponse = CandidateResponseDTO.fromDomain(updatedCandidate, addressService.getAddressesByUserId(userId))
-        } catch (EntityNotFoundException e) {
-            println "Error: ${e.message}"
-            return null
-        }
+
+        Candidate candidateToUpdate = repository.findByCpf(candidateUpdate.cpf()) as Candidate
+        Candidate updatedCandidate = repository.update(candidateUpdate.toCandidate(), candidateToUpdate.id)
+
+        candidateResponse = CandidateResponseDTO.fromDomain(updatedCandidate, addressService.getAddressesByUserId(candidateToUpdate.id))
+
         return candidateResponse
     }
 
-    CandidateResponseDTO updateCandidate(CandidateUpdateDTO candidateUpdate) {
-        try {
-            Candidate existing = repository.findByCpf(candidateUpdate.cpf()) as Candidate
-            return updateCandidate(candidateUpdate, existing.id)
-        } catch (EntityNotFoundException e) {
-            println "Error: ${e.message}"
-            return null
-        }
-    }
-
-    void deleteCandidate(UUID id) {
-        try {
-            repository.delete(id)
-        } catch (Exception e) {
-            println "Error: ${e.message}"
-        }
+    private void deleteCandidateById(UUID id) {
+        repository.delete(id)
     }
 
     void deleteCandidate(String cpf) {
-        try {
-            Candidate candidate = repository.findByCpf(cpf) as Candidate
-            deleteCandidate(candidate.id)
-        } catch (EntityNotFoundException e) {
-            println "Error: ${e.message}"
-        }
+        Candidate candidate = repository.findByCpf(cpf) as Candidate
+        deleteCandidateById(candidate.id)
     }
 }
