@@ -15,26 +15,23 @@ class CountryRepositoryJDBC implements CountryRepository {
     @Override
     Country findById(UUID id) {
         GroovyRowResult row = sql.firstRow("SELECT * FROM countries WHERE id = ?", [id])
-        if (row) {
-            return  new Country(
-                id: UUID.fromString(row.id.toString()),
-                name: row.name,
-                code: row.code
-            )
-        } else {
-            throw new EntityNotFoundException("Country with id ${id} not found")
-        }
+
+        if (!row) throw new EntityNotFoundException("Country with id ${id} not found")
+
+        return countryFromRow(row)
     }
 
     @Override
     List<Country> findAll() {
         List<GroovyRowResult> rows = sql.rows("SELECT * FROM countries")
-        return rows.collect { row ->
-            new Country(
+        return rows.collect { row -> countryFromRow(row)}
+    }
+
+    private static Country countryFromRow(GroovyRowResult row) {
+        new Country(
                 id: UUID.fromString(row.id.toString()),
                 name: row.name,
                 code: row.code
-            )
-        }
+        )
     }
 }
