@@ -6,6 +6,7 @@ import zg.acelera.domain.Company
 import zg.acelera.domain.Person
 import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
+import zg.acelera.utils.mapper.SkillRowMapper
 
 class CompanyRepositoryJDBC implements CompanyRepository {
     final Sql sql
@@ -192,15 +193,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
 
         Company company = getCompanyFromRow(rows.first())
 
-        Set<Skill> skills = rows.findResults { row ->
-            if (row.skill_id) {
-                return new Skill(
-                    id: UUID.fromString(row.skill_id.toString()),
-                    name: row.skill_name.toString()
-                )
-            }
-            return null
-        } as Set<Skill>
+        Set<Skill> skills = rows.findResults { row -> SkillRowMapper.getDomainFromRow(row)} as Set<Skill>
 
         company.skills = skills
         return company

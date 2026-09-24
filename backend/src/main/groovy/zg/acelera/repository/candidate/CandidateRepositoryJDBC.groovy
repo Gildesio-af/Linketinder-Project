@@ -6,6 +6,7 @@ import zg.acelera.domain.Candidate
 import zg.acelera.domain.Person
 import zg.acelera.domain.Skill
 import zg.acelera.utils.exception.EntityNotFoundException
+import zg.acelera.utils.mapper.SkillRowMapper
 
 import java.time.LocalDate
 
@@ -27,9 +28,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             WHERE us.id = ?
         """, [id])
 
-        if (!rows) {
-            throw new EntityNotFoundException("Candidate with ID ${id} not found")
-        }
+        if (!rows) throw new EntityNotFoundException("Candidate with ID ${id} not found")
 
         return getCandidatesWithSkillsFromRows(rows).first()
     }
@@ -44,7 +43,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             LEFT JOIN skills sk ON sk.id = usk.skill_id
         """)
 
-        return getCandidatesWithSkillsFromRows(rows).toList()
+        return getCandidatesWithSkillsFromRows(rows).toList() as List<Person>
     }
 
     @Override
@@ -58,9 +57,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             WHERE ca.cpf = ?
         """, [cpf])
 
-        if (!rows) {
-            throw new EntityNotFoundException("Candidate) with CPF ${cpf} not found")
-        }
+        if (!rows) throw new EntityNotFoundException("Candidate) with CPF ${cpf} not found")
 
         return getCandidatesWithSkillsFromRows(rows).first()
     }
@@ -81,7 +78,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             )
         """, [skill])
 
-        return getCandidatesWithSkillsFromRows(rows).toList()
+        return getCandidatesWithSkillsFromRows(rows).toList() as List<Person>
     }
 
     @Override
@@ -89,46 +86,14 @@ class CandidateRepositoryJDBC implements CandidateRepository {
         Candidate savedCandidate = null
 
         sql.withTransaction {
-            GroovyRowResult rowGenericUser = sql.firstRow("""
-                INSERT INTO users (name, email, password, description)
-                VALUES (?, ?, ?, ?)
-                RETURNING *
-            """, [user.name, user.email, user.password, user.description])
+            GroovyRowResult GenericUserSavedRow = insertInUser(user)
+            UUID generatedUserId = UUID.fromString(GenericUserSavedRow.id.toString())
+            GroovyRowResult rowCandidate = insertInCandidate(user, generatedUserId)
+            insertInUsersSkill(user.skills, generatedUserId)
 
-            UUID generatedUserId = UUID.fromString(rowGenericUser.id.toString())
+            savedCandidate = getCandidateFromUserRowAndCandidateRow(GenericUserSavedRow, rowCandidate)
 
-            GroovyRowResult rowCandidate = sql.firstRow("""
-                INSERT INTO candidates (user_id, cpf, last_name, birth_date)
-                VALUES (?, ?, ?, ?)
-                RETURNING *
-            """, [generatedUserId, user.cpf, user.lastName, user.birthDate])
-
-            if (user.skills) {
-                user.skills.each { skill ->
-                    if (skill.id) {
-                        sql.executeInsert("""
-                            INSERT INTO users_skill (user_id, skill_id)
-                            VALUES (?, ?)
-                        """, [generatedUserId, skill.id])
-                    }
-                }
-            }
-
-            savedCandidate = getCandidateFromUserRowAndCandidateRow(rowGenericUser, rowCandidate)
-
-            Set<Skill> fullSkills = [] as Set<Skill>
-            if (user.skills) {
-                List<GroovyRowResult> skillRows = sql.rows("""
-                    SELECT sk.id AS skill_id, sk.name AS skill_name
-                    FROM users_skill usk
-                    INNER JOIN skills sk ON sk.id = usk.skill_id
-                    WHERE usk.user_id = ?
-                """, [generatedUserId])
-                fullSkills = skillRows.collect { row ->
-                    new Skill(id: UUID.fromString(row.skill_id.toString()), name: row.skill_name.toString())
-                } as Set<Skill>
-            }
-            savedCandidate.skills = fullSkills
+            savedCandidate.skills = fetchFullSkills(generatedUserId)
         }
 
         return savedCandidate
@@ -139,25 +104,32 @@ class CandidateRepositoryJDBC implements CandidateRepository {
         Candidate updatedCandidate = null
 
         sql.withTransaction {
-            GroovyRowResult rowGenericUser = sql.firstRow("""
-                UPDATE users
-                SET name = COALESCE(?, name), email = COALESCE(?, email),description = COALESCE(?, description)
-                WHERE id = ?
-                RETURNING *
-            """, [user.name, user.email, user.description, userId])
-
-            GroovyRowResult rowCandidate = sql.firstRow("""
-                UPDATE candidates
-                SET last_name = COALESCE(?, last_name), birth_date = COALESCE(?, birth_date)
-                WHERE user_id = ?
-                RETURNING *
-            """, [user.lastName, user.birthDate, userId])
+            GroovyRowResult rowGenericUser = updateGenericUser(user, userId)
+            GroovyRowResult rowCandidate = updateCandidate(user, userId)
 
             updatedCandidate = getCandidateFromUserRowAndCandidateRow(rowGenericUser, rowCandidate)
             updatedCandidate.skills = user.skills ?: [] as Set<Skill>
         }
 
         return updatedCandidate
+    }
+
+    private GroovyRowResult updateCandidate(Candidate user, UUID userId) {
+        sql.firstRow("""
+                UPDATE candidates
+                SET last_name = COALESCE(?, last_name), birth_date = COALESCE(?, birth_date)
+                WHERE user_id = ?
+                RETURNING *
+            """, [user.lastName, user.birthDate, userId])
+    }
+
+    private GroovyRowResult updateGenericUser(Candidate user, UUID userId) {
+        return sql.firstRow("""
+                UPDATE users
+                SET name = COALESCE(?, name), email = COALESCE(?, email),description = COALESCE(?, description)
+                WHERE id = ?
+                RETURNING *
+            """, [user.name, user.email, user.description, userId])
     }
 
     @Override
@@ -181,15 +153,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
         Candidate candidate = getCandidateFromRow(rows.first())
 
-        Set<Skill> skills = rows.findResults { row ->
-            if (row.skill_id) {
-                return new Skill(
-                    id: UUID.fromString(row.skill_id.toString()),
-                    name: row.skill_name.toString()
-                )
-            }
-            return null
-        } as Set<Skill>
+        Set<Skill> skills = rows.findResults { row -> SkillRowMapper.getDomainFromRow(row)} as Set<Skill>
 
         candidate.skills = skills
         return candidate
@@ -197,18 +161,64 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
     private static Candidate getCandidateFromRow(GroovyRowResult row) {
         return new Candidate(
-            id: UUID.fromString(row.id.toString()),
-            name: row.name,
-            email: row.email,
-            password: row.password,
-            description: row.description,
-            cpf: row.cpf,
-            lastName: row.last_name,
-            birthDate: row.birth_date ? LocalDate.parse(row.birth_date.toString()) : null
+                id: UUID.fromString(row.id.toString()),
+                name: row.name,
+                email: row.email,
+                password: row.password,
+                description: row.description,
+                cpf: row.cpf,
+                lastName: row.last_name,
+                birthDate: row.birth_date ? LocalDate.parse(row.birth_date.toString()) : null
         )
     }
 
     private static Candidate getCandidateFromUserRowAndCandidateRow(GroovyRowResult userRow, GroovyRowResult candidateRow) {
         return getCandidateFromRow(userRow + candidateRow as GroovyRowResult)
+    }
+
+    private GroovyRowResult insertInUser(Candidate user) {
+        return sql.firstRow("""
+                INSERT INTO users (name, email, password, description)
+                VALUES (?, ?, ?, ?)
+                RETURNING *
+            """, [user.name, user.email, user.password, user.description])
+    }
+
+    private GroovyRowResult insertInCandidate(Candidate user, UUID userId) {
+        return sql.firstRow("""
+                INSERT INTO candidates (user_id, cpf, last_name, birth_date)
+                VALUES (?, ?, ?, ?)
+                RETURNING *
+            """, [userId, user.cpf, user.lastName, user.birthDate])
+    }
+
+    private void insertInUsersSkill(Set<Skill> skills, UUID userId) {
+        if (skills) return
+
+        skills.each { skill ->
+            sql.execute("""
+                INSERT INTO users_skill (user_id, skill_id)
+                VALUES (?, ?)
+            """, [userId, skill.id])
+
+        }
+    }
+
+    private Set<Skill> fetchFullSkills(UUID userId) {
+        List<GroovyRowResult> skillRows = sql.rows("""
+                    SELECT sk.id AS skill_id, sk.name AS skill_name
+                    FROM users_skill usk
+                    INNER JOIN skills sk ON sk.id = usk.skill_id
+                    WHERE usk.user_id = ?
+                """, [userId])
+
+        if (!skillRows) return [] as Set<Skill>
+
+        return skillRows.collect { row ->
+            new Skill(
+                    id: UUID.fromString(row.skill_id.toString()),
+                    name: row.skill_name.toString()
+            )
+        } as Set<Skill>
     }
 }
