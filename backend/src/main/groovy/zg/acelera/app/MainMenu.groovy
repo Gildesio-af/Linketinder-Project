@@ -14,12 +14,16 @@ import zg.acelera.repository.job.JobRepositoryJDBC
 import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.repository.skill.SkillRepositoryJDBC
 import zg.acelera.service.*
+import zg.acelera.user_interface.CandidateJobUI
 import zg.acelera.user_interface.CandidateUI
+import zg.acelera.user_interface.CompanyJobUI
 import zg.acelera.user_interface.CompanyUI
+import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.user_interface.JobUI
 import zg.acelera.user_interface.MatchUI
 import zg.acelera.utils.db.DatabaseManager
+import zg.acelera.utils.reader.SkillConsoleReader
 
 class MainMenu {
 
@@ -43,9 +47,13 @@ class MainMenu {
 
         MatchService matchService = new MatchService()
 
-        JobUI jobUI = new JobUI(jobService, companyService, inputReader)
-        CandidateUI candidateUI = new CandidateUI(candidateService, skillService, countryService, jobUI, inputReader)
-        CompanyUI companyUI = new CompanyUI(companyService, skillService, countryService, jobUI, inputReader)
+        AddressConsoleReader addressConsoleReader = new AddressConsoleReader(inputReader, countryService)
+        SkillConsoleReader skillConsoleReader = new SkillConsoleReader(inputReader, skillService)
+
+        CandidateJobUI candidateJobUI = new CandidateJobUI(jobService, inputReader, addressConsoleReader, skillConsoleReader)
+        CompanyJobUI companyJobUI = new CompanyJobUI(jobService, companyService, inputReader, addressConsoleReader, skillConsoleReader)
+        CandidateUI candidateUI = new CandidateUI(candidateService, candidateJobUI, inputReader, addressConsoleReader, skillConsoleReader)
+        CompanyUI companyUI = new CompanyUI(companyService, companyJobUI, inputReader, addressConsoleReader, skillConsoleReader)
         MatchUI matchUI = new MatchUI(matchService, inputReader)
 
         boolean running = true

@@ -4,10 +4,10 @@ import zg.acelera.dto.skill.SkillResponseDTO
 import zg.acelera.service.SkillService
 
 class SkillConsoleReader {
-    private final SkillService skillService
     private final InputReader input
+    private final SkillService skillService
 
-    SkillConsoleReader(SkillService skillService, InputReader input) {
+    SkillConsoleReader(InputReader input, SkillService skillService) {
         this.skillService = skillService
         this.input = input
     }
