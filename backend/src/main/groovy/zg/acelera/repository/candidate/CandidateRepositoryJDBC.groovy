@@ -96,7 +96,7 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
             savedCandidate = getCandidateFromUserRowAndCandidateRow(GenericUserSavedRow, rowCandidate)
 
-            savedCandidate.skills = skillRepository.findByUserId(generatedUserId)findByUserId''
+            savedCandidate.skills = skillRepository.findByUserId(generatedUserId)
         }
 
         return savedCandidate
@@ -137,6 +137,8 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
     @Override
     void delete(UUID userId) {
+        findById(userId)
+
         sql.withTransaction {
             sql.execute("DELETE FROM candidates WHERE user_id = ?", [userId])
             sql.execute("DELETE FROM users WHERE id = ?", [userId])

@@ -5,45 +5,33 @@ import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.service.CandidateService
-import zg.acelera.service.CountryService
-import zg.acelera.service.SkillService
-import zg.acelera.utils.DataManager
+import zg.acelera.utils.reader.AddressConsoleReader
+import zg.acelera.utils.reader.InputReader
+import zg.acelera.utils.reader.SkillConsoleReader
 
+import java.sql.SQLException
 import java.time.LocalDate
 
 class CandidateUI {
     private final CandidateService candidateService
-    private final SkillService skillService
-    private final CountryService countryService
-    private final JobUI jobUI
+    private final CandidateJobUI jobUI
     private final InputReader input
+    private final AddressConsoleReader addressReader
+    private final SkillConsoleReader skillReader
 
-    CandidateUI(CandidateService candidateService, SkillService skillService, CountryService countryService, JobUI jobUI, InputReader inputReader) {
+    CandidateUI(CandidateService candidateService, CandidateJobUI jobUI, InputReader inputReader, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
         this.candidateService = candidateService
-        this.skillService = skillService
-        this.countryService = countryService
         this.jobUI = jobUI
         this.input = inputReader
+        this.addressReader = addressReader
+        this.skillReader = skillReader
     }
 
     void showMenu() {
         boolean running = true
 
         while (running) {
-            println """
-            ========================================
-                   LINKETINDER - CANDIDATE MENU
-            ========================================
-            1. Show all candidates
-            2. Search candidate by CPF
-            3. Search candidates by Skill
-            4. Register candidate
-            5. Update candidate
-            6. Delete candidate
-            7. View Available Jobs
-            0. Go back to Main Menu
-            ========================================
-            """
+            printCandidateMenu()
             String option = input.readString("Choose an option: ")
 
             switch (option) {
@@ -67,54 +55,34 @@ class CandidateUI {
     void registerCandidate() {
         println "\n=== REGISTER CANDIDATE ==="
         try {
-            String cpf = input.readString("CPF (11 digits, without punctuation): ")
-            String name = input.readString("Name: ")
-            String lastName = input.readString("Last Name: ")
-            String email = input.readString("E-mail: ")
-            String password = input.readString("Password (min 6 characters): ")
-            String description = input.readString("Description/Bio: ")
-            LocalDate birthDate = input.readDate("Birth Date (dd/MM/yyyy): ")
+            CandidateDTO newCandidateDTO = getCandidateDataToCreate()
 
-            Set<String> skillNames = DataManager.readSkillsFromDatabase()
-            if (!skillNames || skillNames.isEmpty()) {
-                println "Error: No skills selected. Registration canceled."
+            if (!newCandidateDTO) {
+                println "Error: Failed to create candidate data. Registration canceled."
                 return
             }
 
-            Set<String> skillIds = candidateService.resolveSkillNamesToIds(skillNames)
+            println "\n--- ADDRESS ---"
+            AddressCreateDTO newAddressDTO = addressReader.readAddressData()
 
-            CandidateDTO dto = new CandidateDTO(cpf, name, email, password, description, lastName, birthDate, skillIds)
-
-            println "\n--- ADDRESS DATA ---"
-            AddressCreateDTO addressDTO = DataManager.readAddressData()
-
-            CandidateResponseDTO result = candidateService.registerCandidate(dto, addressDTO)
-            if (result) {
+            CandidateResponseDTO candidateSaved = candidateService.registerCandidate(newCandidateDTO, newAddressDTO)
+            if (candidateSaved) {
                 println "\nCandidate registered successfully!"
-                printCandidateResponse(result)
+                printCandidateResponse(candidateSaved)
             }
-
         } catch (IllegalArgumentException e) {
             println "Validation error: ${e.message}"
+        } catch (SQLException e) {
+            println "Database error: ${e.message}"
         } catch (Exception e) {
             println "Error: ${e.message}"
         }
     }
 
     void updateCandidate() {
-        println "\n=== UPDATE CANDIDATE ==="
-        String cpf = input.readString("Enter the CPF of the candidate you want to update: ")
-
-        println "--- Enter the new values or press ENTER to keep the current value ---"
         try {
-            String name = input.readString("New Name: ", false)
-            String lastName = input.readString("New Last Name: ", false)
-            String email = input.readString("New E-mail: ", false)
-            String password = input.readString("New Password: ", false)
-            String description = input.readString("New Description: ", false)
-            LocalDate birthDate = input.readDate("New Birth Date (dd/MM/yyyy): ", false)
-
-            CandidateUpdateDTO dto = new CandidateUpdateDTO(cpf, name, email, password, description, lastName, birthDate)
+            println "\n=== UPDATE CANDIDATE ==="
+            CandidateUpdateDTO dto = getDataToUpdate()
             CandidateResponseDTO result = candidateService.updateCandidate(dto)
             if (result) {
                 println "\nCandidate updated successfully!"
@@ -123,6 +91,10 @@ class CandidateUI {
 
         } catch (IllegalArgumentException e) {
             println "Validation error: ${e.message}"
+        } catch (SQLException e) {
+            println "Database error: ${e.message}"
+        } catch (Exception e) {
+            println "Error: ${e.message}"
         }
     }
 
@@ -152,7 +124,7 @@ class CandidateUI {
         println "\n=== DELETE CANDIDATE ==="
         String cpf = input.readString("Enter the CPF of the candidate you want to delete: ")
         candidateService.deleteCandidate(cpf)
-        println "Candidate deleted successfully (if found)."
+        println "Candidate deleted successfully."
     }
 
     void listAllCandidates() {
@@ -179,14 +151,59 @@ class CandidateUI {
         } else {
             println "  Skills: (none)"
         }
-        if (candidate.address()) {
-            candidate.address().each { addr ->
-                println "  Address: ${addr.street()}, ${addr.number()} - ${addr.neighborhood()}, ${addr.city()} - ${addr.state()}, ${addr.cep()}"
-                if (addr.country()) {
-                    println "  Country: ${addr.country().name()} (${addr.country().code()})"
-                }
-            }
-        }
+
+        AddressPrinter.printAddressesFormated(candidate.addresses())
         println "------------------------------"
+    }
+
+    private printCandidateMenu() {
+        println """
+            ========================================
+                   LINKETINDER - CANDIDATE MENU
+            ========================================
+            1. Show all candidates
+            2. Search candidate by CPF
+            3. Search candidates by Skill
+            4. Register candidate
+            5. Update candidate
+            6. Delete candidate
+            7. View Available Jobs
+            0. Go back to Main Menu
+            ========================================
+            """
+    }
+
+    CandidateDTO getCandidateDataToCreate() {
+        String cpf = input.readString("CPF (11 digits): ")
+        String name = input.readString("Name: ")
+        String lastName = input.readString("Last Name: ")
+        String email = input.readString("E-mail: ")
+        String password = input.readString("Password (min 6 characters): ")
+        String description = input.readString("Description/Bio: ")
+        LocalDate birthDate = input.readDate("Birth Date (dd/MM/yyyy): ")
+
+        Set<String> skillNames = skillReader.getSkillsFromUser()
+
+        Set<String> skillIds = candidateService.resolveSkillNamesToIds(skillNames)
+
+        if (skillIds.size() != skillNames.size()) {
+            throw new IllegalArgumentException("Some skills could not be recognized. Please ensure all skills are valid.")
+        }
+
+        return new CandidateDTO(cpf, name, email, password, description, lastName, birthDate, skillIds)
+    }
+
+    CandidateUpdateDTO getDataToUpdate() {
+        String cpf = input.readString("Enter the CPF of the candidate you want to update: ")
+
+        println "--- Enter the new values or press ENTER to keep the current value ---"
+        String name = input.readString("New Name: ", false)
+        String lastName = input.readString("New Last Name: ", false)
+        String email = input.readString("New E-mail: ", false)
+        String password = input.readString("New Password: ", false)
+        String description = input.readString("New Description: ", false)
+        LocalDate birthDate = input.readDate("New Birth Date (dd/MM/yyyy): ", false)
+
+        return new CandidateUpdateDTO(cpf, name, email, password, description, lastName, birthDate)
     }
 }

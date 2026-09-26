@@ -16,7 +16,7 @@ import zg.acelera.repository.skill.SkillRepositoryJDBC
 import zg.acelera.service.*
 import zg.acelera.user_interface.CandidateUI
 import zg.acelera.user_interface.CompanyUI
-import zg.acelera.user_interface.InputReader
+import zg.acelera.utils.reader.InputReader
 import zg.acelera.user_interface.JobUI
 import zg.acelera.user_interface.MatchUI
 import zg.acelera.utils.db.DatabaseManager
@@ -43,7 +43,7 @@ class MainMenu {
 
         MatchService matchService = new MatchService()
 
-        JobUI jobUI = new JobUI(jobService, companyService, skillService, countryService, inputReader)
+        JobUI jobUI = new JobUI(jobService, companyService, inputReader)
         CandidateUI candidateUI = new CandidateUI(candidateService, skillService, countryService, jobUI, inputReader)
         CompanyUI companyUI = new CompanyUI(companyService, skillService, countryService, jobUI, inputReader)
         MatchUI matchUI = new MatchUI(matchService, inputReader)

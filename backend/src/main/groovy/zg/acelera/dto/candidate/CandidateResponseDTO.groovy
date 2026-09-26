@@ -16,7 +16,7 @@ record CandidateResponseDTO(
         String description,
         String cpf,
         LocalDate birthDate,
-        Set<AddressResponseDTO> address,
+        Set<AddressResponseDTO> addresses,
         Set<SkillResponseDTO> skills
 ) {
     static CandidateResponseDTO fromDomain(Candidate candidate, Set<AddressResponseDTO> addresses) {
@@ -32,7 +32,7 @@ record CandidateResponseDTO(
                 description: candidate.description,
                 cpf: candidate.cpf,
                 birthDate: candidate.birthDate,
-                address: addresses,
+                addresses: addresses,
                 skills: skillDTOs
         )
     }

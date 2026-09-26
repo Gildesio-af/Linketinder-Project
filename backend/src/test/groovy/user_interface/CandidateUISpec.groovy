@@ -4,7 +4,7 @@ import spock.lang.Specification
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.service.CandidateService
 import zg.acelera.user_interface.CandidateUI
-import zg.acelera.user_interface.InputReader
+import zg.acelera.utils.reader.InputReader
 
 class CandidateUISpec extends Specification{
 

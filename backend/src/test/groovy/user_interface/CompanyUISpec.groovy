@@ -3,7 +3,7 @@ package user_interface
 import spock.lang.Specification
 import zg.acelera.dto.company.CompanyCreateDTO
 import zg.acelera.user_interface.CompanyUI
-import zg.acelera.user_interface.InputReader
+import zg.acelera.utils.reader.InputReader
 import zg.acelera.service.CompanyService
 
 

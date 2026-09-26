@@ -5,43 +5,32 @@ import zg.acelera.dto.company.CompanyCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
 import zg.acelera.service.CompanyService
-import zg.acelera.service.CountryService
-import zg.acelera.service.SkillService
-import zg.acelera.utils.DataManager
+import zg.acelera.utils.reader.AddressConsoleReader
+import zg.acelera.utils.reader.InputReader
+import zg.acelera.utils.reader.SkillConsoleReader
+
+import java.sql.SQLException
 
 class CompanyUI {
     private final CompanyService companyService
-    private final SkillService skillService
-    private final CountryService countryService
-    private final JobUI jobUI
+    private final CompanyJobUI jobUI
     private final InputReader input
+    private final AddressConsoleReader addressReader
+    private final SkillConsoleReader skillReader
 
-    CompanyUI(CompanyService companyService, SkillService skillService, CountryService countryService, JobUI jobUI, InputReader inputReader) {
+    CompanyUI(CompanyService companyService, CompanyJobUI jobUI, InputReader inputReader, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
         this.companyService = companyService
-        this.skillService = skillService
-        this.countryService = countryService
         this.jobUI = jobUI
         this.input = inputReader
+        this.addressReader = addressReader
+        this.skillReader = skillReader
     }
 
     void showMenu() {
         boolean running = true
 
         while (running) {
-            println """
-            ========================================
-                   LINKETINDER - COMPANY MENU
-            ========================================
-            1. Show all companies
-            2. Search company by CNPJ
-            3. Search companies by Skill
-            4. Register company
-            5. Update company
-            6. Delete company
-            7. Manage Jobs (requires login)
-            0. Go back to Main Menu
-            ========================================
-            """
+            printCompanyMenu()
             String option = input.readString("Choose an option: ")
 
             switch (option) {
@@ -65,24 +54,10 @@ class CompanyUI {
     void registerCompany() {
         println "\n=== REGISTER COMPANY ==="
         try {
-            String cnpj = input.readString("CNPJ (14 digits, without punctuation): ")
-            String name = input.readString("Name: ")
-            String email = input.readString("Corporate E-mail: ")
-            String password = input.readString("Password (min 6 characters): ")
-            String description = input.readString("Description/Bio: ")
-
-            Set<String> skillNames = DataManager.readSkillsFromDatabase()
-            if (!skillNames || skillNames.isEmpty()) {
-                println "Error: No skills selected. Registration canceled."
-                return
-            }
-
-            Set<String> skillIds = companyService.resolveSkillNamesToIds(skillNames)
-
-            CompanyCreateDTO dto = new CompanyCreateDTO(cnpj, name, email, password, description, skillIds)
+            CompanyCreateDTO dto = getCompanyDataToCreate()
 
             println "\n--- ADDRESS DATA ---"
-            AddressCreateDTO addressDTO = DataManager.readAddressData()
+            AddressCreateDTO addressDTO = addressReader.readAddressData()
 
             CompanyResponseDTO result = companyService.registerCompany(dto, addressDTO)
             if (result) {
@@ -92,6 +67,8 @@ class CompanyUI {
 
         } catch (IllegalArgumentException e) {
             println "Validation error: ${e.message}"
+        } catch (SQLException e) {
+            println "Database error: ${e.message}"
         } catch (Exception e) {
             println "Error: ${e.message}"
         }
@@ -99,17 +76,10 @@ class CompanyUI {
 
     void updateCompany() {
         println "\n=== UPDATE COMPANY ==="
-        String cnpj = input.readString("Enter the CNPJ of the company you want to update: ")
-
-        println "--- Enter the new values or press ENTER to keep the current value ---"
         try {
-            String name = input.readString("New Name: ", false)
-            String email = input.readString("New Corporate E-mail: ", false)
-            String password = input.readString("New Password: ", false)
-            String description = input.readString("New Description: ", false)
-
-            CompanyUpdateDTO dto = new CompanyUpdateDTO(cnpj, name, email, password, description)
+            CompanyUpdateDTO dto = getCompanyDataToUpdate()
             CompanyResponseDTO result = companyService.updateCompany(dto)
+
             if (result) {
                 println "\nCompany updated successfully!"
                 printCompanyResponse(result)
@@ -117,6 +87,10 @@ class CompanyUI {
 
         } catch (IllegalArgumentException e) {
             println "Validation error: ${e.message}"
+        } catch (SQLException e) {
+            println "Database error: ${e.message}"
+        } catch (Exception e) {
+            println "Error: ${e.message}"
         }
     }
 
@@ -172,14 +146,52 @@ class CompanyUI {
         } else {
             println "  Desired Skills: (none)"
         }
-        if (company.addresses()) {
-            company.addresses().each { addr ->
-                println "  Address: ${addr.street()}, ${addr.number()} - ${addr.neighborhood()}, ${addr.city()} - ${addr.state()}, ${addr.cep()}"
-                if (addr.country()) {
-                    println "  Country: ${addr.country().name()} (${addr.country().code()})"
-                }
-            }
-        }
+
+        AddressPrinter.printAddressesFormated(company.addresses())
         println "------------------------------"
+    }
+
+    private printCompanyMenu() {
+        println """
+            ========================================
+                   LINKETINDER - COMPANY MENU
+            ========================================
+            1. Show all companies
+            2. Search company by CNPJ
+            3. Search companies by Skill
+            4. Register company
+            5. Update company
+            6. Delete company
+            7. Manage Jobs (requires login)
+            0. Go back to Main Menu
+            ========================================
+            """
+    }
+
+    CompanyCreateDTO getCompanyDataToCreate() {
+        String cnpj = input.readString("CNPJ (14 digits, without punctuation): ")
+        String name = input.readString("Name: ")
+        String email = input.readString("Corporate E-mail: ")
+        String password = input.readString("Password (min 6 characters): ")
+        String description = input.readString("Description/Bio: ")
+
+        Set<String> skillNames = skillReader.getSkillsFromUser()
+        if (!skillNames || skillNames.isEmpty())
+            throw new IllegalArgumentException("No skills selected. Registration canceled.")
+
+        Set<String> skillIds = companyService.resolveSkillNamesToIds(skillNames)
+
+        return new CompanyCreateDTO(cnpj, name, email, password, description, skillIds)
+    }
+
+    CompanyUpdateDTO getCompanyDataToUpdate() {
+        String cnpj = input.readString("Enter the CNPJ of the company you want to update: ")
+        println "--- Enter the new values or press ENTER to keep the current value ---"
+        String name = input.readString("New Name: ", false)
+        String email = input.readString("New Corporate E-mail: ", false)
+        String password = input.readString("New Password: ", false)
+        String description = input.readString("New Description: ", false)
+
+        return new CompanyUpdateDTO(cnpj, name, email, password, description)
     }
 }
