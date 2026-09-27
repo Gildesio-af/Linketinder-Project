@@ -153,7 +153,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
 
         Company company = getCompanyFromRow(rows.first())
 
-        Set<Skill> skills = rows.findResults { row -> SkillRowMapper.getDomainFromRow(row)} as Set<Skill>
+        Set<Skill> skills = rows.findResults { row -> SkillRowMapper.getDomainFromRowToOtherEntities(row)} as Set<Skill>
 
         company.skills = skills
         return company

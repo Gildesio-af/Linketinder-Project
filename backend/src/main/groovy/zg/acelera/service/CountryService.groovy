@@ -22,6 +22,4 @@ class CountryService {
         List<Country> countries = countryRepository.findAll()
         return countries.collect { country -> CountryDTO.fromDomain(country)}
     }
-
-    private CountryDTO
 }

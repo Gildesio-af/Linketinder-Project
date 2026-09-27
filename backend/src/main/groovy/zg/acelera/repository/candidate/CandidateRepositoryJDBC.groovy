@@ -158,27 +158,10 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
         Candidate candidate = getCandidateFromRow(rows.first())
 
-        Set<Skill> skills = rows.findResults { row -> SkillRowMapper.getDomainFromRow(row)} as Set<Skill>
+        Set<Skill> skills = rows.findResults { row -> SkillRowMapper.getDomainFromRowToOtherEntities(row)} as Set<Skill>
 
         candidate.skills = skills
         return candidate
-    }
-
-    private static Candidate getCandidateFromRow(GroovyRowResult row) {
-        return new Candidate(
-                id: UUID.fromString(row.id.toString()),
-                name: row.name,
-                email: row.email,
-                password: row.password,
-                description: row.description,
-                cpf: row.cpf,
-                lastName: row.last_name,
-                birthDate: row.birth_date ? LocalDate.parse(row.birth_date.toString()) : null
-        )
-    }
-
-    private static Candidate getCandidateFromUserRowAndCandidateRow(GroovyRowResult userRow, GroovyRowResult candidateRow) {
-        return getCandidateFromRow(userRow + candidateRow as GroovyRowResult)
     }
 
     private GroovyRowResult insertInUser(Candidate user) {
@@ -207,5 +190,22 @@ class CandidateRepositoryJDBC implements CandidateRepository {
             """, [userId, skill.id])
 
         }
+    }
+
+    private static Candidate getCandidateFromRow(GroovyRowResult row) {
+        return new Candidate(
+                id: UUID.fromString(row.id.toString()),
+                name: row.name,
+                email: row.email,
+                password: row.password,
+                description: row.description,
+                cpf: row.cpf,
+                lastName: row.last_name,
+                birthDate: row.birth_date ? LocalDate.parse(row.birth_date.toString()) : null
+        )
+    }
+
+    private static Candidate getCandidateFromUserRowAndCandidateRow(GroovyRowResult userRow, GroovyRowResult candidateRow) {
+        return getCandidateFromRow(userRow + candidateRow as GroovyRowResult)
     }
 }

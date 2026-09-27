@@ -154,7 +154,7 @@ class JobRepositoryJDBC implements JobRepository {
 
         Job job = getJobFromRow(firstRow)
 
-        Set<Skill> skills = jobRows.findResults { row -> SkillRowMapper.getDomainFromRow(row)}
+        Set<Skill> skills = jobRows.findResults { row -> SkillRowMapper.getDomainFromRowToOtherEntities(row)}
                 as Set<Skill>
 
         job.desiredSkills = skills

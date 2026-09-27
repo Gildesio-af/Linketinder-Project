@@ -23,7 +23,8 @@ class AddressConsoleReader {
         String state = input.readString("State (UF): ")
 
         List<CountryDTO> countries = countryService.getAllCountries()
-        if (!countries || countries.isEmpty()) {
+
+        if (!countries) {
             println "Error: No countries available in the database."
             throw new IllegalStateException("No countries available.")
         }

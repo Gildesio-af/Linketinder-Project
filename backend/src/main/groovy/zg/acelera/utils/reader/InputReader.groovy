@@ -1,7 +1,5 @@
 package zg.acelera.utils.reader
 
-import zg.acelera.dto.address.AddressCreateDTO
-import zg.acelera.dto.country.CountryDTO
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -65,7 +63,7 @@ class InputReader {
     }
 
     String readOption(String prompt, List<String> options, boolean required = true) {
-        if (!options || options.isEmpty()) {
+        if (!options) {
             println "No options available."
             return null
         }

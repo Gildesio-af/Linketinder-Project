@@ -20,25 +20,35 @@ class SkillConsoleReader {
             return [] as Set<String>
         }
 
-        println "\n--- AVAILABLE SKILLS ---"
         List<SkillResponseDTO> skillList = availableSkills.toList()
+        printSkills(skillList)
+
+        String selectedInput = input.readString("Enter the numbers (e.g. 1,3,5): ")
+        return processSelectedSkills(selectedInput, skillList)
+    }
+
+    private void printSkills(List<SkillResponseDTO> skillList) {
+        println "\n--- AVAILABLE SKILLS ---"
         skillList.eachWithIndex { skill, index ->
             println "  ${index + 1}. ${skill.name()}"
         }
+    }
 
-        String selectedInput = input.readString("Enter the numbers (e.g. 1,3,5): ")
-        Set<String> selectedNames = [] as Set<String>
-
-        selectedInput.split(',').each { entry ->
+    private Set<String> processSelectedSkills(String rawInput, List<SkillResponseDTO> skillList) {
+        return rawInput.split(',').findResults { entry ->
             try {
-                int idx = Integer.parseInt(entry.trim()) - 1
-                if (idx >= 0 && idx < skillList.size()) {
-                    selectedNames.add(skillList[idx].name())
+                int indexChoice = Integer.parseInt(entry.trim()) - 1
+
+                if (indexChoice >= 0 && indexChoice < skillList.size()) {
+                    return skillList[indexChoice].name()
                 }
-            } catch (Exception e) {
+
+                println "Skipping out-of-bounds entry: ${entry.trim()}"
+                return null
+            } catch (NumberFormatException ignored) {
                 println "Skipping invalid entry: ${entry.trim()}"
+                return null
             }
-        }
-        return selectedNames
+        } as Set<String>
     }
 }
