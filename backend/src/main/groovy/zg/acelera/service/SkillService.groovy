@@ -37,10 +37,10 @@ class SkillService {
         return SkillResponseDTO.fromDomain(createdSkill)
     }
 
-    SkillResponseDTO updateSkill(SkillRequestDTO skillDTO) {
+    SkillResponseDTO updateSkill(SkillRequestDTO skillDTO, UUID id) {
         Skill skill = skillDTO.toDomain()
 
-        Skill updatedSkill = skillRepository.update(skill, skill.id)
+        Skill updatedSkill = skillRepository.update(skill, id)
 
         return SkillResponseDTO.fromDomain(updatedSkill)
     }
