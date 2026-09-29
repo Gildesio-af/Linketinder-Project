@@ -12,7 +12,6 @@ const btnLogout = document.getElementById('candidate-logout');
 const jobsContainer = document.getElementById('jobs-container');
 const btnFilterAllJobs = document.getElementById('filter-all-jobs');
 const btnFilterRecommendedJobs = document.getElementById('filter-recommended-jobs');
-let currentJobFilter = 'all';
 const userDpName = document.getElementById('user-dp-name');
 const userDpAge = document.getElementById('user-dp-age');
 const userDpEmail = document.getElementById('user-dp-email');
@@ -26,62 +25,126 @@ const updatePlace = document.getElementById('update-place');
 const updateDescription = document.getElementById('update-description');
 const updateSkillsContainer = document.getElementById('update-skills-container');
 const updateSkillsInput = document.getElementById('update-skills-input');
+let currentJobFilter = 'all';
 let temporarySkills = [];
-function renderSkillsTags() {
-    if (!updateSkillsContainer)
-        return;
-    const tags = updateSkillsContainer.querySelectorAll('.skill-tag');
-    tags.forEach(tag => tag.remove());
-    temporarySkills.forEach(skill => {
-        const span = document.createElement('span');
-        span.className = 'skill-tag';
-        span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
-        span.querySelector('button')?.addEventListener('click', () => {
-            temporarySkills = temporarySkills.filter(s => s !== skill);
-            renderSkillsTags();
+const hardcodedJobsHtml = jobsContainer ? jobsContainer.innerHTML : '';
+function setupSkillInput(inputEl, containerEl, skillsArray) {
+    const renderTags = () => {
+        if (!containerEl)
+            return;
+        containerEl.querySelectorAll('.skill-tag').forEach(tag => tag.remove());
+        skillsArray.forEach(skill => {
+            const span = document.createElement('span');
+            span.className = 'skill-tag';
+            span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
+            span.querySelector('button')?.addEventListener('click', () => {
+                const index = skillsArray.indexOf(skill);
+                if (index > -1)
+                    skillsArray.splice(index, 1);
+                renderTags();
+            });
+            containerEl.insertBefore(span, inputEl);
         });
-        updateSkillsContainer.insertBefore(span, updateSkillsInput);
-    });
-}
-profileBtn?.addEventListener('click', function (event) {
-    event.preventDefault();
-    if (profileDropdown?.classList.contains('show')) {
-        profileDropdown.classList.remove('show');
-        return;
-    }
-    else {
-        profileDropdown?.classList.add('show');
-    }
-    const currentUser = StorageService.getCurrentUser();
-    if (currentUser) {
-        if (userDpName)
-            userDpName.textContent = currentUser.name;
-        if (userDpAge)
-            userDpAge.textContent = currentUser.age?.toString() || '';
-        if (userDpEmail)
-            userDpEmail.textContent = currentUser.email;
-        if (userDpLocation)
-            userDpLocation.textContent = currentUser.localization;
-        if (userDpDescription)
-            userDpDescription.textContent = currentUser.description;
-        if (userDpSkills) {
-            userDpSkills.innerHTML = "";
-            if (currentUser.skills && currentUser.skills.length > 0) {
-                currentUser.skills.forEach(skill => {
-                    const li = document.createElement("li");
-                    li.textContent = skill;
-                    userDpSkills.appendChild(li);
-                });
-            }
-            else {
-                const li = document.createElement("li");
-                li.textContent = "Nenhuma competência";
-                userDpSkills.appendChild(li);
+    };
+    inputEl?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const skill = inputEl.value.trim();
+            if (skill && !skillsArray.includes(skill)) {
+                skillsArray.push(skill);
+                renderTags();
+                inputEl.value = '';
             }
         }
+    });
+    return renderTags;
+}
+const renderSkillsTags = setupSkillInput(updateSkillsInput, updateSkillsContainer, temporarySkills);
+function createCard(options) {
+    const card = document.createElement('div');
+    card.className = 'job-card';
+    const skillsHtml = options.skills.map(skill => `<li>${skill}</li>`).join('');
+    const contactHtml = options.contactInfo
+        ? `<p class="description-sm" style="margin-top: 10px;"><strong>Contato:</strong> ${options.contactInfo}</p>`
+        : '';
+    const actionHtml = options.isMatch
+        ? `<button class="label-font-m btn-like" disabled style="opacity: 0.5;">
+             <img src="../assets/heart.svg" alt="Coração"> Match!
+           </button>`
+        : `<button class="label-font-m btn-like">
+             <img src="../assets/heart.svg" alt="Coração"> Dar Like
+           </button>`;
+    card.innerHTML = `
+        <div class="company-info">
+            <div>
+                <div><img class="img-company" src="../assets/company-green.svg" alt="Logo"></div>
+                <div>
+                    <h3 class="company-font">${options.subtitle}</h3>
+                    <p class="location-font">
+                        <img src="../assets/location.svg" alt="Localização"> ${options.location}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2 class="job-title-font">${options.title}</h2>
+            <p class="description-sm">${options.description}</p>
+            ${contactHtml}
+            <ul class="label-font-s" style="margin-top: 10px;">${skillsHtml}</ul>
+        </div>
+        <div>${actionHtml}</div>
+    `;
+    if (!options.isMatch && options.onLike) {
+        const btnLike = card.querySelector(".btn-like");
+        btnLike.addEventListener('click', () => options.onLike(btnLike));
+    }
+    return card;
+}
+function getFilteredJobs(currentUser) {
+    const allJobs = StorageService.getJobs();
+    if (currentJobFilter === 'all')
+        return allJobs;
+    if (!currentUser || !currentUser.skills)
+        return [];
+    const userSkills = currentUser.skills.map(s => s.toLowerCase());
+    return allJobs.filter(job => (job.skills || []).some(skill => userSkills.includes(skill.toLowerCase())));
+}
+function getMatchedCompanies(currentUser) {
+    if (!currentUser)
+        return [];
+    const matches = StorageService.getMatches().filter(m => m.cpf === currentUser.cpf);
+    const companies = StorageService.getCompanies();
+    return companies.filter(company => matches.some(m => m.cnpj === company.cnpj));
+}
+profileBtn?.addEventListener('click', (event) => {
+    event.preventDefault();
+    profileDropdown?.classList.toggle('show');
+    if (!profileDropdown?.classList.contains('show'))
+        return;
+    const currentUser = StorageService.getCurrentUser();
+    if (!currentUser)
+        return;
+    if (userDpName)
+        userDpName.textContent = currentUser.name;
+    if (userDpAge)
+        userDpAge.textContent = currentUser.age?.toString() || '';
+    if (userDpEmail)
+        userDpEmail.textContent = currentUser.email;
+    if (userDpLocation)
+        userDpLocation.textContent = currentUser.localization;
+    if (userDpDescription)
+        userDpDescription.textContent = currentUser.description;
+    if (userDpSkills) {
+        userDpSkills.innerHTML = "";
+        const skillsToRender = (currentUser.skills?.length) ? currentUser.skills : ["Nenhuma competência"];
+        skillsToRender.forEach(skill => {
+            const li = document.createElement("li");
+            li.textContent = skill;
+            userDpSkills.appendChild(li);
+        });
     }
 });
-btnUpdateData?.addEventListener('click', function (event) {
+btnUpdateData?.addEventListener('click', (event) => {
     event.preventDefault();
     profileDropdown?.classList.remove('show');
     const currentUser = StorageService.getCurrentUser();
@@ -96,109 +159,73 @@ btnUpdateData?.addEventListener('click', function (event) {
             updatePlace.value = currentUser.localization;
         if (updateDescription)
             updateDescription.value = currentUser.description;
-        temporarySkills = [...(currentUser.skills || [])];
+        temporarySkills.length = 0;
+        if (currentUser.skills)
+            temporarySkills.push(...currentUser.skills);
         renderSkillsTags();
     }
     if (updateModal)
         updateModal.style.display = 'block';
 });
-closeModal?.addEventListener('click', function () {
-    if (updateModal)
-        updateModal.style.display = 'none';
-});
-saveUpdateBtn?.addEventListener('click', function (event) {
+saveUpdateBtn?.addEventListener('click', (event) => {
     event.preventDefault();
+    const currentUser = StorageService.getCurrentUser();
+    if (!currentUser)
+        return;
+    const updatedCandidate = {
+        ...currentUser,
+        name: updateName?.value || currentUser.name,
+        age: parseInt(updateAge?.value) || currentUser.age,
+        email: updateEmail?.value || currentUser.email,
+        localization: updatePlace?.value || currentUser.localization,
+        description: updateDescription?.value || currentUser.description,
+        skills: [...temporarySkills]
+    };
+    StorageService.setCurrentUser(updatedCandidate);
     if (updateModal)
         updateModal.style.display = 'none';
+    alert('Dados atualizados com sucesso!');
 });
-window.addEventListener('click', function (event) {
+window.addEventListener('click', (event) => {
     const target = event.target;
     if (!target.closest('.profile-container') && !target.closest('.modal-content')) {
-        if (profileDropdown?.classList.contains('show')) {
-            profileDropdown.classList.remove('show');
-        }
+        profileDropdown?.classList.remove('show');
     }
-    if (target === updateModal) {
-        updateModal.style.display = 'none';
+    if (target === updateModal || target === closeModal) {
+        if (updateModal)
+            updateModal.style.display = 'none';
     }
 });
 btnLogout?.addEventListener('click', () => {
     StorageService.deleteCurrentUser();
     window.location.replace("./login.html");
 });
-let hardcodedJobsHtml = '';
-if (jobsContainer) {
-    hardcodedJobsHtml = jobsContainer.innerHTML;
-}
 export function renderJobs() {
     if (!jobsContainer)
         return;
-    let jobs = StorageService.getJobs();
-    if (currentJobFilter === 'recommended') {
-        const currentUser = StorageService.getCurrentUser();
-        if (currentUser && currentUser.skills) {
-            const userSkills = currentUser.skills.map(s => s.toLowerCase());
-            jobs = jobs.filter(job => {
-                if (!job.skills)
-                    return false;
-                return job.skills.some(skill => userSkills.includes(skill.toLowerCase()));
-            });
-        }
-        else {
-            jobs = [];
-        }
-    }
+    const currentUser = StorageService.getCurrentUser();
+    const jobs = getFilteredJobs(currentUser);
     if (jobs.length === 0) {
-        if (currentJobFilter === 'recommended') {
-            jobsContainer.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhuma vaga recomendada encontrada.</p>';
-        }
-        else {
-            jobsContainer.innerHTML = hardcodedJobsHtml;
-        }
+        jobsContainer.innerHTML = currentJobFilter === 'recommended'
+            ? '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhuma vaga recomendada encontrada.</p>'
+            : hardcodedJobsHtml;
         return;
     }
     jobsContainer.innerHTML = '';
     jobs.forEach(job => {
-        const card = document.createElement('div');
-        card.className = 'job-card';
-        const skillsHtml = (job.skills || [])
-            .map(skill => `<li>${skill}</li>`)
-            .join('');
-        card.innerHTML = `
-            <div class="company-info">
-                <div>
-                    <div>
-                        <img class="img-company" src="../assets/company-green.svg" alt="Logo">
-                    </div>
-                    <div>
-                        <h3 class="company-font">empresa confidencial</h3>
-                        <p class="location-font">
-                            <img src="../assets/location.svg" alt="Ícone de localização">
-                            ${job.jobType}, ${job.location}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <h2 class="job-title-font">${job.name}</h2>
-                <p class="description-sm">${job.description}</p>
-                <ul class="label-font-s">
-                    ${skillsHtml}
-                </ul>
-            </div>
-            <div>
-                <button class="label-font-m btn-like">
-                    <img src="../assets/heart.svg" alt="Ícone branco de coração">
-                    Dar Like
-                </button>
-            </div>
-        `;
-        const btnLike = card.querySelector(".btn-like");
-        btnLike.addEventListener('click', () => {
-            MatchService.registerLikeJob(job.name);
-            btnLike.innerHTML = `<img src="../assets/heart.svg" alt="Ícone branco de coração"> Interesse Enviado!`;
-            btnLike.disabled = true;
-            btnLike.style.opacity = '0.5';
+        const card = createCard({
+            title: job.name,
+            subtitle: "empresa confidencial",
+            location: `${job.jobType}, ${job.location}`,
+            description: job.description,
+            skills: job.skills || [],
+            isMatch: false,
+            onLike: (btn) => {
+                MatchService.registerLikeJob(job.name);
+                btn.innerHTML = `<img src="../assets/heart.svg" alt="Coração"> Interesse Enviado!`;
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
         });
         jobsContainer.appendChild(card);
     });
@@ -206,65 +233,44 @@ export function renderJobs() {
 export function renderMatches() {
     if (!jobsContainer)
         return;
-    jobsContainer.innerHTML = '';
     const currentUser = StorageService.getCurrentUser();
-    const matches = StorageService.getMatches().filter(m => m.cpf === currentUser?.cpf);
-    const companies = StorageService.getCompanies();
-    const matchedCompanies = companies.filter(company => matches.some(m => m.cnpj === company.cnpj));
+    const matchedCompanies = getMatchedCompanies(currentUser);
     if (matchedCompanies.length === 0) {
         jobsContainer.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhum match encontrado.</p>';
         return;
     }
-    matchedCompanies.forEach((company, index) => {
-        const card = document.createElement('div');
-        card.className = 'job-card';
-        const skillsHtml = (company.skills || [])
-            .map(skill => `<li>${skill}</li>`)
-            .join('');
-        card.innerHTML = `
-            <div class="company-info">
-                <div>
-                    <div>
-                        <img class="img-company" src="../assets/company-green.svg" alt="Logo">
-                    </div>
-                    <div>
-                        <h3 class="company-font">${company.name}</h3>
-                        <p class="location-font">
-                            <img src="../assets/location.svg" alt="Ícone de localização">
-                            ${company.localization}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <h2 class="job-title-font">Empresa Parceira</h2>
-                <p class="description-sm">${company.description}</p>
-                <p class="description-sm" style="margin-top: 10px;"><strong>Contato:</strong> ${company.email}</p>
-                <ul class="label-font-s" style="margin-top: 10px;">
-                    ${skillsHtml}
-                </ul>
-            </div>
-            <div>
-                <button class="label-font-m btn-like" disabled style="opacity: 0.5;">
-                    <img src="../assets/heart.svg" alt="Ícone branco de coração">
-                    Match!
-                </button>
-            </div>
-        `;
+    jobsContainer.innerHTML = '';
+    matchedCompanies.forEach(company => {
+        const card = createCard({
+            title: "Empresa Parceira",
+            subtitle: company.name,
+            location: company.localization,
+            description: company.description,
+            skills: company.skills || [],
+            contactInfo: company.email,
+            isMatch: true
+        });
         jobsContainer.appendChild(card);
     });
 }
 btnJobsAvailable?.addEventListener('click', () => {
-    btnJobsAvailable.className = 'nav-font-selected';
-    if (btnMyMatches)
-        btnMyMatches.className = 'nav-font';
+    btnJobsAvailable.classList.add('nav-font-selected');
+    btnJobsAvailable.classList.remove('nav-font');
+    if (btnMyMatches) {
+        btnMyMatches.classList.add('nav-font');
+        btnMyMatches.classList.remove('nav-font-selected');
+    }
     renderJobs();
 });
 btnMyMatches?.addEventListener('click', () => {
-    if (btnMyMatches)
-        btnMyMatches.className = 'nav-font-selected';
-    if (btnJobsAvailable)
-        btnJobsAvailable.className = 'nav-font';
+    if (btnMyMatches) {
+        btnMyMatches.classList.add('nav-font-selected');
+        btnMyMatches.classList.remove('nav-font');
+    }
+    if (btnJobsAvailable) {
+        btnJobsAvailable.classList.add('nav-font');
+        btnJobsAvailable.classList.remove('nav-font-selected');
+    }
     renderMatches();
 });
 btnFilterAllJobs?.addEventListener('click', () => {
@@ -276,7 +282,7 @@ btnFilterAllJobs?.addEventListener('click', () => {
 btnFilterRecommendedJobs?.addEventListener('click', () => {
     currentJobFilter = 'recommended';
     btnFilterRecommendedJobs.classList.add('btn-selected');
-    btnFilterAllJobs.classList.remove('btn-selected');
+    btnFilterAllJobs?.classList.remove('btn-selected');
     renderJobs();
 });
 renderJobs();
