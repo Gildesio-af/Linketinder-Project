@@ -33,7 +33,7 @@ if (formLogin) {
             }
 
             StorageService.setCurrentUser(company);
-            window.location.replace("./candidates.html")
+            window.location.replace("./company_menu.html")
         } else {
             throw new Error("User format invalid.");
         }
