@@ -16,7 +16,7 @@ class SkillRepositoryJDBC implements SkillRepository {
     @Override
     Skill findById(UUID id) {
         GroovyRowResult row = sql.firstRow("SELECT * FROM skills WHERE id = ?", [id])
-        if (row) return SkillRowMapper.getDomainFromRowToOtherEntities(row)
+        if (row) return SkillRowMapper.getDomainFromRow(row)
 
         throw new EntityNotFoundException("Skill with id ${id} not found")
     }
@@ -24,7 +24,7 @@ class SkillRepositoryJDBC implements SkillRepository {
     @Override
     Skill findByName(String name) {
         GroovyRowResult row = sql.firstRow("SELECT * FROM skills WHERE lower(name) = lower(?)", [name])
-        if (row) return SkillRowMapper.getDomainFromRowToOtherEntities(row)
+        if (row) return SkillRowMapper.getDomainFromRow(row)
 
         throw new EntityNotFoundException("Skill with name ${name} not found")
     }
@@ -39,7 +39,7 @@ class SkillRepositoryJDBC implements SkillRepository {
     @Override
     Skill save(Skill skill) {
         GroovyRowResult row = sql.firstRow("INSERT INTO skills (name) VALUES (?) RETURNING *", [skill.name])
-        if (row) return SkillRowMapper.getDomainFromRowToOtherEntities(row)
+        if (row) return SkillRowMapper.getDomainFromRow(row)
 
         return null
     }
@@ -47,7 +47,7 @@ class SkillRepositoryJDBC implements SkillRepository {
     @Override
     Skill update(Skill skill, UUID id) {
         GroovyRowResult row = sql.firstRow("UPDATE skills SET name = ? WHERE id = ? RETURNING *", [skill.name, id])
-        if (row) return SkillRowMapper.getDomainFromRowToOtherEntities(row)
+        if (row) return SkillRowMapper.getDomainFromRow(row)
 
         throw new EntityNotFoundException("Skill with id ${id} not found")
     }
@@ -73,6 +73,6 @@ class SkillRepositoryJDBC implements SkillRepository {
         """, [userId])
 
         if (!skillRows) return [] as Set<Skill>
-        return skillRows.collect { SkillRowMapper.getDomainFromRowToOtherEntities(it) } as Set<Skill>
+        return skillRows.collect { SkillRowMapper.getDomainFromRow(it) } as Set<Skill>
     }
 }

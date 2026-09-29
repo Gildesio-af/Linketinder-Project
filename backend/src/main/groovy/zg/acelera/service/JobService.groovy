@@ -1,5 +1,6 @@
 package zg.acelera.service
 
+import zg.acelera.domain.Address
 import zg.acelera.domain.Job
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
@@ -85,6 +86,7 @@ class JobService {
         if (!addressResponse) throw new IllegalStateException("Failed to create address for the job.")
 
         Job jobDomain = newJob.toDomain()
+        jobDomain.address = new Address(id: addressResponse.id())
         List<UUID> skillsIds = getSkillsIdByName(newJob.skills())
 
         Job createdJob = jobRepository.create(jobDomain, skillsIds)
