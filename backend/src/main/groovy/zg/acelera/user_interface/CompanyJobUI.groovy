@@ -70,7 +70,7 @@ class CompanyJobUI extends JobUI {
             String title = input.readString("Job Title: ")
             String description = input.readString("Job Description: ")
 
-            List<String> skillNames = skillReader.getSkillsFromUser()
+            List<String> skillNames = skillReader.getSkillsFromUser().toList()
             if (!skillNames) {
                 println "Error: No skills selected. Job creation canceled."
                 return

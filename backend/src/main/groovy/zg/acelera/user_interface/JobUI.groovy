@@ -1,17 +1,11 @@
 package zg.acelera.user_interface
 
-import zg.acelera.dto.address.AddressCreateDTO
-import zg.acelera.dto.company.CompanyResponseDTO
-import zg.acelera.dto.job.JobCreateDTO
+
 import zg.acelera.dto.job.JobResponseDTO
-import zg.acelera.dto.job.JobUpdateDTO
-import zg.acelera.service.CompanyService
 import zg.acelera.service.JobService
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.utils.reader.SkillConsoleReader
-
-import java.sql.SQLException
 
 abstract class JobUI {
     protected final JobService jobService
