@@ -2,7 +2,6 @@ import { StorageService } from "../../services/storage/StorageService.js";
 import type { Candidate, Company, Job } from "../../models/Domain.js";
 import { MatchService } from "../../services/match/MatchService.js";
 
-
 const profileBtn = document.getElementById('profileBtn') as HTMLAnchorElement;
 const profileDropdown = document.getElementById('profileDropdown') as HTMLDivElement;
 const btnUpdateData = document.getElementById('btnUpdateData') as HTMLButtonElement;
@@ -38,24 +37,42 @@ let temporarySkills: string[] = [];
 
 const hardcodedJobsHtml = jobsContainer ? jobsContainer.innerHTML : '';
 
-function renderSkillsTags() {
-    if (!updateSkillsContainer) return;
-    
-    updateSkillsContainer.querySelectorAll('.skill-tag').forEach(tag => tag.remove());
+function setupSkillInput(inputEl: HTMLInputElement, containerEl: HTMLDivElement, skillsArray: string[]) {
+    const renderTags = () => {
+        if (!containerEl) return;
+        containerEl.querySelectorAll('.skill-tag').forEach(tag => tag.remove());
 
-    temporarySkills.forEach(skill => {
-        const span = document.createElement('span');
-        span.className = 'skill-tag';
-        span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
-        
-        span.querySelector('button')?.addEventListener('click', () => {
-            temporarySkills = temporarySkills.filter(s => s !== skill);
-            renderSkillsTags();
+        skillsArray.forEach(skill => {
+            const span = document.createElement('span');
+            span.className = 'skill-tag';
+            span.innerHTML = `${skill} <button type="button" aria-label="Remover ${skill}">&times;</button>`;
+            
+            span.querySelector('button')?.addEventListener('click', () => {
+                const index = skillsArray.indexOf(skill);
+                if (index > -1) skillsArray.splice(index, 1);
+                renderTags();
+            });
+
+            containerEl.insertBefore(span, inputEl);
         });
+    };
 
-        updateSkillsContainer.insertBefore(span, updateSkillsInput);
+    inputEl?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const skill = inputEl.value.trim();
+            if (skill && !skillsArray.includes(skill)) {
+                skillsArray.push(skill);
+                renderTags();
+                inputEl.value = '';
+            }
+        }
     });
+
+    return renderTags;
 }
+
+const renderSkillsTags = setupSkillInput(updateSkillsInput, updateSkillsContainer, temporarySkills);
 
 type CardOptions = {
     title: string;
@@ -119,12 +136,22 @@ function getFilteredJobs(currentUser: Candidate): Job[] {
     const allJobs = StorageService.getJobs();
     
     if (currentJobFilter === 'all') return allJobs;
-
     if (!currentUser || !currentUser.skills) return [];
 
     const userSkills = currentUser.skills.map(s => s.toLowerCase());
     return allJobs.filter(job => 
         (job.skills || []).some(skill => userSkills.includes(skill.toLowerCase()))
+    );
+}
+
+function getMatchedCompanies(currentUser: Candidate): Company[] {
+    if (!currentUser) return [];
+    
+    const matches = StorageService.getMatches().filter(m => m.cpf === currentUser.cpf);
+    const companies = StorageService.getCompanies();
+
+    return companies.filter(company => 
+        matches.some(m => m.cnpj === company.cnpj)
     );
 }
 
@@ -167,11 +194,34 @@ btnUpdateData?.addEventListener('click', (event) => {
         if (updatePlace) updatePlace.value = currentUser.localization;
         if (updateDescription) updateDescription.value = currentUser.description;
         
-        temporarySkills = [...(currentUser.skills || [])];
+        temporarySkills.length = 0;
+        if (currentUser.skills) temporarySkills.push(...currentUser.skills);
         renderSkillsTags();
     }
 
     if (updateModal) updateModal.style.display = 'block';
+});
+
+saveUpdateBtn?.addEventListener('click', (event) => {
+    event.preventDefault();
+    
+    const currentUser = StorageService.getCurrentUser() as Candidate;
+    if (!currentUser) return;
+
+    const updatedCandidate: Candidate = {
+        ...currentUser, 
+        name: updateName?.value || currentUser.name,
+        age: parseInt(updateAge?.value) || currentUser.age,
+        email: updateEmail?.value || currentUser.email,
+        localization: updatePlace?.value || currentUser.localization,
+        description: updateDescription?.value || currentUser.description,
+        skills: [...temporarySkills]
+    };
+
+    StorageService.setCurrentUser(updatedCandidate);
+
+    if (updateModal) updateModal.style.display = 'none';
+    alert('Dados atualizados com sucesso!');
 });
 
 window.addEventListener('click', (event: Event) => {
@@ -184,11 +234,6 @@ window.addEventListener('click', (event: Event) => {
     if (target === updateModal || target === closeModal) {
         if (updateModal) updateModal.style.display = 'none';
     }
-});
-
-saveUpdateBtn?.addEventListener('click', (event) => {
-    event.preventDefault();
-    if (updateModal) updateModal.style.display = 'none';
 });
 
 btnLogout?.addEventListener('click', () => {
@@ -234,12 +279,7 @@ export function renderMatches() {
     if (!jobsContainer) return;
     
     const currentUser = StorageService.getCurrentUser() as Candidate;
-    const matches = StorageService.getMatches().filter(m => m.cpf === currentUser?.cpf);
-    const companies = StorageService.getCompanies();
-
-    const matchedCompanies = companies.filter(company => 
-        matches.some(m => m.cnpj === company.cnpj)
-    );
+    const matchedCompanies = getMatchedCompanies(currentUser);
 
     if (matchedCompanies.length === 0) {
         jobsContainer.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhum match encontrado.</p>';
@@ -263,14 +303,25 @@ export function renderMatches() {
 }
 
 btnJobsAvailable?.addEventListener('click', () => {
-    btnJobsAvailable.className = 'nav-font-selected';
-    if(btnMyMatches) btnMyMatches.className = 'nav-font';
+    btnJobsAvailable.classList.add('nav-font-selected');
+    btnJobsAvailable.classList.remove('nav-font');
+    
+    if (btnMyMatches) {
+        btnMyMatches.classList.add('nav-font');
+        btnMyMatches.classList.remove('nav-font-selected');
+    }
     renderJobs();
 });
 
 btnMyMatches?.addEventListener('click', () => {
-    if(btnMyMatches) btnMyMatches.className = 'nav-font-selected';
-    if(btnJobsAvailable) btnJobsAvailable.className = 'nav-font';
+    if (btnMyMatches) {
+        btnMyMatches.classList.add('nav-font-selected');
+        btnMyMatches.classList.remove('nav-font');
+    }
+    if (btnJobsAvailable) {
+        btnJobsAvailable.classList.add('nav-font');
+        btnJobsAvailable.classList.remove('nav-font-selected');
+    }
     renderMatches();
 });
 
