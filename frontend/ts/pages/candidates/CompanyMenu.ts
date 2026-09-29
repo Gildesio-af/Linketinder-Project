@@ -65,8 +65,7 @@ function setupSkillInput(
             
             span.querySelector('button')?.addEventListener('click', () => {
                 const index = skillsArray.indexOf(skill);
-                if (index > -1) skillsArray.splice(index, 1); // Remove pelo índice preservando a referência
-                renderTags();
+                if (index > -1) skillsArray.splice(index, 1);
             });
             containerEl.insertBefore(span, inputEl);
         });
