@@ -7,25 +7,7 @@ import groovy.transform.builder.Builder
 @Canonical
 @EqualsAndHashCode(includes = ['cnpj'])
 @Builder(includeSuperProperties = true)
-class Company extends PersonImpl{
+class Company extends UserBase{
     String cnpj
     Set<Candidate> likedCandidates = [] as HashSet<Candidate>
-
-    @Override
-    void dislike(Person person) {
-        if(person && liked.contains(person))
-            liked -= person
-    }
-
-    @Override
-    void showDetails() {
-        println "=== Company(a): ${name} ==="
-        println "CNPJ: ${cnpj}"
-        println "Corporate email: ${email}"
-        println "Description: ${description}"
-        println "Desired Skills: ${skills.join(', ')}"
-        println("Liked Candidates: ${liked.collect { it.name }.join(', ')}")
-        println("Address: ${address.street}, ${address.number}, ${address.country.name} - ${address.country.code}, ${address.city} ${address.state}, ${address.cep}")
-        println "==============================\n"
-    }
 }

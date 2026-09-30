@@ -4,11 +4,10 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import spock.lang.Specification
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.domain.Skill
 import zg.acelera.repository.candidate.CandidateRepositoryJDBC
 import zg.acelera.repository.skill.SkillRepository
-import zg.acelera.user_interface.CandidateJobUI
 import zg.acelera.utils.exception.EntityNotFoundException
 
 import java.time.LocalDate
@@ -48,7 +47,7 @@ class CandidateRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, [candidateId]) >> [createCandidateRow()]
 
         when:
-        Person result = repository.findById(candidateId) as Candidate
+        User result = repository.findById(candidateId) as Candidate
 
         then:
         result.id == candidateId
@@ -84,7 +83,7 @@ class CandidateRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_) >> [row1, row2]
 
         when:
-        List<Person> result = repository.findAll()
+        List<User> result = repository.findAll()
 
         then:
         result.size() == 2
@@ -95,7 +94,7 @@ class CandidateRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_) >> []
 
         when:
-        List<Person> result = repository.findAll()
+        List<User> result = repository.findAll()
 
         then:
         result.isEmpty()
@@ -107,7 +106,7 @@ class CandidateRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, [cpf]) >> [createCandidateRow()]
 
         when:
-        Person result = repository.findByCpf(cpf) as Candidate
+        User result = repository.findByCpf(cpf) as Candidate
 
         then:
         result.cpf == cpf
@@ -130,7 +129,7 @@ class CandidateRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, ["Java"]) >> [createCandidateRow()]
 
         when:
-        List<Person> result = repository.findBySkill("Java")
+        List<User> result = repository.findBySkill("Java")
 
         then:
         result.size() == 1
@@ -141,7 +140,7 @@ class CandidateRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, ["Rust"]) >> []
 
         when:
-        List<Person> result = repository.findBySkill("Rust")
+        List<User> result = repository.findBySkill("Rust")
 
         then:
         result.isEmpty()

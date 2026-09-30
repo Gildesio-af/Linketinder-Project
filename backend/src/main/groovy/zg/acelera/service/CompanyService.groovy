@@ -1,7 +1,7 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Company
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.company.CompanyCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
@@ -9,8 +9,6 @@ import zg.acelera.dto.company.CompanyUpdateDTO
 import zg.acelera.dto.skill.SkillResponseDTO
 import zg.acelera.repository.company.CompanyRepository
 import zg.acelera.utils.exception.EntityNotFoundException
-
-import java.sql.SQLException
 
 class CompanyService {
     private final CompanyRepository companyRepository
@@ -24,7 +22,7 @@ class CompanyService {
     }
 
     List<CompanyResponseDTO> listAllCompanies() {
-        List<Person> allCompanies = companyRepository.findAll()
+        List<User> allCompanies = companyRepository.findAll()
         return allCompanies.collect { company ->
             CompanyResponseDTO.fromDomain(company as Company, addressService.getAddressesByUserId(company.id))
         }
@@ -36,7 +34,7 @@ class CompanyService {
     }
 
     List<CompanyResponseDTO> listCompaniesBySkill(String skillName) {
-        List<Person> companiesBySkill = companyRepository.findBySkill(skillName)
+        List<User> companiesBySkill = companyRepository.findBySkill(skillName)
         return companiesBySkill.collect { company ->
             CompanyResponseDTO.fromDomain(company as Company, addressService.getAddressesByUserId(company.id))
         }
@@ -49,11 +47,6 @@ class CompanyService {
         if (addressDTO) addressService.createAddress(addressDTO, companySaved.id)
 
         return CompanyResponseDTO.fromDomain(companySaved, addressService.getAddressesByUserId(companySaved.id))
-    }
-
-    //TODO: remove
-    CompanyResponseDTO registerCompany(CompanyCreateDTO companyDTO) {
-        return registerCompany(companyDTO, null)
     }
 
     Set<String> resolveSkillNamesToIds(Set<String> skillNames) {

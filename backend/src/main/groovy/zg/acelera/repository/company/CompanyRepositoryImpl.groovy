@@ -3,7 +3,7 @@ package zg.acelera.repository.company
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Company
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 
 import java.nio.file.Paths
 
@@ -25,7 +25,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
     }
 
     @Override
-    Person findById(UUID id) {
+    User findById(UUID id) {
         return findAll().find { it.id == id }
     }
 
@@ -35,7 +35,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
     }
 
     @Override
-    List<Person> findAll() {
+    List<User> findAll() {
         if (file.text.trim().isEmpty()) return []
 
         def slurper = new JsonSlurper()
@@ -55,7 +55,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
         }
     }
 
-    private void rewriteFile(List<Person> companies) {
+    private void rewriteFile(List<User> companies) {
         def builder = new JsonBuilder()
 
         builder companies.collect { person ->
@@ -76,12 +76,12 @@ class CompanyRepositoryImpl implements CompanyRepository {
     }
 
     @Override
-    Person findByCnpj(String cnpj) {
+    User findByCnpj(String cnpj) {
         return findAll().find { ((Company) it).cnpj == cnpj }
     }
 
     @Override
-    List<Person> findBySkill(String skill) {
+    List<User> findBySkill(String skill) {
         return findAll().findAll { it.skills.any { it.name?.equalsIgnoreCase(skill) } }
     }
 
@@ -92,7 +92,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
         }
 
         company.id = company.id ?: UUID.randomUUID()
-        List<Person> all = findAll()
+        List<User> all = findAll()
         all.add(company)
         rewriteFile(all)
         return company
@@ -100,7 +100,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
 
     @Override
     Company update(Company company, UUID userId) {
-        List<Person> all = findAll()
+        List<User> all = findAll()
         int index = all.findIndexOf { ((Company) it).id == userId }
 
         if (index == -1) throw new IllegalArgumentException("Company not found with ID: ${userId}")
@@ -120,7 +120,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
 
     @Override
     void delete(UUID userId) {
-        List<Person> all = findAll()
+        List<User> all = findAll()
         if (all.removeIf { ((Company) it).id == userId }) {
             rewriteFile(all)
         }

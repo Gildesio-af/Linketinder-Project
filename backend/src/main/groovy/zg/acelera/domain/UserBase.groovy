@@ -5,7 +5,7 @@ import groovy.transform.EqualsAndHashCode
 
 @Canonical
 @EqualsAndHashCode(includes = ['id'])
-abstract class PersonImpl implements Person {
+abstract class UserBase implements User {
     UUID id
     String name
     String email
@@ -13,12 +13,5 @@ abstract class PersonImpl implements Person {
 
     Set<Address> addresses = [] as HashSet<Address>
     String description
-    Set<PersonImpl> liked = [] as HashSet<PersonImpl>
     Set<Skill> skills = [] as HashSet<Skill>
-
-    @Override
-    void like(String id) {
-        if (id)
-            liked += id
-    }
 }

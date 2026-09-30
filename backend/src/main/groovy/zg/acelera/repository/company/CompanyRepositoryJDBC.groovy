@@ -3,7 +3,7 @@ package zg.acelera.repository.company
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import zg.acelera.domain.Company
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.domain.Skill
 import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.utils.exception.EntityNotFoundException
@@ -19,7 +19,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
     }
 
     @Override
-    Person findById(UUID id) {
+    User findById(UUID id) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -52,7 +52,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
     }
 
     @Override
-    List<Person> findAll() {
+    List<User> findAll() {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -61,11 +61,11 @@ class CompanyRepositoryJDBC implements CompanyRepository {
             LEFT JOIN skills sk ON sk.id = usk.skill_id
         """)
 
-        return getCompaniesWithSkillsFromRows(rows).toList() as List<Person>
+        return getCompaniesWithSkillsFromRows(rows).toList() as List<User>
     }
 
     @Override
-    Person findByCnpj(String cnpj) {
+    User findByCnpj(String cnpj) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -81,7 +81,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
     }
 
     @Override
-    List<Person> findBySkill(String skill) {
+    List<User> findBySkill(String skill) {
         List<GroovyRowResult> rows = sql.rows("""
             SELECT us.*, co.*, sk.id AS skill_id, sk.name AS skill_name
             FROM users us
@@ -96,7 +96,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
             )
         """, [skill])
 
-        return getCompaniesWithSkillsFromRows(rows).toList() as List<Person>
+        return getCompaniesWithSkillsFromRows(rows).toList() as List<User>
     }
 
     @Override
@@ -190,7 +190,7 @@ class CompanyRepositoryJDBC implements CompanyRepository {
     }
 
     private void insertInUsersSkill(Set<Skill> skills, UUID userId) {
-        if (skills) return
+        if (!skills) return
 
         skills.each { skill ->
             sql.execute("""

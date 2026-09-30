@@ -4,7 +4,7 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import spock.lang.Specification
 import zg.acelera.domain.Company
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.domain.Skill
 import zg.acelera.repository.company.CompanyRepositoryJDBC
 import zg.acelera.repository.skill.SkillRepository
@@ -43,7 +43,7 @@ class CompanyRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, [companyId]) >> [createCompanyRow()]
 
         when:
-        Person result = repository.findById(companyId) as Company
+        User result = repository.findById(companyId) as Company
 
         then:
         result.id == companyId
@@ -79,7 +79,7 @@ class CompanyRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_) >> []
 
         when:
-        List<Person> result = repository.findAll()
+        List<User> result = repository.findAll()
 
         then:
         result.isEmpty()
@@ -138,7 +138,7 @@ class CompanyRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, ["Java"]) >> [createCompanyRow()]
 
         when:
-        List<Person> result = repository.findBySkill("Java")
+        List<User> result = repository.findBySkill("Java")
 
         then:
         result.size() == 1
@@ -149,7 +149,7 @@ class CompanyRepositoryJDBCSpec extends Specification {
         sqlMock.rows(_, ["Rust"]) >> []
 
         when:
-        List<Person> result = repository.findBySkill("Rust")
+        List<User> result = repository.findBySkill("Rust")
 
         then:
         result.isEmpty()

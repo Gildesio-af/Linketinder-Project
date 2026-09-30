@@ -2,7 +2,7 @@ package zg.acelera.user_interface
 
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.Company
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.service.MatchService
 import zg.acelera.utils.reader.InputReader
 
@@ -66,7 +66,7 @@ class MatchUI {
 
     private void viewPotentials() {
         println "\n--- POTENTIAL MATCHES ---"
-        List<Person> potentials = matchService.getPotentialMatches()
+        List<User> potentials = matchService.getPotentialMatches()
 
         if (potentials.isEmpty()) {
             println "No profiles available for you at the moment."

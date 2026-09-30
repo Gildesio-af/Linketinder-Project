@@ -2,7 +2,7 @@ package zg.acelera.service
 
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.Company
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.repository.candidate.CandidateRepositoryImpl
 import zg.acelera.repository.company.CompanyRepositoryImpl
 import zg.acelera.repository.candidate.CandidateRepository
@@ -12,7 +12,7 @@ import zg.acelera.repository.company.CompanyRepository
 class MatchService {
     private final CandidateRepository candidateRepository
     private final CompanyRepository companyRepository
-    private Person currentUser
+    private User currentUser
 
     MatchService() {
         this.candidateRepository = new CandidateRepositoryImpl()
@@ -47,7 +47,7 @@ class MatchService {
         throw new IllegalArgumentException("Invalid format. Please provide a valid CPF (11 digits) or CNPJ (14 digits).")
     }
 
-    List<Person> getPotentialMatches() {
+    List<User> getPotentialMatches() {
         if (currentUser instanceof Candidate) {
             return companyRepository.findAll()
         } else if (currentUser instanceof Company) {
@@ -57,8 +57,8 @@ class MatchService {
     }
 
     void likeProfile(Set<String> targetsId) {
-        List<Person> potentials = getPotentialMatches()
-        List<Person> likedProfiles = []
+        List<User> potentials = getPotentialMatches()
+        List<User> likedProfiles = []
 
         if (currentUser instanceof Candidate) {
             likedProfiles = potentials.findAll { targetsId.contains(((Company) it).cnpj) }
@@ -78,7 +78,7 @@ class MatchService {
     }
 
     void showMatches() {
-        List<Person> matches = []
+        List<User> matches = []
         if(currentUser instanceof Candidate) {
             matches = searchCandidateMatches()
         } else if(currentUser instanceof Company) {

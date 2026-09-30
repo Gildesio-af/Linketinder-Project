@@ -3,7 +3,7 @@ package zg.acelera.repository.candidate
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.domain.SkillEnum
 
 import java.nio.file.Paths
@@ -26,18 +26,18 @@ class CandidateRepositoryImpl implements CandidateRepository {
     }
 
     @Override
-    Person findById(UUID id) {
+    User findById(UUID id) {
         return null
     }
 
     @Override
-    List<Person> findAll() {
+    List<User> findAll() {
         if (file.text.trim().isEmpty()) return []
 
         def slurper = new JsonSlurper()
         def jsonList = slurper.parse(file)
 
-        List<Person> candidates = []
+        List<User> candidates = []
 
         jsonList.each { map ->
             Set<SkillEnum> loadedSkills = map.skills?.collect { SkillEnum.valueOf(it.toString()) } as HashSet
@@ -59,7 +59,7 @@ class CandidateRepositoryImpl implements CandidateRepository {
         candidates
     }
 
-    private void rewriteFile(List<Person> candidates) {
+    private void rewriteFile(List<User> candidates) {
         def builder = new JsonBuilder()
 
         builder candidates.collect { person ->
@@ -81,12 +81,12 @@ class CandidateRepositoryImpl implements CandidateRepository {
     }
 
     @Override
-    Person findByCpf(String cpf) {
+    User findByCpf(String cpf) {
         return findAll().find { ((Candidate) it).cpf == cpf }
     }
 
     @Override
-    List<Person> findBySkill(String skill) {
+    List<User> findBySkill(String skill) {
         return null
     }
 

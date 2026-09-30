@@ -1,7 +1,7 @@
 package zg.acelera.service
 
 import zg.acelera.domain.Candidate
-import zg.acelera.domain.Person
+import zg.acelera.domain.User
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.candidate.CandidateDTO
@@ -23,7 +23,7 @@ class CandidateService {
     }
 
     List<CandidateResponseDTO> listAllCandidates() {
-        List<Person> allCandidates = repository.findAll()
+        List<User> allCandidates = repository.findAll()
         return allCandidates.collect { candidate ->
             CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
         }
@@ -38,7 +38,7 @@ class CandidateService {
     }
 
     List<CandidateResponseDTO> listCandidatesBySkill(String skillName) {
-        List<Person> candidates = repository.findBySkill(skillName)
+        List<User> candidates = repository.findBySkill(skillName)
 
         List<CandidateResponseDTO> candidateResponseDTOS = candidates.collect { candidate ->
             CandidateResponseDTO.fromDomain(candidate as Candidate, addressService.getAddressesByUserId(candidate.id))
