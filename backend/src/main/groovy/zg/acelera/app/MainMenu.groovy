@@ -1,6 +1,9 @@
 package zg.acelera.app
 
 import groovy.sql.Sql
+import zg.acelera.controller.CandidateController
+import zg.acelera.controller.CompanyController
+import zg.acelera.controller.JobController
 import zg.acelera.repository.address.AddressRepository
 import zg.acelera.repository.address.AddressRepositoryJDBC
 import zg.acelera.repository.candidate.CandidateRepository
@@ -34,6 +37,7 @@ class MainMenu {
         Sql sql = factory.createSql()
         InputReader inputReader = new InputReader()
 
+        // Repositories
         CountryRepository countryRepository = new CountryRepositoryJDBC(sql)
         AddressRepository addressRepository = new AddressRepositoryJDBC(sql)
         SkillRepository skillRepository = new SkillRepositoryJDBC(sql)
@@ -41,6 +45,7 @@ class MainMenu {
         CompanyRepository companyRepository = new CompanyRepositoryJDBC(sql, skillRepository)
         JobRepository jobRepository = new JobRepositoryJDBC(sql)
 
+        // Services
         CountryService countryService = new CountryService(countryRepository)
         AddressService addressService = new AddressService(addressRepository, countryService)
         SkillService skillService = new SkillService(skillRepository)
@@ -50,13 +55,20 @@ class MainMenu {
 
         MatchService matchService = new MatchService()
 
+        // Controllers
+        CandidateController candidateController = new CandidateController(candidateService)
+        CompanyController companyController = new CompanyController(companyService)
+        JobController jobController = new JobController(jobService)
+
+        // Readers
         AddressConsoleReader addressConsoleReader = new AddressConsoleReader(inputReader, countryService)
         SkillConsoleReader skillConsoleReader = new SkillConsoleReader(inputReader, skillService)
 
-        CandidateJobUI candidateJobUI = new CandidateJobUI(jobService, inputReader, addressConsoleReader, skillConsoleReader)
-        CompanyJobUI companyJobUI = new CompanyJobUI(jobService, companyService, inputReader, addressConsoleReader, skillConsoleReader)
-        CandidateUI candidateUI = new CandidateUI(candidateService, candidateJobUI, inputReader, addressConsoleReader, skillConsoleReader)
-        CompanyUI companyUI = new CompanyUI(companyService, companyJobUI, inputReader, addressConsoleReader, skillConsoleReader)
+        // Views
+        CandidateJobUI candidateJobUI = new CandidateJobUI(jobController, inputReader, addressConsoleReader, skillConsoleReader)
+        CompanyJobUI companyJobUI = new CompanyJobUI(jobController, companyController, inputReader, addressConsoleReader, skillConsoleReader)
+        CandidateUI candidateUI = new CandidateUI(candidateController, candidateJobUI, inputReader, addressConsoleReader, skillConsoleReader)
+        CompanyUI companyUI = new CompanyUI(companyController, companyJobUI, inputReader, addressConsoleReader, skillConsoleReader)
         MatchUI matchUI = new MatchUI(matchService, inputReader)
 
         boolean running = true

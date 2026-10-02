@@ -1,20 +1,20 @@
 package zg.acelera.user_interface
 
 
+import zg.acelera.controller.JobController
 import zg.acelera.dto.job.JobResponseDTO
-import zg.acelera.service.JobService
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.utils.reader.SkillConsoleReader
 
 abstract class JobUI {
-    protected final JobService jobService
+    protected final JobController jobController
     protected final InputReader input
     protected final AddressConsoleReader addressReader
     protected final SkillConsoleReader skillReader
 
-    JobUI(JobService jobService, InputReader input, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
-        this.jobService = jobService
+    JobUI(JobController jobController, InputReader input, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
+        this.jobController = jobController
         this.input = input
         this.addressReader = addressReader
         this.skillReader = skillReader

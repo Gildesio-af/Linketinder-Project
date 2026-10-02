@@ -1,12 +1,12 @@
 package zg.acelera.user_interface
 
+import zg.acelera.controller.CompanyController
+import zg.acelera.controller.JobController
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
 import zg.acelera.dto.job.JobCreateDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.dto.job.JobUpdateDTO
-import zg.acelera.service.CompanyService
-import zg.acelera.service.JobService
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.utils.reader.SkillConsoleReader
@@ -14,18 +14,18 @@ import zg.acelera.utils.reader.SkillConsoleReader
 import java.sql.SQLException
 
 class CompanyJobUI extends JobUI {
-    private final CompanyService companyService
+    private final CompanyController companyController
 
-    CompanyJobUI(JobService jobService, CompanyService companyService, InputReader input, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
-        super (jobService, input, addressReader, skillReader)
-        this.companyService = companyService
+    CompanyJobUI(JobController jobController, CompanyController companyController, InputReader input, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
+        super (jobController, input, addressReader, skillReader)
+        this.companyController = companyController
     }
 
     void manageJobs() {
         println "\n=== COMPANY LOGIN ==="
         String cnpj = input.readString("Enter your CNPJ to login: ")
 
-        CompanyResponseDTO company = companyService.listCompanyByCnpj(cnpj)
+        CompanyResponseDTO company = companyController.findByCnpj(cnpj)
         if (!company) {
             println "Error: No company found with CNPJ: ${cnpj}. Login failed."
             return
@@ -59,7 +59,7 @@ class CompanyJobUI extends JobUI {
 
     private void viewMyJobs(CompanyResponseDTO company) {
         println "\n=== MY JOBS ==="
-        Set<JobResponseDTO> jobsByPublisher = jobService.getJobsByPublisher(company.id())
+        Set<JobResponseDTO> jobsByPublisher = jobController.getJobsByPublisher(company.id())
         String emptyMessage = "You don't have any jobs posted yet."
         displayJobs(jobsByPublisher, emptyMessage)
     }
@@ -81,7 +81,7 @@ class CompanyJobUI extends JobUI {
             println "\n--- JOB LOCATION ---"
             AddressCreateDTO addressDTO = addressReader.readAddressData()
 
-            JobResponseDTO result = jobService.createJob(newJob, addressDTO)
+            JobResponseDTO result = jobController.createJob(newJob, addressDTO)
 
             if (result) {
                 println "\nJob created successfully!"
@@ -101,7 +101,7 @@ class CompanyJobUI extends JobUI {
         try {
             JobResponseDTO selectedJob = selectJobFromCompany(company)
             JobUpdateDTO jobToUpdateDTO = getDataToUpdateJob(selectedJob)
-            JobResponseDTO jobUpdated = jobService.updateJob(jobToUpdateDTO, selectedJob.id())
+            JobResponseDTO jobUpdated = jobController.updateJob(jobToUpdateDTO, selectedJob.id())
 
             if (jobUpdated) {
                 println "\nJob updated successfully!"
@@ -122,7 +122,7 @@ class CompanyJobUI extends JobUI {
         JobResponseDTO selectedJob = selectJobFromCompany(company)
         String confirm = input.readString("Are you sure you want to delete '${selectedJob.name()}'? (yes/no): ")
         if (confirm?.toLowerCase() == "yes") {
-            jobService.deleteJob(selectedJob.id())
+            jobController.deleteJob(selectedJob.id())
             println "Job deleted successfully."
         } else {
             println "Deletion canceled."
@@ -144,7 +144,7 @@ class CompanyJobUI extends JobUI {
     }
 
     private JobResponseDTO selectJobFromCompany(CompanyResponseDTO company) {
-        Set<JobResponseDTO> jobs = jobService.getJobsByPublisher(company.id())
+        Set<JobResponseDTO> jobs = jobController.getJobsByPublisher(company.id())
 
         if (!jobs) {
             println "You don't have any jobs to select."

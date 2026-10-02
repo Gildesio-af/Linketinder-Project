@@ -1,10 +1,10 @@
 package zg.acelera.user_interface
 
+import zg.acelera.controller.CompanyController
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.company.CompanyCreateDTO
 import zg.acelera.dto.company.CompanyResponseDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
-import zg.acelera.service.CompanyService
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.utils.reader.SkillConsoleReader
@@ -12,14 +12,14 @@ import zg.acelera.utils.reader.SkillConsoleReader
 import java.sql.SQLException
 
 class CompanyUI {
-    private final CompanyService companyService
+    private final CompanyController controller
     private final CompanyJobUI jobUI
     private final InputReader input
     private final AddressConsoleReader addressReader
     private final SkillConsoleReader skillReader
 
-    CompanyUI(CompanyService companyService, CompanyJobUI jobUI, InputReader inputReader, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
-        this.companyService = companyService
+    CompanyUI(CompanyController controller, CompanyJobUI jobUI, InputReader inputReader, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
+        this.controller = controller
         this.jobUI = jobUI
         this.input = inputReader
         this.addressReader = addressReader
@@ -59,7 +59,7 @@ class CompanyUI {
             println "\n--- ADDRESS DATA ---"
             AddressCreateDTO addressDTO = addressReader.readAddressData()
 
-            CompanyResponseDTO result = companyService.registerCompany(dto, addressDTO)
+            CompanyResponseDTO result = controller.register(dto, addressDTO)
             if (result) {
                 println "\nCompany registered successfully!"
                 printCompanyResponse(result)
@@ -78,7 +78,7 @@ class CompanyUI {
         println "\n=== UPDATE COMPANY ==="
         try {
             CompanyUpdateDTO dto = getCompanyDataToUpdate()
-            CompanyResponseDTO result = companyService.updateCompany(dto)
+            CompanyResponseDTO result = controller.update(dto)
 
             if (result) {
                 println "\nCompany updated successfully!"
@@ -97,7 +97,7 @@ class CompanyUI {
     void searchCompanyByCnpj() {
         println "\n=== SEARCH COMPANY ==="
         String cnpj = input.readString("Enter the CNPJ: ")
-        CompanyResponseDTO result = companyService.listCompanyByCnpj(cnpj)
+        CompanyResponseDTO result = controller.findByCnpj(cnpj)
         if (result) {
             printCompanyResponse(result)
         } else {
@@ -108,7 +108,7 @@ class CompanyUI {
     void searchCompaniesBySkill() {
         println "\n=== FILTER BY SKILL ==="
         String skill = input.readString("Enter the name of the skill (e.g. JAVA): ")
-        List<CompanyResponseDTO> results = companyService.listCompaniesBySkill(skill)
+        List<CompanyResponseDTO> results = controller.findBySkill(skill)
         if (results && !results.isEmpty()) {
             results.each { printCompanyResponse(it) }
         } else {
@@ -119,13 +119,13 @@ class CompanyUI {
     void deleteCompany() {
         println "\n=== DELETE COMPANY ==="
         String cnpj = input.readString("Enter the CNPJ of the company you want to delete: ")
-        companyService.deleteCompany(cnpj)
+        controller.delete(cnpj)
         println "Company deleted successfully (if found)."
     }
 
     void listAllCompanies() {
         println "\n=== ALL COMPANIES ==="
-        List<CompanyResponseDTO> companies = companyService.listAllCompanies()
+        List<CompanyResponseDTO> companies = controller.listAll()
         if (companies && !companies.isEmpty()) {
             companies.each { printCompanyResponse(it) }
         } else {
@@ -179,7 +179,7 @@ class CompanyUI {
         if (!skillNames || skillNames.isEmpty())
             throw new IllegalArgumentException("No skills selected. Registration canceled.")
 
-        Set<String> skillIds = companyService.resolveSkillNamesToIds(skillNames)
+        Set<String> skillIds = controller.resolveSkillNamesToIds(skillNames)
 
         return new CompanyCreateDTO(cnpj, name, email, password, description, skillIds)
     }

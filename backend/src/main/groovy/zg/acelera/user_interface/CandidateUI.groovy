@@ -1,10 +1,10 @@
 package zg.acelera.user_interface
 
+import zg.acelera.controller.CandidateController
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.candidate.CandidateDTO
 import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
-import zg.acelera.service.CandidateService
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.utils.reader.SkillConsoleReader
@@ -13,14 +13,14 @@ import java.sql.SQLException
 import java.time.LocalDate
 
 class CandidateUI {
-    private final CandidateService candidateService
+    private final CandidateController controller
     private final CandidateJobUI jobUI
     private final InputReader input
     private final AddressConsoleReader addressReader
     private final SkillConsoleReader skillReader
 
-    CandidateUI(CandidateService candidateService, CandidateJobUI jobUI, InputReader inputReader, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
-        this.candidateService = candidateService
+    CandidateUI(CandidateController controller, CandidateJobUI jobUI, InputReader inputReader, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
+        this.controller = controller
         this.jobUI = jobUI
         this.input = inputReader
         this.addressReader = addressReader
@@ -65,7 +65,7 @@ class CandidateUI {
             println "\n--- ADDRESS ---"
             AddressCreateDTO newAddressDTO = addressReader.readAddressData()
 
-            CandidateResponseDTO candidateSaved = candidateService.registerCandidate(newCandidateDTO, newAddressDTO)
+            CandidateResponseDTO candidateSaved = controller.register(newCandidateDTO, newAddressDTO)
             if (candidateSaved) {
                 println "\nCandidate registered successfully!"
                 printCandidateResponse(candidateSaved)
@@ -84,7 +84,7 @@ class CandidateUI {
         try {
             println "\n=== UPDATE CANDIDATE ==="
             CandidateUpdateDTO dto = getDataToUpdate()
-            CandidateResponseDTO result = candidateService.updateCandidate(dto)
+            CandidateResponseDTO result = controller.update(dto)
             if (result) {
                 println "\nCandidate updated successfully!"
                 printCandidateResponse(result)
@@ -102,7 +102,7 @@ class CandidateUI {
     void searchCandidateByCpf() {
         println "\n=== SEARCH CANDIDATE ==="
         String cpf = input.readString("Enter the CPF: ")
-        CandidateResponseDTO result = candidateService.listCandidateByCpf(cpf)
+        CandidateResponseDTO result = controller.findByCpf(cpf)
         if (result) {
             printCandidateResponse(result)
         } else {
@@ -113,7 +113,7 @@ class CandidateUI {
     void searchCandidatesBySkill() {
         println "\n=== FILTER BY SKILL ==="
         String skill = input.readString("Enter the name of the skill (e.g. JAVA): ")
-        List<CandidateResponseDTO> results = candidateService.listCandidatesBySkill(skill)
+        List<CandidateResponseDTO> results = controller.findBySkill(skill)
         if (results && !results.isEmpty()) {
             results.each { printCandidateResponse(it) }
         } else {
@@ -124,13 +124,13 @@ class CandidateUI {
     void deleteCandidate() {
         println "\n=== DELETE CANDIDATE ==="
         String cpf = input.readString("Enter the CPF of the candidate you want to delete: ")
-        candidateService.deleteCandidate(cpf)
+        controller.delete(cpf)
         println "Candidate deleted successfully."
     }
 
     void listAllCandidates() {
         println "\n=== ALL CANDIDATES ==="
-        List<CandidateResponseDTO> candidates = candidateService.listAllCandidates()
+        List<CandidateResponseDTO> candidates = controller.listAll()
         if (candidates && !candidates.isEmpty()) {
             candidates.each { printCandidateResponse(it) }
         } else {
@@ -185,7 +185,7 @@ class CandidateUI {
 
         Set<String> skillNames = skillReader.getSkillsFromUser()
 
-        Set<String> skillIds = candidateService.resolveSkillNamesToIds(skillNames)
+        Set<String> skillIds = controller.resolveSkillNamesToIds(skillNames)
 
         if (skillIds.size() != skillNames.size()) {
             throw new IllegalArgumentException("Some skills could not be recognized. Please ensure all skills are valid.")

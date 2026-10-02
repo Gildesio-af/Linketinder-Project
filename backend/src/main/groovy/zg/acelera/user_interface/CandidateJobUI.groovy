@@ -1,14 +1,14 @@
 package zg.acelera.user_interface
 
+import zg.acelera.controller.JobController
 import zg.acelera.dto.job.JobResponseDTO
-import zg.acelera.service.JobService
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
 import zg.acelera.utils.reader.SkillConsoleReader
 
 class CandidateJobUI extends JobUI {
-    CandidateJobUI(JobService jobService, InputReader input, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
-        super (jobService, input, addressReader, skillReader)
+    CandidateJobUI(JobController jobController, InputReader input, AddressConsoleReader addressReader, SkillConsoleReader skillReader) {
+        super (jobController, input, addressReader, skillReader)
     }
 
     void candidateViewJobsMenu() {
@@ -52,14 +52,14 @@ class CandidateJobUI extends JobUI {
 
     private void viewAllJobs() {
         println "\n=== ALL JOBS ==="
-        Set<JobResponseDTO> jobs = jobService.getAllJobs()
+        Set<JobResponseDTO> jobs = jobController.getAllJobs()
         displayJobs(jobs, "No jobs available at the moment.")
     }
 
     private void searchJobsByName() {
         println "\n=== SEARCH JOBS BY NAME ==="
         String name = input.readString("Enter the job name to search: ")
-        Set<JobResponseDTO> jobsByName = jobService.getJobsByName(name)
+        Set<JobResponseDTO> jobsByName = jobController.getJobsByName(name)
         String emptyMessage = "No jobs found matching: ${name}"
         displayJobs(jobsByName, emptyMessage)
     }
@@ -67,7 +67,7 @@ class CandidateJobUI extends JobUI {
     private void searchJobsBySkill() {
         println "\n=== SEARCH JOBS BY SKILL ==="
         String skill = input.readString("Enter the skill name to search (e.g. JAVA): ")
-        Set<JobResponseDTO> jobs = jobService.getJobsBySkill(skill)
+        Set<JobResponseDTO> jobs = jobController.getJobsBySkill(skill)
         String emptyMessage = "No jobs found with skill: ${skill}"
         displayJobs(jobs, emptyMessage)
     }
