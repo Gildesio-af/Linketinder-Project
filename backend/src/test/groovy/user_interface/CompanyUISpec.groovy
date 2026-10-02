@@ -1,6 +1,7 @@
 package user_interface
 
 import spock.lang.Specification
+import zg.acelera.controller.CompanyController
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.company.CompanyCreateDTO
@@ -8,7 +9,6 @@ import zg.acelera.dto.company.CompanyResponseDTO
 import zg.acelera.dto.company.CompanyUpdateDTO
 import zg.acelera.dto.country.CountryDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.service.CompanyService
 import zg.acelera.user_interface.CompanyJobUI
 import zg.acelera.user_interface.CompanyUI
 import zg.acelera.utils.reader.AddressConsoleReader
@@ -17,7 +17,7 @@ import zg.acelera.utils.reader.SkillConsoleReader
 
 class CompanyUISpec extends Specification {
 
-    CompanyService serviceMock
+    CompanyController controllerMock
     CompanyJobUI jobUIMock
     InputReader inputMock
     AddressConsoleReader addressReaderMock
@@ -28,12 +28,12 @@ class CompanyUISpec extends Specification {
     UUID skillId = UUID.randomUUID()
 
     def setup() {
-        serviceMock = Mock(CompanyService)
+        controllerMock = Mock(CompanyController)
         jobUIMock = Mock(CompanyJobUI)
         inputMock = Mock(InputReader)
         addressReaderMock = Mock(AddressConsoleReader)
         skillReaderMock = Mock(SkillConsoleReader)
-        ui = new CompanyUI(serviceMock, jobUIMock, inputMock, addressReaderMock, skillReaderMock)
+        ui = new CompanyUI(controllerMock, jobUIMock, inputMock, addressReaderMock, skillReaderMock)
     }
 
     private CompanyResponseDTO createCompanyResponse() {
@@ -45,7 +45,7 @@ class CompanyUISpec extends Specification {
         )
     }
 
-    def "registerCompany should read inputs and call service when data is valid"() {
+    def "registerCompany should read inputs and call controller when data is valid"() {
         given:
         inputMock.readString("CNPJ (14 digits, without punctuation): ") >> "12345678000199"
         inputMock.readString("Name: ") >> "Tech Corp"
@@ -54,7 +54,7 @@ class CompanyUISpec extends Specification {
         inputMock.readString("Description/Bio: ") >> "A tech company"
 
         skillReaderMock.getSkillsFromUser() >> (["Java"] as Set)
-        serviceMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
+        controllerMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
 
         AddressCreateDTO addressDTO = new AddressCreateDTO(
                 cep: "12345678", street: "Main St", number: "100",
@@ -63,13 +63,13 @@ class CompanyUISpec extends Specification {
         )
         addressReaderMock.readAddressData() >> addressDTO
 
-        serviceMock.registerCompany(_, addressDTO) >> createCompanyResponse()
+        controllerMock.register(_, addressDTO) >> createCompanyResponse()
 
         when:
         ui.registerCompany()
 
         then:
-        1 * serviceMock.registerCompany({ CompanyCreateDTO dto ->
+        1 * controllerMock.register({ CompanyCreateDTO dto ->
             dto.cnpj() == "12345678000199" &&
                     dto.name() == "Tech Corp" &&
                     dto.email() == "tech@corp.com"
@@ -85,13 +85,13 @@ class CompanyUISpec extends Specification {
         inputMock.readString("Description/Bio: ") >> "A tech company"
 
         skillReaderMock.getSkillsFromUser() >> (["Java"] as Set)
-        serviceMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
+        controllerMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
 
         when:
         ui.registerCompany()
 
         then:
-        0 * serviceMock.registerCompany(_, _)
+        0 * controllerMock.register(_, _)
     }
 
     def "registerCompany should handle empty skills gracefully"() {
@@ -108,56 +108,56 @@ class CompanyUISpec extends Specification {
         ui.registerCompany()
 
         then:
-        0 * serviceMock.registerCompany(_, _)
+        0 * controllerMock.register(_, _)
     }
 
-    def "listAllCompanies should call service and print companies"() {
+    def "listAllCompanies should call controller and print companies"() {
         given:
-        serviceMock.listAllCompanies() >> [createCompanyResponse()]
+        controllerMock.listAll() >> [createCompanyResponse()]
 
         when:
         ui.listAllCompanies()
 
         then:
-        1 * serviceMock.listAllCompanies()
+        1 * controllerMock.listAll()
     }
 
     def "listAllCompanies should handle empty list"() {
         given:
-        serviceMock.listAllCompanies() >> []
+        controllerMock.listAll() >> []
 
         when:
         ui.listAllCompanies()
 
         then:
-        1 * serviceMock.listAllCompanies()
+        1 * controllerMock.listAll()
     }
 
-    def "searchCompanyByCnpj should call service with the provided CNPJ"() {
+    def "searchCompanyByCnpj should call controller with the provided CNPJ"() {
         given:
         inputMock.readString("Enter the CNPJ: ") >> "12345678000199"
-        serviceMock.listCompanyByCnpj("12345678000199") >> createCompanyResponse()
+        controllerMock.findByCnpj("12345678000199") >> createCompanyResponse()
 
         when:
         ui.searchCompanyByCnpj()
 
         then:
-        1 * serviceMock.listCompanyByCnpj("12345678000199")
+        1 * controllerMock.findByCnpj("12345678000199")
     }
 
-    def "searchCompaniesBySkill should call service with the provided skill"() {
+    def "searchCompaniesBySkill should call controller with the provided skill"() {
         given:
         inputMock.readString("Enter the name of the skill (e.g. JAVA): ") >> "Java"
-        serviceMock.listCompaniesBySkill("Java") >> [createCompanyResponse()]
+        controllerMock.findBySkill("Java") >> [createCompanyResponse()]
 
         when:
         ui.searchCompaniesBySkill()
 
         then:
-        1 * serviceMock.listCompaniesBySkill("Java")
+        1 * controllerMock.findBySkill("Java")
     }
 
-    def "deleteCompany should call service with the provided CNPJ"() {
+    def "deleteCompany should call controller with the provided CNPJ"() {
         given:
         inputMock.readString("Enter the CNPJ of the company you want to delete: ") >> "12345678000199"
 
@@ -165,10 +165,10 @@ class CompanyUISpec extends Specification {
         ui.deleteCompany()
 
         then:
-        1 * serviceMock.deleteCompany("12345678000199")
+        1 * controllerMock.delete("12345678000199")
     }
 
-    def "updateCompany should read inputs and call service"() {
+    def "updateCompany should read inputs and call controller"() {
         given:
         inputMock.readString("Enter the CNPJ of the company you want to update: ") >> "12345678000199"
         inputMock.readString("New Name: ", false) >> "Tech Corp Updated"
@@ -176,13 +176,13 @@ class CompanyUISpec extends Specification {
         inputMock.readString("New Password: ", false) >> null
         inputMock.readString("New Description: ", false) >> null
 
-        serviceMock.updateCompany(_) >> createCompanyResponse()
+        controllerMock.update(_) >> createCompanyResponse()
 
         when:
         ui.updateCompany()
 
         then:
-        1 * serviceMock.updateCompany({ CompanyUpdateDTO dto ->
+        1 * controllerMock.update({ CompanyUpdateDTO dto ->
             dto.cnpj() == "12345678000199" && dto.name() == "Tech Corp Updated"
         })
     }

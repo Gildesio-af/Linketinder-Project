@@ -1,6 +1,8 @@
 package user_interface
 
 import spock.lang.Specification
+import zg.acelera.controller.CompanyController
+import zg.acelera.controller.JobController
 import zg.acelera.domain.Skill
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
@@ -9,8 +11,6 @@ import zg.acelera.dto.country.CountryDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.dto.job.JobUpdateDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.service.CompanyService
-import zg.acelera.service.JobService
 import zg.acelera.user_interface.CompanyJobUI
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
@@ -18,8 +18,8 @@ import zg.acelera.utils.reader.SkillConsoleReader
 
 class CompanyJobUISpec extends Specification {
 
-    JobService jobServiceMock
-    CompanyService companyServiceMock
+    JobController jobControllerMock
+    CompanyController companyControllerMock
     InputReader inputMock
     AddressConsoleReader addressReaderMock
     SkillConsoleReader skillReaderMock
@@ -32,12 +32,12 @@ class CompanyJobUISpec extends Specification {
     UUID skillId = UUID.randomUUID()
 
     def setup() {
-        jobServiceMock = Mock(JobService)
-        companyServiceMock = Mock(CompanyService)
+        jobControllerMock = Mock(JobController)
+        companyControllerMock = Mock(CompanyController)
         inputMock = Mock(InputReader)
         addressReaderMock = Mock(AddressConsoleReader)
         skillReaderMock = Mock(SkillConsoleReader)
-        ui = new CompanyJobUI(jobServiceMock, companyServiceMock, inputMock, addressReaderMock, skillReaderMock)
+        ui = new CompanyJobUI(jobControllerMock, companyControllerMock, inputMock, addressReaderMock, skillReaderMock)
     }
 
     private CompanyResponseDTO createCompanyResponse() {
@@ -65,34 +65,34 @@ class CompanyJobUISpec extends Specification {
     def "manageJobs should fail login when company not found"() {
         given:
         inputMock.readString("Enter your CNPJ to login: ") >> "12345678000199"
-        companyServiceMock.listCompanyByCnpj("12345678000199") >> null
+        companyControllerMock.findByCnpj("12345678000199") >> null
 
         when:
         ui.manageJobs()
 
         then:
-        0 * jobServiceMock.getJobsByPublisher(_)
+        0 * jobControllerMock.getJobsByPublisher(_)
     }
 
     def "manageJobs should login and allow viewing jobs"() {
         given:
         inputMock.readString("Enter your CNPJ to login: ") >> "12345678000199"
-        companyServiceMock.listCompanyByCnpj("12345678000199") >> createCompanyResponse()
+        companyControllerMock.findByCnpj("12345678000199") >> createCompanyResponse()
 
         inputMock.readString("Choose an option: ") >>> ["1", "0"]
-        jobServiceMock.getJobsByPublisher(companyId) >> ([createJobResponse()] as Set)
+        jobControllerMock.getJobsByPublisher(companyId) >> ([createJobResponse()] as Set)
 
         when:
         ui.manageJobs()
 
         then:
-        1 * jobServiceMock.getJobsByPublisher(companyId)
+        1 * jobControllerMock.getJobsByPublisher(companyId)
     }
 
     def "manageJobs should login and allow creating a job"() {
         given:
         inputMock.readString("Enter your CNPJ to login: ") >> "12345678000199"
-        companyServiceMock.listCompanyByCnpj("12345678000199") >> createCompanyResponse()
+        companyControllerMock.findByCnpj("12345678000199") >> createCompanyResponse()
 
         inputMock.readString("Choose an option: ") >>> ["2", "0"]
         inputMock.readString("Job Title: ") >> "Java Dev"
@@ -107,26 +107,26 @@ class CompanyJobUISpec extends Specification {
         )
         addressReaderMock.readAddressData() >> addressDTO
 
-        jobServiceMock.createJob(_, addressDTO) >> createJobResponse()
+        jobControllerMock.createJob(_, addressDTO) >> createJobResponse()
 
         when:
         ui.manageJobs()
 
         then:
-        1 * jobServiceMock.createJob(_, addressDTO)
+        1 * jobControllerMock.createJob(_, addressDTO)
     }
 
     def "manageJobs should login and exit immediately when user selects 0"() {
         given:
         inputMock.readString("Enter your CNPJ to login: ") >> "12345678000199"
-        companyServiceMock.listCompanyByCnpj("12345678000199") >> createCompanyResponse()
+        companyControllerMock.findByCnpj("12345678000199") >> createCompanyResponse()
         inputMock.readString("Choose an option: ") >> "0"
 
         when:
         ui.manageJobs()
 
         then:
-        0 * jobServiceMock._
+        0 * jobControllerMock._
     }
 
     def "getDataToUpdateJob should read new title and description"() {
