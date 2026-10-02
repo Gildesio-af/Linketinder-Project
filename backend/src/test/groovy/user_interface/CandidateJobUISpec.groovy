@@ -1,11 +1,11 @@
 package user_interface
 
 import spock.lang.Specification
+import zg.acelera.controller.JobController
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.country.CountryDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.domain.Skill
-import zg.acelera.service.JobService
 import zg.acelera.user_interface.CandidateJobUI
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
@@ -13,7 +13,7 @@ import zg.acelera.utils.reader.SkillConsoleReader
 
 class CandidateJobUISpec extends Specification {
 
-    JobService jobServiceMock
+    JobController jobControllerMock
     InputReader inputMock
     AddressConsoleReader addressReaderMock
     SkillConsoleReader skillReaderMock
@@ -25,11 +25,11 @@ class CandidateJobUISpec extends Specification {
     UUID skillId = UUID.randomUUID()
 
     def setup() {
-        jobServiceMock = Mock(JobService)
+        jobControllerMock = Mock(JobController)
         inputMock = Mock(InputReader)
         addressReaderMock = Mock(AddressConsoleReader)
         skillReaderMock = Mock(SkillConsoleReader)
-        ui = new CandidateJobUI(jobServiceMock, inputMock, addressReaderMock, skillReaderMock)
+        ui = new CandidateJobUI(jobControllerMock, inputMock, addressReaderMock, skillReaderMock)
     }
 
     private JobResponseDTO createJobResponse() {
@@ -53,51 +53,51 @@ class CandidateJobUISpec extends Specification {
         ui.candidateViewJobsMenu()
 
         then:
-        0 * jobServiceMock.getAllJobs()
+        0 * jobControllerMock.getAllJobs()
     }
 
     def "candidateViewJobsMenu should call getAllJobs when user selects option 1"() {
         given:
         inputMock.readString("Choose an option: ") >>> ["1", "0"]
-        jobServiceMock.getAllJobs() >> ([createJobResponse()] as Set)
+        jobControllerMock.getAllJobs() >> ([createJobResponse()] as Set)
 
         when:
         ui.candidateViewJobsMenu()
 
         then:
-        1 * jobServiceMock.getAllJobs()
+        1 * jobControllerMock.getAllJobs()
     }
 
     def "candidateViewJobsMenu should call getJobsByName when user selects option 2"() {
         given:
         inputMock.readString("Choose an option: ") >>> ["2", "0"]
         inputMock.readString("Enter the job name to search: ") >> "Java"
-        jobServiceMock.getJobsByName("Java") >> ([createJobResponse()] as Set)
+        jobControllerMock.getJobsByName("Java") >> ([createJobResponse()] as Set)
 
         when:
         ui.candidateViewJobsMenu()
 
         then:
-        1 * jobServiceMock.getJobsByName("Java")
+        1 * jobControllerMock.getJobsByName("Java")
     }
 
     def "candidateViewJobsMenu should call getJobsBySkill when user selects option 3"() {
         given:
         inputMock.readString("Choose an option: ") >>> ["3", "0"]
         inputMock.readString("Enter the skill name to search (e.g. JAVA): ") >> "Java"
-        jobServiceMock.getJobsBySkill("Java") >> ([createJobResponse()] as Set)
+        jobControllerMock.getJobsBySkill("Java") >> ([createJobResponse()] as Set)
 
         when:
         ui.candidateViewJobsMenu()
 
         then:
-        1 * jobServiceMock.getJobsBySkill("Java")
+        1 * jobControllerMock.getJobsBySkill("Java")
     }
 
     def "candidateViewJobsMenu should handle empty results gracefully"() {
         given:
         inputMock.readString("Choose an option: ") >>> ["1", "0"]
-        jobServiceMock.getAllJobs() >> ([] as Set)
+        jobControllerMock.getAllJobs() >> ([] as Set)
 
         when:
         ui.candidateViewJobsMenu()

@@ -1,6 +1,7 @@
 package user_interface
 
 import spock.lang.Specification
+import zg.acelera.controller.CandidateController
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.candidate.CandidateDTO
@@ -8,7 +9,6 @@ import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.dto.country.CountryDTO
 import zg.acelera.dto.skill.SkillResponseDTO
-import zg.acelera.service.CandidateService
 import zg.acelera.user_interface.CandidateJobUI
 import zg.acelera.user_interface.CandidateUI
 import zg.acelera.utils.reader.AddressConsoleReader
@@ -19,7 +19,7 @@ import java.time.LocalDate
 
 class CandidateUISpec extends Specification {
 
-    CandidateService serviceMock
+    CandidateController controllerMock
     CandidateJobUI jobUIMock
     InputReader inputMock
     AddressConsoleReader addressReaderMock
@@ -31,12 +31,12 @@ class CandidateUISpec extends Specification {
     UUID countryId = UUID.randomUUID()
 
     def setup() {
-        serviceMock = Mock(CandidateService)
+        controllerMock = Mock(CandidateController)
         jobUIMock = Mock(CandidateJobUI)
         inputMock = Mock(InputReader)
         addressReaderMock = Mock(AddressConsoleReader)
         skillReaderMock = Mock(SkillConsoleReader)
-        ui = new CandidateUI(serviceMock, jobUIMock, inputMock, addressReaderMock, skillReaderMock)
+        ui = new CandidateUI(controllerMock, jobUIMock, inputMock, addressReaderMock, skillReaderMock)
     }
 
     private CandidateResponseDTO createCandidateResponse() {
@@ -49,7 +49,7 @@ class CandidateUISpec extends Specification {
         )
     }
 
-    def "registerCandidate should read inputs and call service when data is valid"() {
+    def "registerCandidate should read inputs and call controller when data is valid"() {
         given:
         inputMock.readString("CPF (11 digits): ") >> "12345678900"
         inputMock.readString("Name: ") >> "John"
@@ -60,7 +60,7 @@ class CandidateUISpec extends Specification {
         inputMock.readDate("Birth Date (dd/MM/yyyy): ") >> LocalDate.of(1995, 5, 15)
 
         skillReaderMock.getSkillsFromUser() >> (["Java"] as Set)
-        serviceMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
+        controllerMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
 
         AddressCreateDTO addressDTO = new AddressCreateDTO(
                 cep: "12345678", street: "Main St", number: "100",
@@ -70,13 +70,13 @@ class CandidateUISpec extends Specification {
 
         addressReaderMock.readAddressData() >> addressDTO
 
-        serviceMock.registerCandidate(_, addressDTO) >> createCandidateResponse()
+        controllerMock.register(_, addressDTO) >> createCandidateResponse()
 
         when:
         ui.registerCandidate()
 
         then:
-        1 * serviceMock.registerCandidate({ CandidateDTO dto ->
+        1 * controllerMock.register({ CandidateDTO dto ->
             dto.cpf() == "12345678900" &&
                     dto.name() == "John" &&
                     dto.lastName() == "Doe" &&
@@ -95,62 +95,62 @@ class CandidateUISpec extends Specification {
         inputMock.readDate("Birth Date (dd/MM/yyyy): ") >> LocalDate.of(1995, 5, 15)
 
         skillReaderMock.getSkillsFromUser() >> (["Java"] as Set)
-        serviceMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
+        controllerMock.resolveSkillNamesToIds(["Java"] as Set) >> ([skillId.toString()] as Set)
 
         when:
         ui.registerCandidate()
 
         then:
-        0 * serviceMock.registerCandidate(_, _)
+        0 * controllerMock.register(_, _)
     }
 
-    def "listAllCandidates should call service and print candidates"() {
+    def "listAllCandidates should call controller and print candidates"() {
         given:
-        serviceMock.listAllCandidates() >> [createCandidateResponse()]
+        controllerMock.listAll() >> [createCandidateResponse()]
 
         when:
         ui.listAllCandidates()
 
         then:
-        1 * serviceMock.listAllCandidates()
+        1 * controllerMock.listAll()
     }
 
     def "listAllCandidates should handle empty list"() {
         given:
-        serviceMock.listAllCandidates() >> []
+        controllerMock.listAll() >> []
 
         when:
         ui.listAllCandidates()
 
         then:
-        1 * serviceMock.listAllCandidates()
+        1 * controllerMock.listAll()
     }
 
-    def "searchCandidateByCpf should call service with the provided CPF"() {
+    def "searchCandidateByCpf should call controller with the provided CPF"() {
         given:
         inputMock.readString("Enter the CPF: ") >> "12345678900"
-        serviceMock.listCandidateByCpf("12345678900") >> createCandidateResponse()
+        controllerMock.findByCpf("12345678900") >> createCandidateResponse()
 
         when:
         ui.searchCandidateByCpf()
 
         then:
-        1 * serviceMock.listCandidateByCpf("12345678900")
+        1 * controllerMock.findByCpf("12345678900")
     }
 
-    def "searchCandidatesBySkill should call service with the provided skill"() {
+    def "searchCandidatesBySkill should call controller with the provided skill"() {
         given:
         inputMock.readString("Enter the name of the skill (e.g. JAVA): ") >> "Java"
-        serviceMock.listCandidatesBySkill("Java") >> [createCandidateResponse()]
+        controllerMock.findBySkill("Java") >> [createCandidateResponse()]
 
         when:
         ui.searchCandidatesBySkill()
 
         then:
-        1 * serviceMock.listCandidatesBySkill("Java")
+        1 * controllerMock.findBySkill("Java")
     }
 
-    def "deleteCandidate should call service with the provided CPF"() {
+    def "deleteCandidate should call controller with the provided CPF"() {
         given:
         inputMock.readString("Enter the CPF of the candidate you want to delete: ") >> "12345678900"
 
@@ -158,10 +158,10 @@ class CandidateUISpec extends Specification {
         ui.deleteCandidate()
 
         then:
-        1 * serviceMock.deleteCandidate("12345678900")
+        1 * controllerMock.delete("12345678900")
     }
 
-    def "updateCandidate should read inputs and call service"() {
+    def "updateCandidate should read inputs and call controller"() {
         given:
         inputMock.readString("Enter the CPF of the candidate you want to update: ") >> "12345678900"
         inputMock.readString("New Name: ", false) >> "John Updated"
@@ -171,13 +171,13 @@ class CandidateUISpec extends Specification {
         inputMock.readString("New Description: ", false) >> null
         inputMock.readDate("New Birth Date (dd/MM/yyyy): ", false) >> null
 
-        serviceMock.updateCandidate(_) >> createCandidateResponse()
+        controllerMock.update(_) >> createCandidateResponse()
 
         when:
         ui.updateCandidate()
 
         then:
-        1 * serviceMock.updateCandidate({ CandidateUpdateDTO dto ->
+        1 * controllerMock.update({ CandidateUpdateDTO dto ->
             dto.cpf() == "12345678900" && dto.name() == "John Updated"
         })
     }
