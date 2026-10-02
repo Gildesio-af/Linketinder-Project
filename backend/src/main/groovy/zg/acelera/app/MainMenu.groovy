@@ -18,17 +18,20 @@ import zg.acelera.user_interface.CandidateJobUI
 import zg.acelera.user_interface.CandidateUI
 import zg.acelera.user_interface.CompanyJobUI
 import zg.acelera.user_interface.CompanyUI
+import zg.acelera.utils.db.DatabaseConfig
+import zg.acelera.utils.db.DatabaseConnectionFactory
+import zg.acelera.utils.db.DatabaseFactory
 import zg.acelera.utils.reader.AddressConsoleReader
 import zg.acelera.utils.reader.InputReader
-import zg.acelera.user_interface.JobUI
 import zg.acelera.user_interface.MatchUI
-import zg.acelera.utils.db.DatabaseManager
 import zg.acelera.utils.reader.SkillConsoleReader
 
 class MainMenu {
 
     static void startApplication() {
-        Sql sql = DatabaseManager.getSql()
+        DatabaseConfig config = DatabaseConfig.fromEnvironment()
+        DatabaseConnectionFactory factory = new DatabaseFactory(config)
+        Sql sql = factory.createSql()
         InputReader inputReader = new InputReader()
 
         CountryRepository countryRepository = new CountryRepositoryJDBC(sql)
@@ -83,7 +86,7 @@ class MainMenu {
                     break
                 case "0":
                     println "Exiting the system. Goodbye!"
-                    DatabaseManager.close()
+                    factory.close()
                     running = false
                     break
                 default:
