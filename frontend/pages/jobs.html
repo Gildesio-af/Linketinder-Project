@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Vagas</title>
+</head>
+
+<body class="job-body">
+    <header class="jobs-header">
+        <div>
+            <div class="div-logo">
+                <img src="../assets/logo.svg" alt="Logo">
+            </div>
+            <span class="logo-font-g">Linketinder</span>
+        </div>
+        <nav>
+            <button class="nav-font-selected" id="jobs-available">Vagas disponíveis</button>
+            <button class="nav-font" id="my-matches-candidate">Meus Matches</button>
+            <button class="nav-font" id="candidate-logout">Sair</button>
+            <div class="profile-container">
+                <a href="#" class="div-profile" id="profileBtn">
+                    <img src="../assets/user.svg" alt="Ícone de perfil">
+                </a>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="info-group">
+                        <span class="info-label description-sm">Nome</span>
+                        <span id="user-dp-name" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Idade</span>
+                        <span id="user-dp-age" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Email de trabalho</span>
+                        <span id="user-dp-email" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Localização</span>
+                        <span id="user-dp-location" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Descrição de aprendizado</span>
+                        <span id="user-dp-description" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Competências</span>
+                        <ul id="user-dp-skills" class="dropdown-skills-list label-font-s">
+                        </ul>
+                    </div>
+                    <button id="btnUpdateData" class="btn-update-data label-font-m">Atualizar dados</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="job-main">
+        <div class="section-description">
+            <div>
+                <h1 class="title-font">Oportunidades disponíveis</h1>
+                <p class="description-m">Descubra vagas alinhadas ao seu perfil. A identidade das empresas permanece
+                    confidencial até que haja interesse mútuo, garantindo avaliações baseadas em
+                    competência técnica.
+                </p>
+            </div>
+            <nav>
+                <button id="filter-all-jobs" class="btn-tab btn-selected nav-font">Todas</button>
+                <button id="filter-recommended-jobs" class="btn-tab nav-font">Recomendadas</button>
+            </nav>
+        </div>
+        <div id="jobs-container">
+        </div>
+    </main>
+
+    <div id="updateModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="title-font" style="margin-bottom: 20px;">Atualizar Dados do Candidato</h2>
+            <form id="form-update-user">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="update-name">Nome</label>
+                        <input class="reg-input" type="text" id="update-name">
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="update-age">Idade</label>
+                        <input class="reg-input" type="number" id="update-age">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="update-email">Email de trabalho</label>
+                        <input class="reg-input" type="email" id="update-email">
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="update-place">Localização</label>
+                        <input class="reg-input" type="text" id="update-place">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="update-description">Descrição de aprendizado</label>
+                    <textarea class="reg-input textarea" id="update-description"
+                        style="min-height: 80px;"></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="update-skills-input">Competências</label>
+                    <div class="skills-container" id="update-skills-container">
+                        <input class="skill-input" type="text" id="update-skills-input"
+                            placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn-user-register label-font-m" style="margin-top: 16px; width: 100%;"
+                    id="saveUpdateBtn">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+    <footer class="job-footer">
+        <span>
+            <p class="footer-font">&copy; 2026 Linketinder. High-Trust Anonymous Matchmaking.</p>
+        </span>
+    </footer>
+    <script type="module" src="../ts/pages/jobs/Jobs.js"></script>
+</body>
+
+</html>

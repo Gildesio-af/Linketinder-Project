@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Perfil</title>
+</head>
+<body class="company-p-body">
+    <header class="company-p-header">
+        <div>
+            <div class="div-logo">
+                <img src="../assets/logo.svg" alt="Logo">
+            </div>
+            <span class="logo-font-g">Linketinder</span>
+        </div>
+        <nav>
+            <button class="nav-font-selected" id="candidates">Candidatos</button>
+            <button class="nav-font" id="my-matches-company">Meus Matches</button>
+            <button class="nav-font" id="job-form-btn">Criar Vaga</button>
+            <button class="nav-font" id="company-logout">Sair</button>
+            <div class="profile-container">
+                <button class="div-profile" id="profile-btn">
+                    <img style="transform: scale(0.75);" src="../assets/company-white.svg" alt="Ícone de perfil empresa">
+                </button>
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="info-group">
+                        <span class="info-label description-sm">Nome da Empresa</span>
+                        <span id="company-dp-name" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">CNPJ</span>
+                        <span id="company-dp-cnpj" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Email corporativo</span>
+                        <span id="company-dp-email" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Localização</span>
+                        <span id="company-dp-location" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Sobre a empresa</span>
+                        <span id="company-dp-description" class="description-sm"></span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label description-sm">Competências Desejadas</span>
+                        <ul id="company-dp-skills" class="dropdown-skills-list label-font-s">
+                        </ul>
+                    </div>
+                    <button id="btn-update-data" class="btn-update-data label-font-m">Atualizar dados</button>
+                    <button id="btn-delete-company" class="label-font-m">Excluir Conta</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="company-p-main">
+        <div class="graphic-container">
+            <h2 class="title-font">Visão de Competências</h2>
+            <p class="description-m">
+                Distribuição das principais skills procuradas na sua base de talentos.
+            </p>
+            <div class="chart-container" style="position: relative; height:400px; width:100%;">
+                <canvas id="competencias-chart"></canvas>
+            </div>
+        </div>
+        <div class="company-b-area">
+            <div class="metrics-card">
+                <h3>Métricas de Engajamento</h3>
+                <div class="metric-item">
+                    <div class="metric-header">
+                        <span class="metric-label">Taxa de Resposta</span>
+                        <span id="response-rate-text">68%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="response-rate-fill" class="progress-fill" style="width: 68%;"></div>
+                    </div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-header">
+                        <span class="metric-label">Matches Feitos</span>
+                        <span id="matches-made-text">142</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="matches-made-fill" class="progress-fill" style="width: 47%;"></div>
+                    </div>
+                </div>
+            </div>
+            <span>
+                <div class="green-card">
+                    <h2 class="sub-title-white">Total de Perfis Ativos</h2>
+                    <p id="qt-active-profiles" class="white-font-g">500</p>
+                </div>
+            </span>
+        </div>
+        <aside id="candidates-panel" class="candidates-panel">
+            
+        </aside>
+    </main>
+
+
+    <div id="company-update-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="title-font" style="margin-bottom: 20px;">Atualizar Dados da Empresa</h2>
+            <form id="form-update-company">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="company-update-name">Nome da Empresa</label>
+                        <input class="reg-input" type="text" id="company-update-name" value="Empresa Tech S/A">
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="company-update-cnpj">CNPJ</label>
+                        <input class="reg-input" type="text" id="company-update-cnpj" value="12.345.678/0001-90">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="company-update-email">Email corporativo</label>
+                        <input class="reg-input" type="email" id="company-update-email" value="rh@empresa.com">
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="company-update-place">Localização</label>
+                        <input class="reg-input" type="text" id="company-update-place" value="São Paulo - SP">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="company-update-description">Sobre a empresa</label>
+                    <textarea class="reg-input textarea" id="company-update-description">Focada em desenvolver soluções inovadoras para o mercado de tecnologia.</textarea>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="update-skills-input">Competências procuradas</label>
+                    <div class="skills-container" id="update-skills-container">
+                        <input class="skill-input" type="text" id="update-skills-input" placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" id="add-skill-btn" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-company-register label-font-m" id="company-update-btn">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="job-create-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal-job close-modal">&times;</span>
+            <h2 class="title-font" style="margin-bottom: 20px;">Criar Nova Vaga</h2>
+            <form id="form-create-job">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="job-create-title">Título da Vaga</label>
+                        <input class="reg-input" type="text" id="job-create-title" placeholder="Ex: Desenvolvedor Front-end" required>
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="job-create-type">Tipo de Trabalho</label>
+                        <select class="reg-input" id="job-create-type" required style="padding: 0 16px;">
+                            <option value="Remoto">Remoto</option>
+                            <option value="Híbrido">Híbrido</option>
+                            <option value="Presencial">Presencial</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="job-create-location">Localidade</label>
+                    <input class="reg-input" type="text" id="job-create-location" placeholder="Ex: São Paulo - SP ou Remoto" required>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="job-create-description">Descrição</label>
+                    <textarea class="reg-input textarea" id="job-create-description" placeholder="Descreva as responsabilidades e requisitos..." required></textarea>
+                </div>
+                <div class="field-group">
+                    <label class="description-sm" for="job-create-skills-input">Competências desejadas</label>
+                    <div class="skills-container" id="job-create-skills-container">
+                        <input class="skill-input" type="text" id="job-create-skills-input" placeholder="Adicionar competência...">
+                        <button class="add-skill-btn" type="button" id="job-add-skill-btn" aria-label="Adicionar skill">
+                            <img src="../assets/plus.svg" alt="Adicionar">
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-company-register label-font-m" id="job-create-btn">Cadastrar Vaga</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="job-footer">
+        <span>
+            <p class="footer-font">&copy; 2024 Linketinder. High-Trust Anonymous Matchmaking.</p>
+        </span>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="../ts/graphic.js"></script>
+    <script type="module" src="../ts/pages/company_menu/CompanyMenu.js"></script>
+</body>
+</html>

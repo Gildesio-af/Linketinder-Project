@@ -1,0 +1,47 @@
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-database-postgresql:13.7.0"
+    }
+}
+
+plugins {
+    id 'groovy'
+    id("org.flywaydb.flyway") version "13.7.0"
+}
+
+group = 'zg.acelera'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.groovy:groovy:4.0.21'
+    implementation 'org.apache.groovy:groovy-json:4.0.21'
+    implementation 'org.apache.groovy:groovy-sql:4.0.21'
+    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation 'com.zaxxer:HikariCP:5.1.0'
+
+    testImplementation platform('org.spockframework:spock-bom:2.3-groovy-4.0')
+    testImplementation 'org.spockframework:spock-core'
+    testImplementation 'net.bytebuddy:byte-buddy:1.14.9'
+    testImplementation 'org.objenesis:objenesis:3.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+flyway {
+    url = System.getenv("DB_URL") ?: "jdbc:postgresql://localhost:5433/postgres"
+    user = System.getenv("DB_USER") ?: "postgres"
+    password = System.getenv("DB_PASSWORD") ?: "123456"
+
+    if (project.hasProperty('env') && project.property('env') == 'dev') {
+        locations = ['classpath:db/migration', 'classpath:db/testdata']
+    } else {
+        locations = ['classpath:db/migration']
+    }
+}
