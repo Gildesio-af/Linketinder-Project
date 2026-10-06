@@ -98,7 +98,7 @@ class AddressRepositoryJDBC implements AddressRepository {
             address.country.id,
             addressId
         ])
-        if (row) throw new EntityNotFoundException("Address with id ${addressId} not found")
+        if (!row) throw new EntityNotFoundException("Address with id ${addressId} not found")
 
         return createAddressFromRow(row)
     }
