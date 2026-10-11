@@ -62,7 +62,7 @@ CREATE TABLE jobs(
     address_id UUID NOT NULL ,
     publisher_id UUID NOT NULL ,
     CONSTRAINT jobs_address_fk FOREIGN KEY (address_id) REFERENCES addresses(id),
-    CONSTRAINT jobs_publisher FOREIGN KEY (publisher_id) REFERENCES companies(id)
+    CONSTRAINT jobs_publisher FOREIGN KEY (publisher_id) REFERENCES companies(user_id)
 );
 
 CREATE TABLE jobs_skill(
@@ -71,22 +71,22 @@ CREATE TABLE jobs_skill(
     PRIMARY KEY(job_id, skill_id),
     FOREIGN KEY (job_id) REFERENCES jobs(id),
     FOREIGN KEY (skill_id) REFERENCES skills(id)
-)
+);
 
 CREATE TABLE companies_like(
-    company_id UUID,
-    liked_user_id UUID,
-    PRIMARY KEY (company_id, liked_user_id),
-    FOREIGN KEY (company_id) REFERENCES companies(id),
-    FOREIGN KEY (liked_user_id) REFERENCES candidates(id)
+    company_id UUID NOT NULL,
+    liked_candidate_id UUID NOT NULL,
+    PRIMARY KEY (company_id, liked_candidate_id),
+    CONSTRAINT fk_companies_likes_company FOREIGN KEY (company_id) REFERENCES companies(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_companies_likes_candidate FOREIGN KEY (liked_candidate_id) REFERENCES candidates(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE jobs_like(
-    candidate_id UUID,
-    job_id UUID,
+    candidate_id UUID NOT NULL,
+    job_id UUID NOT NULL,
     PRIMARY KEY (candidate_id, job_id),
-    FOREIGN KEY (candidate_id) REFERENCES candidates(id),
-    FOREIGN KEY (job_id) REFERENCES jobs(id)
+    CONSTRAINT fk_jobs_like_candidate FOREIGN KEY (candidate_id) REFERENCES candidates(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_jobs_like_job FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
 );
 
 CREATE TABLE matches(
@@ -95,10 +95,10 @@ CREATE TABLE matches(
     company_id UUID NOT NULL,
     job_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT match_candidate_fk FOREIGN KEY (candidate_id) REFERENCES candidates(user_id),
-    CONSTRAINT match_company_fk FOREIGN KEY (company_id) REFERENCES companies(user_id),
-    CONSTRAINT match_job_fk FOREIGN KEY (job_id) REFERENCES jobs(id),
-    CONSTRAINT unique_match UNIQUE (candidate_id, job_id)
+    CONSTRAINT unique_match_candidate_job UNIQUE (candidate_id, job_id),
+    CONSTRAINT fk_matches_candidate FOREIGN KEY (candidate_id) REFERENCES candidates(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_matches_company FOREIGN KEY (company_id) REFERENCES companies(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_matches_job FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
 );
 
 INSERT INTO countries (id, name, code) VALUES
@@ -159,4 +159,33 @@ INSERT INTO companies (user_id, cnpj) VALUES
     ('50000000-0000-4000-8000-000000000003', '33333333000133'),
     ('50000000-0000-4000-8000-000000000004', '44444444000144'),
     ('50000000-0000-4000-8000-000000000005', '55555555000155');
+
+INSERT INTO jobs (id, name, description, address_id, publisher_id) VALUES
+    ('60000000-0000-4000-8000-000000000001', 'Desenvolvedor Backend Java', 'Desenvolvimento de APIs para ERP de restaurantes', '30000000-0000-4000-8000-000000000006', '50000000-0000-4000-8000-000000000001'),
+    ('60000000-0000-4000-8000-000000000002', 'Analista de Dados Python', 'Análise e modelagem de dados para clientes', '30000000-0000-4000-8000-000000000007', '50000000-0000-4000-8000-000000000002'),
+    ('60000000-0000-4000-8000-000000000003', 'Frontend Developer', 'Desenvolvimento de interfaces web com JavaScript', '30000000-0000-4000-8000-000000000008', '50000000-0000-4000-8000-000000000003'),
+    ('60000000-0000-4000-8000-000000000004', 'Engenheiro DevOps', 'Infraestrutura em nuvem e automação com Go', '30000000-0000-4000-8000-000000000009', '50000000-0000-4000-8000-000000000004'),
+    ('60000000-0000-4000-8000-000000000005', 'Desenvolvedor Fullstack', 'Aplicações Node.js para Big Data', '30000000-0000-4000-8000-000000000010', '50000000-0000-4000-8000-000000000005');
+
+INSERT INTO companies_like (company_id, liked_candidate_id) VALUES
+    ('50000000-0000-4000-8000-000000000001', '40000000-0000-4000-8000-000000000001'),
+    ('50000000-0000-4000-8000-000000000002', '40000000-0000-4000-8000-000000000002'),
+    ('50000000-0000-4000-8000-000000000003', '40000000-0000-4000-8000-000000000003'),
+    ('50000000-0000-4000-8000-000000000004', '40000000-0000-4000-8000-000000000004'),
+    ('50000000-0000-4000-8000-000000000005', '40000000-0000-4000-8000-000000000001'),
+    ('50000000-0000-4000-8000-000000000001', '40000000-0000-4000-8000-000000000005');
+
+INSERT INTO jobs_like (candidate_id, job_id) VALUES
+    ('40000000-0000-4000-8000-000000000001', '60000000-0000-4000-8000-000000000001'),
+    ('40000000-0000-4000-8000-000000000002', '60000000-0000-4000-8000-000000000002'),
+    ('40000000-0000-4000-8000-000000000003', '60000000-0000-4000-8000-000000000003'),
+    ('40000000-0000-4000-8000-000000000004', '60000000-0000-4000-8000-000000000004'),
+    ('40000000-0000-4000-8000-000000000005', '60000000-0000-4000-8000-000000000005'),
+    ('40000000-0000-4000-8000-000000000001', '60000000-0000-4000-8000-000000000003');
+
+INSERT INTO matches (candidate_id, company_id, job_id) VALUES
+    ('40000000-0000-4000-8000-000000000001', '50000000-0000-4000-8000-000000000001', '60000000-0000-4000-8000-000000000001'),
+    ('40000000-0000-4000-8000-000000000002', '50000000-0000-4000-8000-000000000002', '60000000-0000-4000-8000-000000000002'),
+    ('40000000-0000-4000-8000-000000000003', '50000000-0000-4000-8000-000000000003', '60000000-0000-4000-8000-000000000003'),
+    ('40000000-0000-4000-8000-000000000004', '50000000-0000-4000-8000-000000000004', '60000000-0000-4000-8000-000000000004');
 
