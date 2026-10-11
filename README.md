@@ -87,9 +87,10 @@ backend/
                 │   ├── V1__create_core_entities.sql
                 │   ├── V2__fixing_address_and_user_relationship.sql
                 │   ├── V3__add_delete_cascade_on_user_relationships.sql
-                │   └── V4__add_delete_cascade_on_job_relatioships.sql
+                │   ├── V4__add_delete_cascade_on_job_relatioships.sql
+                │   └── V5__add_like_and_match_tables.sql
                 └── testdata/            # Dados mocados para dev
-                    └── mock.sql
+                    └── R__mock_data.sql
 ```
 
 ## Integração com Banco de Dados (PostgreSQL)
@@ -104,7 +105,7 @@ A persistência de dados foi migrada de **arquivos JSON** para um banco de dados
 | **Repositórios** | `CandidateRepository` / `CompanyRepository` (JSON) | `*RepositoryJDBC` (SQL nativo) |
 | **Conexão** | Leitura/escrita em arquivo | HikariCP connection pool |
 | **Schema** | Manual (`db/script.sql`) | Flyway migrations versionadas |
-| **Dados de teste** | JSONs pré-preenchidos | Script SQL mocado separado (`testdata/mock.sql`) |
+| **Dados de teste** | JSONs pré-preenchidos | Script SQL mocado separado (`testdata/R__mock_data.sql`) |
 
 ### Repositórios JDBC implementados
 
@@ -127,16 +128,64 @@ As migrations estão em `src/main/resources/db/migration/` e são executadas em 
 | `V2__fixing_address_and_user_relationship.sql` | Inverte a relação `users ↔ addresses`: remove `address_id` de `users` e adiciona `user_id` em `addresses` |
 | `V3__add_delete_cascade_on_user_relationships.sql` | Adiciona `ON DELETE CASCADE` em `candidates`, `companies`, `users_skill` e `addresses` |
 | `V4__add_delete_cascade_on_job_relatioships.sql` | Adiciona `ON DELETE CASCADE` em `jobs` (publisher) e `jobs_skill` |
+| `V5__add_like_and_match_tables.sql` | Cria as tabelas `companies_like`, `jobs_like` e `matches` para o sistema de curtidas e matches |
 
-### Dados mocados (`testdata/mock.sql`)
+### Likes e Matches (V5)
 
-O arquivo `mock.sql` contém dados de teste para ambiente de desenvolvimento:
+A V5 modela o sistema de curtidas do Linketinder diretamente no banco. As curtidas são **assimétricas**: o candidato curte uma **vaga**, enquanto a empresa curte um **candidato**.
+
+```text
+ candidates ──< jobs_like >── jobs ──> companies
+     │                                     │
+     └──────────< companies_like >─────────┘
+
+                    matches
+         (candidate_id, company_id, job_id)
+```
+
+| Tabela | Chave primária | Significado |
+|---|---|---|
+| `jobs_like` | `(candidate_id, job_id)` | O candidato demonstrou interesse em uma vaga |
+| `companies_like` | `(company_id, liked_candidate_id)` | A empresa demonstrou interesse em um candidato |
+| `matches` | `id` (UUID) + `UNIQUE (candidate_id, job_id)` | Registro do interesse mútuo, com data (`created_at`) |
+
+**Como funciona a lógica de match:**
+
+1. O candidato curte uma vaga → é inserida uma linha em `jobs_like`.
+2. A empresa curte o candidato → é inserida uma linha em `companies_like`.
+3. Existe **match** quando as duas curtidas se cruzam, ou seja, o candidato curtiu uma vaga **e** a empresa que publicou essa vaga (`jobs.publisher_id`) curtiu esse candidato. Nesse caso é gravada uma linha em `matches` com candidato, empresa e vaga.
+
+A consulta abaixo encontra os pares que formam match:
+
+```sql
+SELECT jl.candidate_id, j.publisher_id AS company_id, jl.job_id
+FROM jobs_like jl
+JOIN jobs j            ON j.id = jl.job_id
+JOIN companies_like cl ON cl.company_id = j.publisher_id
+                      AND cl.liked_candidate_id = jl.candidate_id;
+```
+
+**Regras garantidas pelo schema:**
+
+* **Sem curtidas duplicadas:** as chaves primárias compostas impedem curtir a mesma vaga ou o mesmo candidato duas vezes.
+* **Um match por candidato e vaga:** a constraint `unique_match_candidate_job` impede gravar o mesmo match duas vezes.
+* **Integridade referencial:** curtidas e matches só aceitam IDs existentes de `candidates(user_id)`, `companies(user_id)` e `jobs(id)`.
+* **Limpeza automática:** todas as FKs usam `ON DELETE CASCADE`. Se um candidato, uma empresa ou uma vaga for removido, as curtidas e os matches ligados a ele também são apagados.
+
+> **📝 Nota:** Por enquanto as tabelas da V5 existem apenas no banco. O `MatchService` ainda usa os repositórios em JSON (há um `TODO` para migrar para JDBC).
+
+### Dados mocados (`testdata/R__mock_data.sql`)
+
+O arquivo `R__mock_data.sql` é uma migration **repetível** do Flyway: roda depois de todas as migrations versionadas e usa `ON CONFLICT DO NOTHING` para não duplicar dados. Ele contém dados de teste para o ambiente de desenvolvimento:
 
 * **1 país** (Brasil)
 * **4 skills** (Java, Spring Boot, PostgreSQL, React)
-* **5 candidatos** com CPF e data de nascimento
+* **5 candidatos** com CPF, data de nascimento e skills
 * **5 empresas** com CNPJ
-* **2 endereços** (São Paulo e Rio de Janeiro)
+* **7 endereços** (2 de usuários e 5 de vagas)
+* **5 vagas** com skills exigidas
+* **6 curtidas de empresas** e **6 curtidas em vagas**
+* **4 matches**, todos coerentes com as curtidas
 
 ## Requisitos
 
@@ -187,7 +236,7 @@ Isso inicia um container PostgreSQL 15 com as seguintes configurações:
 ./gradlew flywayMigrate -Penv=dev
 ```
 
-> **📝 Nota:** A flag `-Penv=dev` inclui os scripts da pasta `testdata/` (com o `mock.sql`) além das migrations padrão. Sem essa flag, apenas o schema é criado (sem dados de exemplo).
+> **📝 Nota:** A flag `-Penv=dev` inclui os scripts da pasta `testdata/` (com o `R__mock_data.sql`) além das migrations padrão. Sem essa flag, apenas o schema é criado (sem dados de exemplo).
 
 **Limpar o banco e recriar do zero:**
 
