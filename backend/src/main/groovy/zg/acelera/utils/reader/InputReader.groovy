@@ -1,5 +1,6 @@
 package zg.acelera.utils.reader
 
+import zg.acelera.dto.auth.AuthRequestDTO
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -10,6 +11,19 @@ class InputReader {
 
     InputReader() {
         this.scanner = new Scanner(System.in)
+    }
+
+    UUID readUUID(String prompt, boolean required = true) {
+        while (true) {
+            String input = readString(prompt, required)
+            if (input == null) return null
+
+            try {
+                return UUID.fromString(input)
+            } catch (IllegalArgumentException e) {
+                println "Error: Invalid UUID format. Please enter a valid UUID."
+            }
+        }
     }
 
     String readString(String prompt, boolean required = true) {
@@ -82,5 +96,11 @@ class InputReader {
             }
             println "Error: Please choose a number between 1 and ${options.size()}."
         }
+    }
+
+    AuthRequestDTO readAuthDTO() {
+        String username = readString("Enter your CPF or CNPJ to login: ")?.replaceAll("\\D", "")
+        String password = readString("Enter your password: ")
+        return new AuthRequestDTO(username, password)
     }
 }
