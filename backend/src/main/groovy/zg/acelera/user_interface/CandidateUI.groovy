@@ -74,10 +74,9 @@ class CandidateUI {
             println "Validation error: ${e.message}"
         } catch (SQLException e) {
             println "Database error: ${e.message}"
+        } catch (Exception e) {
+            println "Error: ${e.message}"
         }
-//        } catch (Exception e) {
-//            println "Error: ${e.message}"
-//        }
     }
 
     void updateCandidate() {
@@ -157,7 +156,7 @@ class CandidateUI {
         println "------------------------------"
     }
 
-    private printCandidateMenu() {
+    private static printCandidateMenu() {
         println """
             ========================================
                    LINKETINDER - CANDIDATE MENU

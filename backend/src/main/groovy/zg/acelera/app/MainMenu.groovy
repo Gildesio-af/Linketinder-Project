@@ -4,6 +4,8 @@ import groovy.sql.Sql
 import zg.acelera.controller.CandidateController
 import zg.acelera.controller.CompanyController
 import zg.acelera.controller.JobController
+import zg.acelera.controller.LikeController
+import zg.acelera.controller.MatchController
 import zg.acelera.repository.address.AddressRepository
 import zg.acelera.repository.address.AddressRepositoryJDBC
 import zg.acelera.repository.candidate.CandidateRepository
@@ -14,12 +16,19 @@ import zg.acelera.repository.country.CountryRepository
 import zg.acelera.repository.country.CountryRepositoryJDBC
 import zg.acelera.repository.job.JobRepository
 import zg.acelera.repository.job.JobRepositoryJDBC
+import zg.acelera.repository.like.CompanyLikeRepositoryJDBC
+import zg.acelera.repository.like.JobLikeRepositoryJDBC
+import zg.acelera.repository.like.LikeRepository
+import zg.acelera.repository.match.MatchRepository
+import zg.acelera.repository.match.MatchRepositoryJDBC
 import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.repository.skill.SkillRepositoryJDBC
 import zg.acelera.service.*
 import zg.acelera.user_interface.CandidateJobUI
+import zg.acelera.user_interface.CandidateMatchUI
 import zg.acelera.user_interface.CandidateUI
 import zg.acelera.user_interface.CompanyJobUI
+import zg.acelera.user_interface.CompanyMatchUI
 import zg.acelera.user_interface.CompanyUI
 import zg.acelera.utils.db.DatabaseConfig
 import zg.acelera.utils.db.DatabaseConnectionFactory
@@ -44,6 +53,9 @@ class MainMenu {
         CandidateRepository candidateRepository = new CandidateRepositoryJDBC(sql, skillRepository)
         CompanyRepository companyRepository = new CompanyRepositoryJDBC(sql, skillRepository)
         JobRepository jobRepository = new JobRepositoryJDBC(sql)
+        LikeRepository jobLikeRepository = new JobLikeRepositoryJDBC(sql)
+        LikeRepository companyLikeRepository = new CompanyLikeRepositoryJDBC(sql)
+        MatchRepository matchRepository = new MatchRepositoryJDBC(sql)
 
         // Services
         CountryService countryService = new CountryService(countryRepository)
@@ -52,13 +64,18 @@ class MainMenu {
         CandidateService candidateService = new CandidateService(candidateRepository, addressService, skillService)
         CompanyService companyService = new CompanyService(companyRepository, addressService, skillService)
         JobService jobService = new JobService(jobRepository, addressService, companyService, skillService)
+        AuthService authService = new AuthService(candidateRepository, companyRepository)
 
-        MatchService matchService = new MatchService()
+        MatchService matchService = new MatchService(matchRepository)
+        JobLikeService jobLikeService = new JobLikeService(jobLikeRepository, companyLikeRepository, companyService, matchService)
+        CompanyLikeService companyLikeService = new CompanyLikeService(companyLikeRepository, jobLikeRepository, jobService, matchService)
 
         // Controllers
         CandidateController candidateController = new CandidateController(candidateService)
         CompanyController companyController = new CompanyController(companyService)
         JobController jobController = new JobController(jobService)
+        LikeController likeController = new LikeController(jobLikeService, companyLikeService)
+        MatchController matchController = new MatchController(matchService)
 
         // Readers
         AddressConsoleReader addressConsoleReader = new AddressConsoleReader(inputReader, countryService)
@@ -69,7 +86,9 @@ class MainMenu {
         CompanyJobUI companyJobUI = new CompanyJobUI(jobController, companyController, inputReader, addressConsoleReader, skillConsoleReader)
         CandidateUI candidateUI = new CandidateUI(candidateController, candidateJobUI, inputReader, addressConsoleReader, skillConsoleReader)
         CompanyUI companyUI = new CompanyUI(companyController, companyJobUI, inputReader, addressConsoleReader, skillConsoleReader)
-        MatchUI matchUI = new MatchUI(matchService, inputReader)
+        CandidateMatchUI candidateMatchUI = new CandidateMatchUI(jobController, likeController, matchController, inputReader)
+        CompanyMatchUI companyMatchUI = new CompanyMatchUI(candidateController, jobController, likeController, matchController, inputReader)
+        MatchUI matchUI = new MatchUI(authService, candidateController, companyController, candidateMatchUI, companyMatchUI, inputReader)
 
         boolean running = true
 

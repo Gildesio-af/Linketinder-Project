@@ -1,98 +1,65 @@
 package zg.acelera.user_interface
 
-import zg.acelera.domain.Candidate
-import zg.acelera.domain.Company
-import zg.acelera.domain.User
-import zg.acelera.service.MatchService
+import zg.acelera.controller.CandidateController
+import zg.acelera.controller.CompanyController
+import zg.acelera.controller.JobController
+import zg.acelera.controller.LikeController
+import zg.acelera.controller.MatchController
+import zg.acelera.dto.auth.AuthRequestDTO
+import zg.acelera.dto.auth.AuthResponseDTO
+import zg.acelera.dto.candidate.CandidateResponseDTO
+import zg.acelera.dto.company.CompanyResponseDTO
+import zg.acelera.dto.job.JobMatchResponseDTO
+import zg.acelera.dto.job.JobResponseDTO
+import zg.acelera.dto.like.LikeCreateDTO
+import zg.acelera.dto.match.MatchResponseDTO
+import zg.acelera.service.AuthService
 import zg.acelera.utils.reader.InputReader
 
 class MatchUI {
-    private final MatchService matchService
+    private final AuthService authService
+    private final CandidateController candidateController
+    private final CompanyController companyController
+    private final CandidateMatchUI candidateUI
+    private final CompanyMatchUI companyUI
     private final InputReader input
 
-    MatchUI(MatchService matchService, InputReader inputReader) {
-        this.matchService = matchService
-        this.input = inputReader
+    MatchUI(AuthService authService,
+            CandidateController candidateController,
+            CompanyController companyController,
+            CandidateMatchUI candidateUI,
+            CompanyMatchUI companyUI,
+            InputReader input) {
+        this.authService = authService
+        this.candidateController = candidateController
+        this.companyController = companyController
+        this.candidateUI = candidateUI
+        this.companyUI = companyUI
+        this.input = input
     }
 
     void showMenu() {
         println "\n=== LINKETINDER - MATCH SYSTEM ==="
-        String id = input.readString("Enter your CPF or CNPJ to login: ")
 
         try {
-            matchService.login(id)
-            println "\nLogin successful!"
+            AuthRequestDTO authDTO = input.readAuthDTO()
+            AuthResponseDTO authResponse = authService.authenticate(authDTO)
 
-            matchLoop()
-        } catch (Exception e) {
-            println "Error: ${e.message}"
-        }
+            if (authResponse.role() == "CANDIDATE") {
+                CandidateResponseDTO candidate = candidateController.findByCpf(authDTO.username())
+                candidateUI.start(candidate)
 
-    }
-
-    private void matchLoop() {
-        boolean running = true
-
-        while (running) {
-            println """
-            ========================================
-                     LINKETINDER - MATCH FEED
-            ========================================
-            1. View potential profiles
-            2. Like profiles
-            3. Show my matches
-            0. Go back to Main Menu
-            ========================================
-            """
-            String option = input.readString("Choose an option: ")
-
-            switch (option) {
-                case "1":
-                    viewPotentials()
-                    break
-                case "2":
-                    likeProfiles()
-                    break
-                case "3":
-                    matchService.showMatches()
-                    break
-                case "0":
-                    println "Logging out..."
-                    running = false
-                    break
+            } else if (authResponse.role() == "COMPANY") {
+                CompanyResponseDTO company = companyController.findByCnpj(authDTO.username())
+                companyUI.start(company)
+            } else {
+                println "Invalid format or role."
             }
+        } catch (IllegalArgumentException e) {
+            println "Validation Error: ${e.message}"
+        } catch (Exception e) {
+            println "Unexpected Error occurred:"
+            e.printStackTrace()
         }
-    }
-
-    private void viewPotentials() {
-        println "\n--- POTENTIAL MATCHES ---"
-        List<User> potentials = matchService.getPotentialMatches()
-
-        if (potentials.isEmpty()) {
-            println "No profiles available for you at the moment."
-            return
-        }
-
-        potentials.each { person ->
-            String id = person instanceof Candidate ? ((Candidate) person).cpf : ((Company) person).cnpj
-            println "[ID: ${id}] - ${person.name} | Skills: ${person.skills.join(', ')} | State: ${person.state} | Description: ${person.description}"
-        }
-    }
-
-    private void likeProfiles() {
-        println "\n--- LIKE PROFILES ---"
-        String idsInput = input.readString("Enter the IDs (CPF/CNPJ) you want to like, separated by commas: ")
-
-        Set<String> targetsId = idsInput.split(',')
-                .collect { it.trim() }
-                .findAll { !it.isEmpty() } as Set<String>
-
-        if (targetsId.isEmpty()) {
-            println "No valid IDs provided. Action canceled."
-            return
-        }
-
-
-            matchService.likeProfile(targetsId)
     }
 }
