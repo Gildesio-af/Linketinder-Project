@@ -1,8 +1,5 @@
--- Repeatable migration (R__) for dev seed data. Runs after all versioned migrations.
--- Every insert is idempotent (ON CONFLICT DO NOTHING) because Flyway re-runs this file whenever it changes.
-
 INSERT INTO countries (id, name, code) VALUES
-    ('11111111-0000-0000-0000-000000000000', 'Brasil', 'BR')
+    ('ec4b410a-c667-45c4-876e-16afb3e867ca', 'Brasil', 'BR')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO skills (id, name) VALUES
@@ -12,7 +9,6 @@ INSERT INTO skills (id, name) VALUES
     ('22222222-0000-0000-0000-000000000004', 'React')
 ON CONFLICT DO NOTHING;
 
--- Candidates
 INSERT INTO users (id, name, email, password, description) VALUES
     ('33333333-0000-0000-0000-000000000001', 'Ana Silva', 'ana@email.com', 'senha123', 'Desenvolvedora Backend'),
     ('33333333-0000-0000-0000-000000000002', 'Bruno Costa', 'bruno@email.com', 'senha123', 'Desenvolvedor Frontend'),
@@ -29,7 +25,6 @@ INSERT INTO candidates (user_id, cpf, last_name, birth_date) VALUES
     ('33333333-0000-0000-0000-000000000005', '55555555555', 'Rocha', '1988-12-15')
 ON CONFLICT DO NOTHING;
 
--- Companies
 INSERT INTO users (id, name, email, password, description) VALUES
     ('44444444-0000-0000-0000-000000000001', 'Tech Corp', 'contato@techcorp.com', 'senha123', 'Consultoria de Software'),
     ('44444444-0000-0000-0000-000000000002', 'Inova Sistemas', 'rh@inova.com.br', 'senha123', 'Fábrica de Software'),
@@ -46,15 +41,14 @@ INSERT INTO companies (user_id, cnpj) VALUES
     ('44444444-0000-0000-0000-000000000005', '55555555000155')
 ON CONFLICT DO NOTHING;
 
--- Addresses: 01-02 belong to users, 03-07 are used by jobs
 INSERT INTO addresses (id, CEP, street, number, neighborhood, city, state, country_id, user_id) VALUES
-    ('55555555-0000-0000-0000-000000000001', '01001000', 'Praça da Sé', '1', 'Sé', 'São Paulo', 'SP', '11111111-0000-0000-0000-000000000000', '44444444-0000-0000-0000-000000000001'),
-    ('55555555-0000-0000-0000-000000000002', '20040002', 'Avenida Rio Branco', '156', 'Centro', 'Rio de Janeiro', 'RJ', '11111111-0000-0000-0000-000000000000', '33333333-0000-0000-0000-000000000001'),
-    ('55555555-0000-0000-0000-000000000003', '01310100', 'Avenida Paulista', '1000', 'Bela Vista', 'São Paulo', 'SP', '11111111-0000-0000-0000-000000000000', NULL),
-    ('55555555-0000-0000-0000-000000000004', '30130010', 'Avenida Afonso Pena', '500', 'Centro', 'Belo Horizonte', 'MG', '11111111-0000-0000-0000-000000000000', NULL),
-    ('55555555-0000-0000-0000-000000000005', '80010000', 'Rua XV de Novembro', '200', 'Centro', 'Curitiba', 'PR', '11111111-0000-0000-0000-000000000000', NULL),
-    ('55555555-0000-0000-0000-000000000006', '90010000', 'Rua dos Andradas', '300', 'Centro Histórico', 'Porto Alegre', 'RS', '11111111-0000-0000-0000-000000000000', NULL),
-    ('55555555-0000-0000-0000-000000000007', '40020000', 'Avenida Sete de Setembro', '400', 'Centro', 'Salvador', 'BA', '11111111-0000-0000-0000-000000000000', NULL)
+    ('55555555-0000-0000-0000-000000000001', '01001000', 'Praça da Sé', '1', 'Sé', 'São Paulo', 'SP', 'ec4b410a-c667-45c4-876e-16afb3e867ca', '44444444-0000-0000-0000-000000000001'),
+    ('55555555-0000-0000-0000-000000000002', '20040002', 'Avenida Rio Branco', '156', 'Centro', 'Rio de Janeiro', 'RJ', 'ec4b410a-c667-45c4-876e-16afb3e867ca', '33333333-0000-0000-0000-000000000001'),
+    ('55555555-0000-0000-0000-000000000003', '01310100', 'Avenida Paulista', '1000', 'Bela Vista', 'São Paulo', 'SP', 'ec4b410a-c667-45c4-876e-16afb3e867ca', NULL),
+    ('55555555-0000-0000-0000-000000000004', '30130010', 'Avenida Afonso Pena', '500', 'Centro', 'Belo Horizonte', 'MG', 'ec4b410a-c667-45c4-876e-16afb3e867ca', NULL),
+    ('55555555-0000-0000-0000-000000000005', '80010000', 'Rua XV de Novembro', '200', 'Centro', 'Curitiba', 'PR', 'ec4b410a-c667-45c4-876e-16afb3e867ca', NULL),
+    ('55555555-0000-0000-0000-000000000006', '90010000', 'Rua dos Andradas', '300', 'Centro Histórico', 'Porto Alegre', 'RS', 'ec4b410a-c667-45c4-876e-16afb3e867ca', NULL),
+    ('55555555-0000-0000-0000-000000000007', '40020000', 'Avenida Sete de Setembro', '400', 'Centro', 'Salvador', 'BA', 'ec4b410a-c667-45c4-876e-16afb3e867ca', NULL)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO users_skill (user_id, skill_id) VALUES
@@ -102,7 +96,6 @@ INSERT INTO jobs_like (candidate_id, job_id) VALUES
     ('33333333-0000-0000-0000-000000000001', '66666666-0000-0000-0000-000000000003')
 ON CONFLICT DO NOTHING;
 
--- Matches = candidate liked the job AND the job's company liked the candidate
 INSERT INTO matches (candidate_id, company_id, job_id) VALUES
     ('33333333-0000-0000-0000-000000000001', '44444444-0000-0000-0000-000000000001', '66666666-0000-0000-0000-000000000001'),
     ('33333333-0000-0000-0000-000000000002', '44444444-0000-0000-0000-000000000002', '66666666-0000-0000-0000-000000000002'),
