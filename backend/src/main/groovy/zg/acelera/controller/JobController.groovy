@@ -2,6 +2,7 @@ package zg.acelera.controller
 
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.job.JobCreateDTO
+import zg.acelera.dto.job.JobMatchResponseDTO
 import zg.acelera.dto.job.JobResponseDTO
 import zg.acelera.dto.job.JobUpdateDTO
 import zg.acelera.service.JobService
@@ -15,6 +16,10 @@ class JobController {
 
     Set<JobResponseDTO> getAllJobs() {
         return jobService.getAllJobs()
+    }
+
+    JobMatchResponseDTO getJobByIdToMatch(UUID jobId) {
+        return jobService.getJobByIdToMatch(jobId)
     }
 
     Set<JobResponseDTO> getJobsByPublisher(UUID publisherId) {

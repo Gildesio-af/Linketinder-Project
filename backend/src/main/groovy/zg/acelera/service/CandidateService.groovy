@@ -22,6 +22,14 @@ class CandidateService {
         this.skillService = skillService
     }
 
+    CandidateResponseDTO findCandidateById(UUID id) {
+        CandidateResponseDTO candidateResponse
+        Candidate searchedCandidate = repository.findById(id) as Candidate
+        candidateResponse = CandidateResponseDTO.fromDomain(searchedCandidate, addressService.getAddressesByUserId(searchedCandidate.id))
+
+        return candidateResponse
+    }
+
     List<CandidateResponseDTO> listAllCandidates() {
         List<User> allCandidates = repository.findAll()
         return allCandidates.collect { candidate ->

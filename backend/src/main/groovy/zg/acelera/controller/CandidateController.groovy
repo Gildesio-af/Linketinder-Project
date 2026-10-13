@@ -13,6 +13,10 @@ class CandidateController {
         this.candidateService = candidateService
     }
 
+    CandidateResponseDTO findById(UUID id) {
+        return candidateService.findCandidateById(id)
+    }
+
     List<CandidateResponseDTO> listAll() {
         return candidateService.listAllCandidates()
     }
