@@ -64,6 +64,7 @@ class SkillRepositoryJDBC implements SkillRepository {
         }
     }
 
+    @Override
     Set<Skill> findByUserId(UUID userId) {
         List<GroovyRowResult> skillRows = sql.rows("""
             SELECT sk.id AS skill_id, sk.name AS skill_name
@@ -73,6 +74,6 @@ class SkillRepositoryJDBC implements SkillRepository {
         """, [userId])
 
         if (!skillRows) return [] as Set<Skill>
-        return skillRows.collect { SkillRowMapper.getDomainFromRow(it) } as Set<Skill>
+        return skillRows.collect { SkillRowMapper.getDomainFromRowToOtherEntities(it) } as Set<Skill>
     }
 }
