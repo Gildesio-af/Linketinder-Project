@@ -4,17 +4,18 @@ import org.apache.catalina.Context
 import org.apache.catalina.Wrapper
 import org.apache.catalina.startup.Tomcat
 import zg.acelera.controller.CandidateWebController
+import zg.acelera.controller.CompanyWebController
 
-class WebServer {
+class WebServerConfig {
     private final int port
     private final Tomcat tomcat
 
-    WebServer(int port = 8080) {
+    WebServerConfig(int port = 8080) {
         this.port = port
         this.tomcat = new Tomcat()
     }
 
-    void start(CandidateWebController candidateController) {
+    void start(CandidateWebController candidateController, CompanyWebController companyController) {
         tomcat.setPort(port)
 
         tomcat.getConnector()
@@ -23,6 +24,9 @@ class WebServer {
 
         Wrapper candidateWrapper = tomcat.addServlet(ctx, "candidatoServlet", candidateController)
         candidateWrapper.addMapping("/candidates/*")
+
+        Wrapper companyWrapper = tomcat.addServlet(ctx, "empresaServlet", companyController)
+        companyWrapper.addMapping("/companies/*")
 
         println "Servidor Tomcat iniciando na porta ${port}..."
         tomcat.start()
