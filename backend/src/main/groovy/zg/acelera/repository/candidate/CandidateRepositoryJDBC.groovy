@@ -193,8 +193,10 @@ class CandidateRepositoryJDBC implements CandidateRepository {
     }
 
     private static Candidate getCandidateFromRow(GroovyRowResult row) {
+        Object userId = row.id ?: row.user_id
+
         return new Candidate(
-                id: UUID.fromString(row.id.toString()),
+                id: UUID.fromString(userId.toString()),
                 name: row.name,
                 email: row.email,
                 password: row.password,
