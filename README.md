@@ -172,7 +172,15 @@ JOIN companies_like cl ON cl.company_id = j.publisher_id
 * **Integridade referencial:** curtidas e matches só aceitam IDs existentes de `candidates(user_id)`, `companies(user_id)` e `jobs(id)`.
 * **Limpeza automática:** todas as FKs usam `ON DELETE CASCADE`. Se um candidato, uma empresa ou uma vaga for removido, as curtidas e os matches ligados a ele também são apagados.
 
-> **📝 Nota:** Por enquanto as tabelas da V5 existem apenas no banco. O `MatchService` ainda usa os repositórios em JSON (há um `TODO` para migrar para JDBC).
+### Likes e Matches na aplicação
+
+A lógica de curtidas e matches agora roda na aplicação via JDBC (os repositórios em JSON foram removidos):
+
+* **`JobLikeService.likeJob`**: o candidato curte a vaga. Depois o serviço busca a empresa que publicou a vaga e verifica se ela já curtiu o candidato. Se curtiu, cria o match.
+* **`CompanyLikeService.likeCandidate`**: a empresa curte o candidato. Depois o serviço percorre as vagas da empresa e cria um match para cada vaga que o candidato já curtiu. Retorna a lista de novos matches.
+* **`MatchService.createMatch`**: só grava o match se ainda não existir um para o mesmo par candidato + vaga (`existsMatch`). Se já existir, retorna `null`.
+* **Descurtir:** `unlikeJob` remove o like e o match daquele candidato com aquela vaga. `unlikeCandidate` remove o like e todos os matches entre o candidato e a empresa.
+* **Camadas:** `LikeController` / `MatchController` expõem essas operações para as telas `CandidateMatchUI` e `CompanyMatchUI`. A persistência fica em `JobLikeRepositoryJDBC`, `CompanyLikeRepositoryJDBC` e `MatchRepositoryJDBC`.
 
 ### Dados mocados (`testdata/R__mock_data.sql`)
 
