@@ -28,4 +28,13 @@ record JobCreateDTO(
                 publisher: new Company(id: publisherId)
         )
     }
+
+    static JobCreateDTO fromMap(Map<String, Object> map) {
+        return new JobCreateDTO(
+                map.get("title") as String,
+                map.get("description") as String,
+                (map.get("skills") as List<String>) ?: [] as List<String>,
+                map.get("publisherId") ? UUID.fromString(map.get("publisherId") as String) : null
+        )
+    }
 }

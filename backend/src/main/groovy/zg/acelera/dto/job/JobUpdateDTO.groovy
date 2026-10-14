@@ -22,4 +22,12 @@ record JobUpdateDTO(
                 description: description
         )
     }
+
+    static JobUpdateDTO fromMap(Map<String, Object> map) {
+        return new JobUpdateDTO(
+                map.get("title") as String ?: null,
+                map.get("description") as String ?: null,
+                (map.get("skills") as List<String>) ?: [] as List<String>
+        )
+    }
 }

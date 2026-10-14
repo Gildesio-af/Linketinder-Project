@@ -3,6 +3,7 @@ package zg.acelera.app
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import zg.acelera.controller.CompanyWebController
+import zg.acelera.controller.JobWebController
 import zg.acelera.repository.address.AddressRepository
 import zg.acelera.repository.address.AddressRepositoryJDBC
 import zg.acelera.repository.candidate.CandidateRepository
@@ -11,12 +12,15 @@ import zg.acelera.repository.company.CompanyRepository
 import zg.acelera.repository.company.CompanyRepositoryJDBC
 import zg.acelera.repository.country.CountryRepository
 import zg.acelera.repository.country.CountryRepositoryJDBC
+import zg.acelera.repository.job.JobRepository
+import zg.acelera.repository.job.JobRepositoryJDBC
 import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.repository.skill.SkillRepositoryJDBC
 import zg.acelera.service.AddressService
 import zg.acelera.service.CandidateService
 import zg.acelera.service.CompanyService
 import zg.acelera.service.CountryService
+import zg.acelera.service.JobService
 import zg.acelera.service.SkillService
 import zg.acelera.utils.config.WebServerConfig
 import zg.acelera.controller.CandidateWebController
@@ -36,17 +40,20 @@ class MainWebMenu {
         CountryRepository countryRepository = new CountryRepositoryJDBC(sql)
         CandidateRepository candidateRepository = new CandidateRepositoryJDBC(sql, skillRepository)
         CompanyRepository companyRepository = new CompanyRepositoryJDBC(sql, skillRepository)
+        JobRepository jobRepository = new JobRepositoryJDBC(sql)
 
         CountryService countryService = new CountryService(countryRepository)
         AddressService addressService = new AddressService(addressRepository, countryService)
         SkillService skillService = new SkillService(skillRepository)
         CandidateService candidateService = new CandidateService(candidateRepository, addressService, skillService)
         CompanyService companyService = new CompanyService(companyRepository, addressService, skillService)
+        JobService jobService = new JobService(jobRepository, addressService, companyService, skillService)
 
         CandidateWebController candidateController = new CandidateWebController(candidateService, jsonSlurper)
         CompanyWebController companyController = new CompanyWebController(companyService, jsonSlurper)
+        JobWebController jobController = new JobWebController(jobService, jsonSlurper)
 
         WebServerConfig webServer = new WebServerConfig(8080)
-        webServer.start(candidateController, companyController)
+        webServer.start(candidateController, companyController, jobController)
     }
 }

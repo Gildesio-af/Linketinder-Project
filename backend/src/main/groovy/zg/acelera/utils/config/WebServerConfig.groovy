@@ -5,6 +5,7 @@ import org.apache.catalina.Wrapper
 import org.apache.catalina.startup.Tomcat
 import zg.acelera.controller.CandidateWebController
 import zg.acelera.controller.CompanyWebController
+import zg.acelera.controller.JobWebController
 
 class WebServerConfig {
     private final int port
@@ -15,7 +16,7 @@ class WebServerConfig {
         this.tomcat = new Tomcat()
     }
 
-    void start(CandidateWebController candidateController, CompanyWebController companyController) {
+    void start(CandidateWebController candidateController, CompanyWebController companyController, JobWebController jobController) {
         tomcat.setPort(port)
 
         tomcat.getConnector()
@@ -27,6 +28,9 @@ class WebServerConfig {
 
         Wrapper companyWrapper = tomcat.addServlet(ctx, "empresaServlet", companyController)
         companyWrapper.addMapping("/companies/*")
+
+        Wrapper jobWrapper = tomcat.addServlet(ctx, "jobServlet", jobController)
+        jobWrapper.addMapping("/jobs/*")
 
         println "Servidor Tomcat iniciando na porta ${port}..."
         tomcat.start()

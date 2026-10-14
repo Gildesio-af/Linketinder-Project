@@ -65,9 +65,9 @@ abstract class BaseWebController extends HttpServlet {
         } catch (IllegalArgumentException e) {
             answerJson(resp, HttpServletResponse.SC_BAD_REQUEST, [error: e.message])
         }
-        catch (Exception e) {
-            answerJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, [error: e.message])
-        }
+//        catch (Exception e) {
+//            answerJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, [error: e.message])
+//        }
     }
 
     protected static void answerJson(HttpServletResponse resp, int status, Object data) {
