@@ -28,6 +28,7 @@ dependencies {
     testImplementation 'net.bytebuddy:byte-buddy:1.14.9'
     testImplementation 'org.objenesis:objenesis:3.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.26'
 }
 
 test {
