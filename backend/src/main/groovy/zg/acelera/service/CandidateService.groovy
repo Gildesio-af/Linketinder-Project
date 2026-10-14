@@ -86,7 +86,14 @@ class CandidateService {
         return candidateResponse
     }
 
-    private void deleteCandidateById(UUID id) {
+    CandidateResponseDTO updateCandidate(CandidateUpdateDTO candidateUpdate, UUID candidateId) {
+        Candidate updatedCandidate = repository.update(candidateUpdate.toCandidate(), candidateId)
+        CandidateResponseDTO candidateResponse = CandidateResponseDTO.fromDomain(updatedCandidate, addressService.getAddressesByUserId(candidateId))
+
+        return candidateResponse
+    }
+
+    void deleteCandidateById(UUID id) {
         repository.delete(id)
     }
 

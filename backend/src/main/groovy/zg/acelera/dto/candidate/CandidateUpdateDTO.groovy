@@ -42,4 +42,16 @@ record CandidateUpdateDTO (
                 .birthDate(birthDate ? birthDate : null)
                 .build()
     }
+
+    static CandidateUpdateDTO fromMap(Map<String, Object> map) {
+        return new CandidateUpdateDTO(
+                map.get("cpf") as String ?: null,
+                map.get("name") as String ?: null,
+                map.get("email") as String ?: null,
+                map.get("password") as String ?: null,
+                map.get("description") as String ?: null,
+                map.get("lastName") as String ?: null,
+                map.get("birthDate") ? LocalDate.parse(map.get("birthDate") as String) : null
+        )
+    }
 }
