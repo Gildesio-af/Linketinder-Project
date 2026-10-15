@@ -59,6 +59,45 @@ O front-end não requer processos de build complexos. Basta abrir a pasta `front
 * **Docker / Docker Compose** — Containerização do banco PostgreSQL
 * **Spock Framework** — Testes automatizados
 * **Interface de console** — Interação com o usuário via terminal
+* **Apache Tomcat Embed Core (`tomcat-embed-core`)** — Servidor web embarcado para exposição dos endpoints HTTP da API RESTful.
+* **Jakarta Servlet API** — Manipulação das requisições e respostas HTTP (`HttpServlet`, `HttpServletRequest`, `HttpServletResponse`).
+* **Groovy JSON (`JsonSlurper` e `JsonOutput`/`JsonGenerator`)** — Desserialização e serialização de payloads JSON para Map/DTOs/Records e respostas HTTP.
+
+## API RESTful em Groovy (Tomcat embutido)
+
+Além do modo CLI, o projeto também expõe uma camada RESTful em Groovy puro, sem depender de frameworks. A API é servida com `Apache Tomcat Embed Core` e `Jakarta Servlet`, usando o padrão de `HttpServlet` para receber requisições HTTP e responder em JSON.
+
+### Tecnologias adicionadas
+
+- **Apache Tomcat Embed Core (`tomcat-embed-core`)**
+  - Atua como servidor web embarcado, permitindo subir a aplicação em um container HTTP nativo do Tomcat sem necessidade de um servidor externo.
+- **Jakarta Servlet API**
+  - Cada controller estende `HttpServlet` e implementa `doGet`, `doPost`, `doPut`, `doDelete` indiretamente via o mecanismo de `service()` do `BaseWebController`.
+  - Os objetos `HttpServletRequest` e `HttpServletResponse` são usados para ler o body JSON, validar o verbo HTTP e escrever respostas em `application/json`.
+- **Groovy JSON (`JsonSlurper` & `JsonGenerator`/`JsonOutput`)**
+  - `JsonSlurper` converte o body JSON recebido em `Map` para posterior mapeamento em DTOs/Records.
+  - `JsonOutput`/`JsonGenerator` serializam respostas HTTP em JSON, incluindo cadastros, listagens e erros de validação.
+
+### Arquitetura web e padrões de projeto aplicados
+
+- **Strategy Pattern + Method References para roteamento (sem `switch`/`if-else`)**
+  - O `BaseWebController` possui uma lista interna de rotas do tipo `Route` com os atributos:
+    - `httpMethod` (`GET`, `POST`, `PUT`, `DELETE`)
+    - `pattern` (`Pattern`, normalmente uma regex da sub-rota)
+    - `action` (`Closure`, a estratégia/ação a executar)
+
+- **Factory Method nos DTOs (`fromMap`)**
+  - Os DTOs/Records utilizam o método estático `fromMap(Map)` para transformar o payload JSON em objetos tipados.
+  - Esse processo converte tipos complexos, como `LocalDate` e `UUID`, além de aceitar payloads parcialmente preenchidos em operações de atualização.
+  - Em conjunto com `COALESCE` na camada JDBC, isso permite que `PUT` funcione como atualização parcial, preservando campos não enviados sem quebrar o contrato de persistência.
+
+### Roteamento HTTP registrado no Tomcat
+
+A instância do Tomcat embutido registra os servlets na raiz da aplicação com os seguintes mapeamentos:
+
+- `/candidates/*` → `CandidateWebController`
+- `/companies/*` → `CompanyWebController`
+- `/jobs/*` → `JobWebController`
 
 ## Estrutura do projeto
 
@@ -254,7 +293,29 @@ Isso inicia um container PostgreSQL 15 com as seguintes configurações:
 
 > ⚠️ O comando `flywayClean` **apaga todas as tabelas** do banco. Use com cuidado.
 
-### 4. Compilar e executar
+### 4. Iniciar a API RESTful (Tomcat embarcado)
+
+A aplicação web da camada REST roda pela classe principal `zg.acelera.MainWeb`, que inicia o `WebServerConfig` e sobe o Tomcat incorporado em memória. O servidor responde em `http://localhost:8080` e registra os endpoints com os prefixos:
+
+```text
+http://localhost:8080/candidates/...
+http://localhost:8080/companies/...
+http://localhost:8080/jobs/...
+```
+
+A forma mais direta de iniciar a API pelo Gradle é:
+
+```bash
+./gradlew run
+```
+
+Se o ambiente não possuir a task `run` configurada, a aplicação também pode ser iniciada executando a classe principal `zg.acelera.MainWeb` diretamente no Java/Groovy.
+
+### 5. Modo CLI (console)
+
+O projeto também mantém o modo de interação em terminal, herdado da interface de console original. Isso permite executar operações de cadastro, listagem e matches pelo menu textual, sem depender da API REST. A execução do modo CLI continua sendo válida e pode coexistir com o servidor web embutido em Tomcat.
+
+### 6. Compilar e executar o modo CLI sem servidor web
 
 #### Opção A — Pela IDE (recomendado)
 
