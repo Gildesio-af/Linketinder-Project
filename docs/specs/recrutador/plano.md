@@ -211,7 +211,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 10 — Criar contratos pós-match e proteger a autorização
 
-- [ ] **O que será feito:** criar a projeção de match autorizado e ajustar a
+- [x] **O que será feito:** criar a projeção de match autorizado e ajustar a
   consulta de detalhes para permitir acesso apenas ao candidato, à empresa
   proprietária ou ao recrutador ainda vinculado à vaga. Liberar somente os
   campos aprovados por contexto; nunca retornar CPF, data de nascimento ou

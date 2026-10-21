@@ -80,6 +80,11 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Operação atômica de remoção condicional de match e DTO de resultado sem
   dados identificadores ou credenciais, com cobertura Spock de autorização,
   múltiplos recrutadores, reciprocidade e idempotência.
+- Projeção pós-match autorizada, com acesso restrito ao candidato envolvido,
+  à empresa proprietária da vaga ou ao recrutador com vínculo aceito e curtida
+  ativa, liberando apenas os campos aprovados e mantendo CPF, data de
+  nascimento, senha e e-mail pessoal do recrutador ocultos, com testes Spock
+  de visibilidade e revogação.
 
 ### Modificado
 
