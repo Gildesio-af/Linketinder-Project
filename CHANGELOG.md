@@ -25,6 +25,12 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
   de `TI`, `RH` e `Marketing`, e a especialização `recruiters`, incluindo
   unicidade e validação estrutural do CPF, estados `ACTIVE`/`INACTIVE`,
   relacionamentos com `users` e áreas de recrutamento e exclusão em cascata.
+- Migração Flyway V7 para criar convites e vínculos de recrutadores por vaga,
+  com estados do ciclo de vida, timestamps, exclusão em cascata, índices e
+  unicidade de convites pendentes ou aceitos.
+- Auditoria de curtidas de recrutadores por vaga e candidato, com chave
+  primária composta para idempotência, histórico de remoção via `removed_at` e
+  índices de consulta, preservando a unicidade existente de `matches`.
 
 ### Modificado
 

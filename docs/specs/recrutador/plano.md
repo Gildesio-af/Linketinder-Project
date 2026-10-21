@@ -28,7 +28,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 2 — Criar convites, vínculos e auditoria de curtidas
 
-- [ ] **O que será feito:** adicionar as tabelas
+- [x] **O que será feito:** adicionar as tabelas
   `recruiter_job_invitations` e `recruiter_job_likes`, seus estados,
   timestamps, chaves estrangeiras com cascata, índices e restrições para
   impedir convite `PENDING`/`ACCEPTED` duplicado e garantir uma curtida por
