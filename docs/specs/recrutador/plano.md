@@ -137,7 +137,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 7 — Implementar persistência e serviço do ciclo de convites
 
-- [ ] **O que será feito:** criar contratos e JDBC para criar, listar,
+- [x] **O que será feito:** criar contratos e JDBC para criar, listar,
   aceitar, recusar, cancelar e revogar convites; criar o serviço que valida
   empresa proprietária da vaga, recrutador destinatário, estados permitidos,
   duplicidade e transições atômicas. Listagens devem retornar somente campos

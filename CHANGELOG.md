@@ -58,6 +58,13 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Tratamento explícito de falhas de autorização no controlador web, com
   resposta HTTP 403, além de testes Spock para cadastro, duplicidade,
   inatividade, senha incorreta e atualização indevida.
+- Persistência JDBC e serviço do ciclo de convites de recrutadores por vaga,
+  cobrindo criação idempotente, listagem por recrutador ou empresa, aceite,
+  recusa, cancelamento e revogação com transições atômicas e autorização por
+  proprietário da vaga ou destinatário correto.
+- DTO específico de convite e testes Spock de repositório e serviço, sem
+  exposição de senha, CPF, data de nascimento ou outros dados pessoais não
+  necessários.
 
 ### Modificado
 
