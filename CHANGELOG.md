@@ -100,6 +100,10 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - A skill `skills/feature-com-spec/SKILL.md` foi adaptada para armazenar
   especificações em `docs/specs/<nome-da-feature>/`, validar o Princípio do
   Anonimato e exigir atualizações deste changelog na seção `[Não lançado]`.
+- Executada a regressão completa do back-end com `./gradlew test` e
+  `./gradlew build`, cobrindo os fluxos existentes e a compatibilidade com
+  recrutadores; os testes e o build foram aprovados sem ajustes adicionais,
+  mantendo as respostas pré-match sem dados identificadores.
 
 ### Corrigido
 

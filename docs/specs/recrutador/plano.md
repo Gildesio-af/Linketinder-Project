@@ -255,7 +255,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 12 — Executar regressão completa do back-end
 
-- [ ] **O que será feito:** revisar os testes de cadastro/login de candidato e
+- [x] **O que será feito:** revisar os testes de cadastro/login de candidato e
   empresa, vagas, filtros/recomendações, curtidas legadas, matches e
   encerramento/tratamento de erro; adicionar apenas ajustes diretamente
   necessários para compatibilidade com recrutadores.
