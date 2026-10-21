@@ -70,7 +70,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 4 — Modelar recrutador, estados e contratos de entrada
 
-- [ ] **O que será feito:** criar o domínio do recrutador e tipos para status
+- [x] **O que será feito:** criar o domínio do recrutador e tipos para status
   de recrutador, convite e curtida, além dos DTOs de cadastro, atualização,
   autenticação e respostas próprias sem senha. Implementar validação de
   e-mail/CPF normalizados, idade mínima de 18 anos, senha mínima de seis

@@ -36,6 +36,12 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Compatibilidade com `companies_like` legado sem mistura de registros,
   idempotência de convites ativos e curtidas, preservação do histórico de
   remoção e estratégia consistente para criação e remoção de matches.
+- Domínio do recrutador, estados de recrutador, convite e curtida, além dos
+  DTOs de cadastro, atualização, autenticação e resposta sem senha.
+- Validação dos contratos de entrada do recrutador, com normalização e
+  validação de e-mail/CPF, idade mínima, senha mínima e área de recrutamento,
+  incluindo testes automatizados e proteção contra exposição de dados
+  sensíveis nas respostas.
 
 ### Modificado
 
