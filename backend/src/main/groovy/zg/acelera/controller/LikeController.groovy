@@ -4,6 +4,7 @@ import zg.acelera.dto.like.LikeCreateDTO
 import zg.acelera.dto.match.MatchResponseDTO
 import zg.acelera.service.CompanyLikeService
 import zg.acelera.service.JobLikeService
+import zg.acelera.service.RecruiterJobLikeService
 
 class LikeController {
     private final JobLikeService jobLikeService
@@ -28,5 +29,15 @@ class LikeController {
 
     void unlikeCandidate(LikeCreateDTO likeDTO) {
         companyLikeService.unlikeCandidate(likeDTO.userId(), likeDTO.entityLikedId())
+    }
+
+    zg.acelera.dto.recruiter.RecruiterLikeResultDTO likeCandidateAsRecruiter(
+            RecruiterJobLikeService recruiterLikeService, UUID recruiterId, UUID jobId, UUID candidateId) {
+        recruiterLikeService.like(recruiterId, jobId, candidateId)
+    }
+
+    zg.acelera.dto.recruiter.RecruiterLikeResultDTO unlikeCandidateAsRecruiter(
+            RecruiterJobLikeService recruiterLikeService, UUID recruiterId, UUID jobId, UUID candidateId) {
+        recruiterLikeService.unlike(recruiterId, jobId, candidateId)
     }
 }

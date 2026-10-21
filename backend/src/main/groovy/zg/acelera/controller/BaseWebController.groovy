@@ -36,6 +36,10 @@ abstract class BaseWebController extends HttpServlet {
         routes << new Route(httpMethod: "PUT", pattern: ~"^${regexPath}\$", action: action)
     }
 
+    protected void patch(String regexPath, Closure action) {
+        routes << new Route(httpMethod: "PATCH", pattern: ~"^${regexPath}\$", action: action)
+    }
+
     protected void delete(String regexPath, Closure action) {
         routes << new Route(httpMethod: "DELETE", pattern: ~"^${regexPath}\$", action: action)
     }
@@ -67,9 +71,9 @@ abstract class BaseWebController extends HttpServlet {
         } catch (SecurityException e) {
             answerJson(resp, HttpServletResponse.SC_FORBIDDEN, [error: e.message])
         }
-//        catch (Exception e) {
-//            answerJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, [error: e.message])
-//        }
+        catch (IllegalStateException e) {
+            answerJson(resp, HttpServletResponse.SC_CONFLICT, [error: e.message])
+        }
     }
 
     protected static void answerJson(HttpServletResponse resp, int status, Object data) {
@@ -81,6 +85,27 @@ abstract class BaseWebController extends HttpServlet {
 
     protected Map readBody(HttpServletRequest req) {
         return (Map) jsonSlurper.parse(req.reader)
+    }
+
+    protected static UUID pathUuid(HttpServletRequest req, int segment) {
+        String value = req.pathInfo?.split("/")?.findAll { it }?.getAt(segment)
+        if (!value)
+            throw new IllegalArgumentException("UUID is required.")
+        UUID.fromString(value)
+    }
+
+    protected static UUID authenticatedUserId(HttpServletRequest req, String expectedRole = null) {
+        String id = req.getHeader("X-User-Id")
+        String role = req.getHeader("X-User-Role")
+        if (!id || !role)
+            throw new SecurityException("Authentication is required.")
+        if (expectedRole && role.toUpperCase(Locale.ROOT) != expectedRole)
+            throw new SecurityException("The authenticated user has no permission for this endpoint.")
+        try {
+            UUID.fromString(id)
+        } catch (IllegalArgumentException e) {
+            throw new SecurityException("Authenticated user ID is invalid.")
+        }
     }
 
     private static void configureHeader(HttpServletResponse resp) {

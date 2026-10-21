@@ -232,7 +232,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 11 — Expor endpoints e integrar a composição web
 
-- [ ] **O que será feito:** criar controladores HTTP para cadastro, perfil,
+- [x] **O que foi feito:** criar controladores HTTP para cadastro, perfil,
   autenticação, convites, vagas aceitas, candidatos anônimos, curtidas e
   matches; padronizar parsing de UUID, erros e sessão/autorização. Registrar
   as rotas no menu web sem quebrar candidatos, empresas e vagas existentes.

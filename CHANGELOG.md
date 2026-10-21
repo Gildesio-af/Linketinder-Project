@@ -85,6 +85,15 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
   ativa, liberando apenas os campos aprovados e mantendo CPF, data de
   nascimento, senha e e-mail pessoal do recrutador ocultos, com testes Spock
   de visibilidade e revogação.
+- Endpoints HTTP de recrutador para cadastro, perfil próprio, autenticação,
+  convites, vagas aceitas, candidatos anonimizados, curtidas e matches,
+  integrados à composição do servidor web sem alterar as rotas existentes de
+  candidatos, empresas e vagas.
+- Parsing e validação padronizados de UUID, erros HTTP e autenticação por
+  cabeçalhos de sessão, com autorização aplicada no backend para impedir
+  acesso a perfis, convites, vagas, curtidas e matches não autorizados.
+- Testes Spock dos endpoints de recrutador, incluindo autenticação obrigatória
+  e ausência de senha, CPF e data de nascimento nas respostas.
 
 ### Modificado
 

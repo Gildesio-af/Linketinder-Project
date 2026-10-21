@@ -27,6 +27,12 @@ class RecruiterService {
         register(dto)
     }
 
+    RecruiterResponseDTO findOwnProfile(UUID authenticatedUserId) {
+        if (authenticatedUserId == null)
+            throw new SecurityException('Recruiter authentication is required.')
+        RecruiterResponseDTO.fromDomain(recruiterRepository.findById(authenticatedUserId))
+    }
+
     RecruiterResponseDTO update(UUID authenticatedUserId, UUID targetUserId, RecruiterUpdateDTO dto) {
         if (authenticatedUserId == null || targetUserId == null || authenticatedUserId != targetUserId)
             throw new SecurityException('Recruiters may only update their own profile.')
