@@ -133,6 +133,7 @@
     height: 6px; 
     background-color: var(--light-gray); 
     border-radius: 8px;
+    overflow: hidden;
 }
 
 .progress-fill {

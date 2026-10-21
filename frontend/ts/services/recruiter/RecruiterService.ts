@@ -1,6 +1,7 @@
 import type {
     AnonymousCandidate,
     AssignedJob,
+    InvitationStatus,
     RecruiterAuthResponse,
     RecruiterInvitation,
     RecruiterLike,
@@ -23,6 +24,29 @@ export class RecruiterHttpError extends Error {
 }
 
 type FetchFunction = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+
+/**
+ * Projeção administrativa mínima de um convite, vista pela empresa.
+ * Nunca contém nome, CPF, data de nascimento ou outros dados pessoais do recrutador.
+ */
+export interface CompanyRecruiterInvitation {
+    id: string;
+    jobId: string;
+    status: InvitationStatus;
+    createdAt: string;
+    respondedAt?: string | null;
+    revokedAt?: string | null;
+    recruiterEmail?: string;
+    recruiterArea?: string;
+    jobTitle?: string;
+}
+
+export interface CompanyInvitationRequest {
+    recruiterEmail: string;
+    jobId: string;
+}
+
+type ActorRole = "RECRUITER" | "COMPANY";
 
 export class RecruiterService {
     private readonly baseUrl: string;
@@ -91,13 +115,45 @@ export class RecruiterService {
         return this.request<RecruiterMatch[]>("/recruiters/matches");
     }
 
+    inviteRecruiter(companyId: string, request: CompanyInvitationRequest): Promise<CompanyRecruiterInvitation> {
+        const body: CompanyInvitationRequest = {
+            recruiterEmail: request.recruiterEmail.trim().toLowerCase(),
+            jobId: request.jobId.trim()
+        };
+        return this.request<CompanyRecruiterInvitation>("/recruiter-invitations", {
+            method: "POST",
+            body,
+            actor: { id: companyId, role: "COMPANY" }
+        });
+    }
+
+    getCompanyInvitations(companyId: string): Promise<CompanyRecruiterInvitation[]> {
+        return this.request<CompanyRecruiterInvitation[]>("/recruiter-invitations/company", {
+            actor: { id: companyId, role: "COMPANY" }
+        });
+    }
+
+    cancelInvitation(companyId: string, invitationId: string): Promise<CompanyRecruiterInvitation> {
+        return this.request<CompanyRecruiterInvitation>(
+            `/recruiter-invitations/${encodeURIComponent(invitationId)}/cancel`,
+            { method: "POST", actor: { id: companyId, role: "COMPANY" } }
+        );
+    }
+
+    revokeInvitation(companyId: string, invitationId: string): Promise<CompanyRecruiterInvitation> {
+        return this.request<CompanyRecruiterInvitation>(
+            `/recruiter-invitations/${encodeURIComponent(invitationId)}/revoke`,
+            { method: "POST", actor: { id: companyId, role: "COMPANY" } }
+        );
+    }
+
     private async request<T>(
         path: string,
-        options: { method?: string; body?: object } = {}
+        options: { method?: string; body?: object; actor?: { id: string; role: ActorRole } } = {}
     ): Promise<T> {
         const requestInit: RequestInit = {
             method: options.method ?? "GET",
-            headers: this.authenticationHeaders(options.body !== undefined)
+            headers: this.authenticationHeaders(options.body !== undefined, options.actor)
         };
 
         if (options.body) {
@@ -108,7 +164,7 @@ export class RecruiterService {
         const responseBody = await response.text();
 
         if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
+            if ((response.status === 401 || response.status === 403) && options.actor?.role !== "COMPANY") {
                 StorageService.clearRecruiterInvitationCache();
             }
             throw new RecruiterHttpError(response.status, responseBody);
@@ -125,10 +181,18 @@ export class RecruiterService {
         }
     }
 
-    private authenticationHeaders(hasBody: boolean): Record<string, string> {
-        const session = StorageService.getRecruiterSession();
+    private authenticationHeaders(
+        hasBody: boolean,
+        actor?: { id: string; role: ActorRole }
+    ): Record<string, string> {
         const headers: Record<string, string> = {};
         if (hasBody) headers["Content-Type"] = "application/json";
+        if (actor) {
+            headers["X-User-Id"] = actor.id;
+            headers["X-User-Role"] = actor.role;
+            return headers;
+        }
+        const session = StorageService.getRecruiterSession();
         if (session) {
             headers["X-User-Id"] = session.userId;
             headers["X-User-Role"] = "RECRUITER";

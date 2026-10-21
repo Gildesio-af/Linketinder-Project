@@ -59,10 +59,32 @@ export class RecruiterService {
     getMatches() {
         return this.request("/recruiters/matches");
     }
+    inviteRecruiter(companyId, request) {
+        const body = {
+            recruiterEmail: request.recruiterEmail.trim().toLowerCase(),
+            jobId: request.jobId.trim()
+        };
+        return this.request("/recruiter-invitations", {
+            method: "POST",
+            body,
+            actor: { id: companyId, role: "COMPANY" }
+        });
+    }
+    getCompanyInvitations(companyId) {
+        return this.request("/recruiter-invitations/company", {
+            actor: { id: companyId, role: "COMPANY" }
+        });
+    }
+    cancelInvitation(companyId, invitationId) {
+        return this.request(`/recruiter-invitations/${encodeURIComponent(invitationId)}/cancel`, { method: "POST", actor: { id: companyId, role: "COMPANY" } });
+    }
+    revokeInvitation(companyId, invitationId) {
+        return this.request(`/recruiter-invitations/${encodeURIComponent(invitationId)}/revoke`, { method: "POST", actor: { id: companyId, role: "COMPANY" } });
+    }
     async request(path, options = {}) {
         const requestInit = {
             method: options.method ?? "GET",
-            headers: this.authenticationHeaders(options.body !== undefined)
+            headers: this.authenticationHeaders(options.body !== undefined, options.actor)
         };
         if (options.body) {
             requestInit.body = JSON.stringify(options.body);
@@ -70,7 +92,7 @@ export class RecruiterService {
         const response = await this.fetchFunction(`${this.baseUrl}${path}`, requestInit);
         const responseBody = await response.text();
         if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
+            if ((response.status === 401 || response.status === 403) && options.actor?.role !== "COMPANY") {
                 StorageService.clearRecruiterInvitationCache();
             }
             throw new RecruiterHttpError(response.status, responseBody);
@@ -85,11 +107,16 @@ export class RecruiterService {
             throw new Error("Recruiter request returned an invalid JSON response.");
         }
     }
-    authenticationHeaders(hasBody) {
-        const session = StorageService.getRecruiterSession();
+    authenticationHeaders(hasBody, actor) {
         const headers = {};
         if (hasBody)
             headers["Content-Type"] = "application/json";
+        if (actor) {
+            headers["X-User-Id"] = actor.id;
+            headers["X-User-Role"] = actor.role;
+            return headers;
+        }
+        const session = StorageService.getRecruiterSession();
         if (session) {
             headers["X-User-Id"] = session.userId;
             headers["X-User-Role"] = "RECRUITER";

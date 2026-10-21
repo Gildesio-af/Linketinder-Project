@@ -9,6 +9,18 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 
 ### Adicionado
 
+- Gestão de convites de recrutadores na área da empresa: modal
+  `Recrutadores` em `company_menu.html` para convidar um recrutador já
+  cadastrado pelo e-mail exato (sem listagem/diretório de perfis) para uma
+  vaga própria, listar os convites enviados, cancelar convites pendentes e
+  revogar convites aceitos. `RecruiterService` ganhou os métodos
+  `inviteRecruiter`, `getCompanyInvitations`, `cancelInvitation` e
+  `revokeInvitation`, autenticados como `COMPANY`, e a projeção
+  `CompanyRecruiterInvitation` expõe apenas dados administrativos mínimos
+  (vaga, e-mail usado no convite, área e estado), nunca nome, CPF ou data de
+  nascimento do recrutador. Mensagens de erro são genéricas e o conteúdo é
+  renderizado via `textContent`.
+
 - Telas de cadastro, login e logout de recrutador, com validação de campos,
   integração aos endpoints existentes, navegação dedicada e artefatos
   TypeScript compilados. Credenciais são limpas após o envio e a sessão

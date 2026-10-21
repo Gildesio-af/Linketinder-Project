@@ -18,6 +18,7 @@
             <button class="nav-font-selected" id="candidates">Candidatos</button>
             <button class="nav-font" id="my-matches-company">Meus Matches</button>
             <button class="nav-font" id="job-form-btn">Criar Vaga</button>
+            <button class="nav-font" id="recruiter-invitations-btn">Recrutadores</button>
             <button class="nav-font" id="company-logout">Sair</button>
             <div class="profile-container">
                 <button class="div-profile" id="profile-btn">
@@ -181,6 +182,32 @@
                 </div>
                 <button type="submit" class="btn-company-register label-font-m" id="job-create-btn">Cadastrar Vaga</button>
             </form>
+        </div>
+    </div>
+
+    <div id="recruiter-invitation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal-invitation close-modal">&times;</span>
+            <h2 class="title-font" style="margin-bottom: 8px;">Convites de Recrutadores</h2>
+            <p class="description-sm" style="margin-bottom: 20px;">
+                Convide um recrutador já cadastrado informando o e-mail exato. A busca não lista perfis.
+            </p>
+            <form id="form-recruiter-invitation" autocomplete="off">
+                <div class="field-row">
+                    <div class="field-group">
+                        <label class="description-sm" for="recruiter-invitation-email">E-mail do recrutador</label>
+                        <input class="reg-input" type="email" id="recruiter-invitation-email" placeholder="recrutador@exemplo.com" required>
+                    </div>
+                    <div class="field-group">
+                        <label class="description-sm" for="recruiter-invitation-job">ID da vaga</label>
+                        <input class="reg-input" type="text" id="recruiter-invitation-job" placeholder="UUID de uma vaga sua" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-company-register label-font-m" id="recruiter-invitation-submit">Enviar Convite</button>
+                <p id="recruiter-invitation-feedback" class="invitation-feedback description-sm" role="status" aria-live="polite"></p>
+            </form>
+            <h3 class="sub-title" style="margin: 24px 0 12px;">Convites enviados</h3>
+            <ul id="recruiter-invitation-list" class="invitation-list"></ul>
         </div>
     </div>
 

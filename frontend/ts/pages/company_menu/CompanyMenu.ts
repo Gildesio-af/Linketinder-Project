@@ -1,6 +1,7 @@
 import { StorageService } from "../../services/storage/StorageService.js";
 import type { Company, Candidate, Job } from "../../models/Domain.js";
 import { MatchService } from "../../services/match/MatchService.js";
+import { RecruiterInvitationManagement } from "./RecruiterInvitationManagement.js";
 
 const profileBtn = document.getElementById("profile-btn") as HTMLButtonElement;
 const btnUpdateData = document.getElementById("btn-update-data") as HTMLButtonElement;
@@ -304,6 +305,9 @@ export function renderMatches() {
 }
 
 renderCandidates();
+
+const btnRecruiterInvitations = document.getElementById('recruiter-invitations-btn') as HTMLButtonElement;
+new RecruiterInvitationManagement().init(btnRecruiterInvitations);
 
 btnCandidates.addEventListener('click', () => {
     btnCandidates.className = 'nav-font-selected';

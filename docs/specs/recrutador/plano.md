@@ -341,7 +341,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 16 — Implementar gestão de convites pela empresa
 
-- [ ] **O que será feito:** adicionar à área da empresa busca pontual por
+- [x] **O que será feito:** adicionar à área da empresa busca pontual por
   e-mail, envio de convite para vaga própria, listagem de convites, cancelamento
   pendente e revogação aceita. Exibir apenas os dados administrativos mínimos
   autorizados, sem transformar a busca em diretório público.

@@ -87,11 +87,19 @@ function setEngagementMetrics() {
         matchesMadeFill.style.width = `${matchPercentage}%`;
     }
 
-    const totalLikes = currentUser.likedCandidates?.length || 0;
+    // Usa o registro atualizado da empresa (a sessão pode estar desatualizada).
+    const company = StorageService.getCompanies().find(c => c.cnpj === currentUser.cnpj) ?? currentUser;
+    const likedCandidates = new Set(company.likedCandidates ?? []);
+    const matchedLikedCandidates = new Set(
+        matches.map(m => m.cpf).filter(cpf => likedCandidates.has(cpf))
+    );
+
+    const totalLikes = likedCandidates.size;
     let responseRate = 0;
     if (totalLikes > 0) {
-        responseRate = Math.round((totalMatches / totalLikes) * 100);
+        responseRate = Math.round((matchedLikedCandidates.size / totalLikes) * 100);
     }
+    responseRate = Math.max(0, Math.min(100, responseRate));
     
     if (responseRateText && responseRateFill) {
         responseRateText.textContent = `${responseRate}%`;

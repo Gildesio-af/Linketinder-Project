@@ -1,5 +1,6 @@
 import { StorageService } from "../../services/storage/StorageService.js";
 import { MatchService } from "../../services/match/MatchService.js";
+import { RecruiterInvitationManagement } from "./RecruiterInvitationManagement.js";
 const profileBtn = document.getElementById("profile-btn");
 const btnUpdateData = document.getElementById("btn-update-data");
 const btnLogout = document.getElementById("company-logout");
@@ -248,6 +249,8 @@ export function renderMatches() {
     });
 }
 renderCandidates();
+const btnRecruiterInvitations = document.getElementById('recruiter-invitations-btn');
+new RecruiterInvitationManagement().init(btnRecruiterInvitations);
 btnCandidates.addEventListener('click', () => {
     btnCandidates.className = 'nav-font-selected';
     btnMyMatches.className = 'nav-font';
