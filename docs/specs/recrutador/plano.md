@@ -116,7 +116,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 6 — Implementar cadastro, atualização e autenticação
 
-- [ ] **O que será feito:** criar o serviço de recrutador e integrar o
+- [x] **O que foi feito:** criado o serviço de recrutador e integrada a
   `AuthService` para cadastro independente, atualização do próprio perfil e
   autenticação apenas de conta ativa. Propagar erros de validação e
   autorização sem capturas amplas e sem retornar credenciais.

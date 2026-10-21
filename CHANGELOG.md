@@ -48,6 +48,16 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
   senha.
 - `RecruiterRowMapper` e testes Spock do repositório de recrutador, cobrindo
   criação, leitura, ausência de recrutador, status e projeções sem credenciais.
+- Serviço de recrutador para cadastro independente, validação de área e
+  e-mail, atualização exclusiva do próprio perfil e bloqueio de contas
+  inativas, com respostas sem senha, CPF ou data de nascimento.
+- Autenticação de candidatos, empresas e recrutadores por estratégias
+  específicas para CPF, CNPJ e e-mail, permitindo somente contas de
+  recrutador ativas e preservando mensagens de erro sem exposição de
+  credenciais.
+- Tratamento explícito de falhas de autorização no controlador web, com
+  resposta HTTP 403, além de testes Spock para cadastro, duplicidade,
+  inatividade, senha incorreta e atualização indevida.
 
 ### Modificado
 

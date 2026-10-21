@@ -64,6 +64,8 @@ abstract class BaseWebController extends HttpServlet {
             matchedRoute.action.call(req, resp)
         } catch (IllegalArgumentException e) {
             answerJson(resp, HttpServletResponse.SC_BAD_REQUEST, [error: e.message])
+        } catch (SecurityException e) {
+            answerJson(resp, HttpServletResponse.SC_FORBIDDEN, [error: e.message])
         }
 //        catch (Exception e) {
 //            answerJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, [error: e.message])
