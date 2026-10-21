@@ -273,7 +273,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 13 — Criar modelos, estado de sessão e cliente HTTP do recrutador
 
-- [ ] **O que será feito:** adicionar tipos TypeScript para recrutador,
+- [x] **O que será feito:** adicionar tipos TypeScript para recrutador,
   convite, vaga atribuída, candidato anônimo, curtida e match; criar serviço
   HTTP com tratamento explícito de erros e estado de sessão por perfil, sem
   persistir senha nem dados sensíveis. Manter os modelos existentes de

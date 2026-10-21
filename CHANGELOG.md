@@ -9,6 +9,10 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 
 ### Adicionado
 
+- Modelos TypeScript do recrutador, convites, vagas atribuídas, candidatos
+  anônimos, curtidas e matches, além do cliente HTTP com tratamento explícito
+  de erros e do serviço de sessão por perfil. A sessão persistida usa apenas
+  campos permitidos e não armazena senha, CPF ou data de nascimento.
 - Especificação da feature `Recrutador` em
   `docs/specs/recrutador/spec.md`, com cadastro independente, convites por
   vaga, autoria de curtidas, regras de match, modelo de dados, anonimato e

@@ -1,4 +1,4 @@
-import type { User, Candidate, Company, Job, Match } from "../../models/Domain";
+import type { User, Candidate, Company, Job, Match, RecruiterSession } from "../../models/Domain";
 
 export class StorageService {
     private static KEYS = {
@@ -6,7 +6,8 @@ export class StorageService {
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
         CURRENT_USER: "lt_current_user",
-        MATCHES: "lt_matches"
+        MATCHES: "lt_matches",
+        RECRUITER_SESSION: "lt_recruiter_session"
     }
 
     static getCandidates(): Candidate[] {
@@ -123,6 +124,29 @@ export class StorageService {
 
     static deleteCurrentUser(): void {
         localStorage.removeItem(this.KEYS.CURRENT_USER);
+    }
+
+    static getRecruiterSession(): RecruiterSession | null {
+        const data = localStorage.getItem(this.KEYS.RECRUITER_SESSION);
+        return data ? JSON.parse(data) as RecruiterSession : null;
+    }
+
+    static setRecruiterSession(session: RecruiterSession): void {
+        const safeSession: RecruiterSession = {
+            userId: session.userId,
+            name: session.name,
+            email: session.email,
+            recruitmentAreaId: session.recruitmentAreaId,
+            recruitmentArea: session.recruitmentArea,
+            description: session.description,
+            status: session.status
+        };
+
+        localStorage.setItem(this.KEYS.RECRUITER_SESSION, JSON.stringify(safeSession));
+    }
+
+    static deleteRecruiterSession(): void {
+        localStorage.removeItem(this.KEYS.RECRUITER_SESSION);
     }
 
     static getTopSkills(limit: number = 5): { name: string, count: number }[] {
