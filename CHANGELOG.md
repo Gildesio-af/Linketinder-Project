@@ -9,6 +9,10 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 
 ### Adicionado
 
+- Especificação da feature `Recrutador` em
+  `docs/specs/recrutador/spec.md`, com cadastro independente, convites por
+  vaga, autoria de curtidas, regras de match, modelo de dados, anonimato e
+  critérios de aceite.
 - `AGENTS.md` com o contexto do domínio Linketinder, a arquitetura do projeto,
   as convenções de desenvolvimento e o **Princípio do Anonimato**.
 - A skill `skills/feature-com-spec/SKILL.md`, adaptada para o fluxo de
