@@ -65,6 +65,12 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - DTO específico de convite e testes Spock de repositório e serviço, sem
   exposição de senha, CPF, data de nascimento ou outros dados pessoais não
   necessários.
+- Projeções anônimas para recrutadores, com listagem exclusiva de vagas que
+  possuem vínculo `ACCEPTED` e candidatos associados à vaga sem carregar ou
+  serializar nome, e-mail, CPF, telefone, LinkedIn ou endereço identificável.
+- Autorização no serviço antes da consulta de candidatos, bloqueando
+  recrutadores sem vínculo aceito, com DTOs específicos e testes Spock para
+  acesso autorizado, convites pendentes ou revogados e campos sensíveis.
 
 ### Modificado
 

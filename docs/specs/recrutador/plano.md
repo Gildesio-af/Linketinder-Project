@@ -160,7 +160,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 8 — Implementar projeções anônimas e autorização de candidatos
 
-- [ ] **O que será feito:** criar consulta/DTO específicos para o recrutador
+- [x] **O que foi feito:** criada consulta/DTO específicos para o recrutador
   listar apenas vagas com vínculo `ACCEPTED` e candidatos anonimizados da
   vaga. Aplicar a autorização no serviço antes da consulta e garantir que
   nome, e-mail, CPF, telefone, LinkedIn e endereço identificável não sejam
