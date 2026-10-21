@@ -116,7 +116,7 @@ class CandidateServiceSpec extends Specification {
                 "Developer", "Doe", LocalDate.of(1995, 5, 15),
                 [skillId.toString()] as Set
         )
-        AddressCreateDTO addressDTO = new AddressCreateDTO(null, "12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
+        AddressCreateDTO addressDTO = new AddressCreateDTO("12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
         Candidate savedCandidate = createCandidate()
         AddressResponseDTO addressResponse = createAddressResponse()
 

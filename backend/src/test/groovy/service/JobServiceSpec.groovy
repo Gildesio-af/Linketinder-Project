@@ -150,7 +150,7 @@ class JobServiceSpec extends Specification {
     def "createJob should create address, job and return JobResponseDTO"() {
         given:
         JobCreateDTO dto = new JobCreateDTO("Java Dev", "Develop Java apps", ["Java"], publisherId)
-        AddressCreateDTO addressDTO = new AddressCreateDTO(null, "12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
+        AddressCreateDTO addressDTO = new AddressCreateDTO("12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
         AddressResponseDTO addressResponse = createAddressResponse()
 
         addressServiceMock.createAddress(addressDTO, publisherId) >> addressResponse
@@ -170,7 +170,7 @@ class JobServiceSpec extends Specification {
     def "createJob should throw when address creation fails"() {
         given:
         JobCreateDTO dto = new JobCreateDTO("Java Dev", "Develop Java apps", ["Java"], publisherId)
-        AddressCreateDTO addressDTO = new AddressCreateDTO(null, "12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
+        AddressCreateDTO addressDTO = new AddressCreateDTO("12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
 
         addressServiceMock.createAddress(addressDTO, publisherId) >> null
 

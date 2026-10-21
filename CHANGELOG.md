@@ -42,6 +42,12 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
   validação de e-mail/CPF, idade mínima, senha mínima e área de recrutamento,
   incluindo testes automatizados e proteção contra exposição de dados
   sensíveis nas respostas.
+- Contratos e implementações JDBC para áreas de recrutamento e perfis de
+  recrutador, incluindo busca parametrizada por e-mail, criação e atualização
+  transacional, alteração de status e leitura do próprio perfil sem expor
+  senha.
+- `RecruiterRowMapper` e testes Spock do repositório de recrutador, cobrindo
+  criação, leitura, ausência de recrutador, status e projeções sem credenciais.
 
 ### Modificado
 

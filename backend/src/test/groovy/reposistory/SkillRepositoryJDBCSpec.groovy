@@ -21,7 +21,7 @@ class SkillRepositoryJDBCSpec extends Specification {
 
     def "findById should return a skill when found"() {
         given:
-        sqlMock.firstRow("SELECT * FROM skills WHERE id = ?", [skillId]) >> ([skill_id: skillId, skill_name: "Java"] as GroovyRowResult)
+        sqlMock.firstRow("SELECT * FROM skills WHERE id = ?", [skillId]) >> ([id: skillId, name: "Java"] as GroovyRowResult)
 
         when:
         Skill result = repository.findById(skillId)
@@ -44,7 +44,7 @@ class SkillRepositoryJDBCSpec extends Specification {
 
     def "findByName should return a skill when found"() {
         given:
-        sqlMock.firstRow("SELECT * FROM skills WHERE lower(name) = lower(?)", ["Java"]) >> ([skill_id: skillId, skill_name: "Java"] as GroovyRowResult)
+        sqlMock.firstRow("SELECT * FROM skills WHERE lower(name) = lower(?)", ["Java"]) >> ([id: skillId, name: "Java"] as GroovyRowResult)
 
         when:
         Skill result = repository.findByName("Java")
@@ -94,7 +94,7 @@ class SkillRepositoryJDBCSpec extends Specification {
         given:
         Skill skill = new Skill(name: "Groovy")
         UUID newId = UUID.randomUUID()
-        sqlMock.firstRow("INSERT INTO skills (name) VALUES (?) RETURNING *", ["Groovy"]) >> ([skill_id: newId, skill_name: "Groovy"] as GroovyRowResult)
+        sqlMock.firstRow("INSERT INTO skills (name) VALUES (?) RETURNING *", ["Groovy"]) >> ([id: newId, name: "Groovy"] as GroovyRowResult)
 
         when:
         Skill result = repository.save(skill)
@@ -119,7 +119,7 @@ class SkillRepositoryJDBCSpec extends Specification {
     def "update should update a skill and return it"() {
         given:
         Skill skill = new Skill(name: "Java Updated")
-        sqlMock.firstRow("UPDATE skills SET name = ? WHERE id = ? RETURNING *", ["Java Updated", skillId]) >> ([skill_id: skillId, skill_name: "Java Updated"] as GroovyRowResult)
+        sqlMock.firstRow("UPDATE skills SET name = ? WHERE id = ? RETURNING *", ["Java Updated", skillId]) >> ([id: skillId, name: "Java Updated"] as GroovyRowResult)
 
         when:
         Skill result = repository.update(skill, skillId)

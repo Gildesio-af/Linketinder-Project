@@ -100,7 +100,7 @@ import zg.acelera.service.CountryService
             repositoryMock.create(_, userId) >> domainAddress
             countryServiceMock.getCountryById(countryId) >> createCountryDTO()
 
-            AddressCreateDTO dto = new AddressCreateDTO(null, "12345678", "Main St", "100", "São Paulo", "SP", "Apt 1", "Downtown", countryId.toString(), userId)
+            AddressCreateDTO dto = new AddressCreateDTO("12345678", "Main St", "100", "São Paulo", "SP", "Apt 1", "Downtown", countryId.toString(), userId)
 
             when:
             AddressResponseDTO result = service.createAddress(dto, userId)

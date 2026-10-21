@@ -95,7 +95,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 5 — Implementar contratos e JDBC de recrutador e áreas
 
-- [ ] **O que será feito:** criar interfaces e implementações JDBC para
+- [x] **O que será feito:** criar interfaces e implementações JDBC para
   consultar áreas, localizar recrutador por e-mail, criar/atualizar perfil,
   alterar status e obter os dados do próprio recrutador usando parâmetros
   JDBC. Reutilizar `users` para a identidade global e preservar a separação
