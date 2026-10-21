@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/recruiter_registration.css">
+    <title>Cadastro de recrutador - Linketinder</title>
+</head>
+
+<body class="recruiter-registration-body">
+    <header class="recruiter-registration-header">
+        <div class="div-logo">
+            <img src="../assets/logo.svg" alt="Logo">
+        </div>
+        <h1 class="title-font">Cadastro de recrutador</h1>
+        <p class="description-m">Encontre os profissionais certos para cada oportunidade.</p>
+    </header>
+
+    <main class="recruiter-registration-card">
+        <form id="recruiter-registration-form" novalidate>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-name">Nome</label>
+                <input class="reg-input" type="text" id="recruiter-name" required autocomplete="name">
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruitment-area-id">Área de recrutamento</label>
+                <input class="reg-input" type="text" id="recruitment-area-id"
+                    placeholder="UUID da área (TI, RH ou Marketing)" required>
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-description">Descrição</label>
+                <textarea class="reg-input textarea" id="recruiter-description" required></textarea>
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-email">E-mail</label>
+                <input class="reg-input" type="email" id="recruiter-email" required autocomplete="email">
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-cpf">CPF</label>
+                <input class="reg-input" type="text" id="recruiter-cpf" inputmode="numeric"
+                    maxlength="14" required autocomplete="off">
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-birth-date">Data de nascimento</label>
+                <input class="reg-input" type="date" id="recruiter-birth-date" required autocomplete="bday">
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-password">Senha</label>
+                <input class="reg-input" type="password" id="recruiter-password" minlength="6"
+                    required autocomplete="new-password">
+            </div>
+            <div class="field-group">
+                <label class="description-sm" for="recruiter-password-confirmation">Confirme a senha</label>
+                <input class="reg-input" type="password" id="recruiter-password-confirmation" minlength="6"
+                    required autocomplete="new-password">
+            </div>
+            <p id="recruiter-registration-feedback" class="form-feedback" role="alert" hidden></p>
+            <button class="recruiter-submit-button label-font-m" type="submit">Cadastrar recrutador</button>
+        </form>
+        <p class="login-link description-sm">Já possui cadastro? <a href="./recruiter_login.html">Entrar</a></p>
+    </main>
+
+    <script type="module" src="../ts/pages/recruiter/RecruiterRegistration.js"></script>
+</body>
+
+</html>

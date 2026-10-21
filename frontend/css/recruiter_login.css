@@ -1,0 +1,36 @@
+.recruiter-login-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.recruiter-login-card {
+    width: min(100% - 32px, 440px);
+    height: fit-content;
+    padding: 40px;
+    background: var(--white-font);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.recruiter-login-card form {
+    margin-top: 28px;
+}
+
+.logout-button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--strong-green);
+    border-radius: 8px;
+    color: var(--strong-green);
+    background: var(--white-font);
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+    .recruiter-login-card {
+        padding: 28px 20px;
+    }
+}

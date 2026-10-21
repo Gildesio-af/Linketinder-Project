@@ -295,7 +295,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 14 — Implementar cadastro e login de recrutador
 
-- [ ] **O que será feito:** criar tela de cadastro com área, descrição,
+- [x] **O que será feito:** criar tela de cadastro com área, descrição,
   e-mail, CPF, data de nascimento e senha, além do fluxo de login e logout;
   validar campos no formulário e consumir os endpoints sem duplicar a regra
   de autorização do back-end. Não exibir nem manter senha após o envio.

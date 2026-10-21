@@ -1,0 +1,90 @@
+.recruiter-registration-body,
+.recruiter-login-body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--light-bg) url('../assets/Overlay+Blur.svg') no-repeat;
+}
+
+.recruiter-registration-header {
+    text-align: center;
+    padding: 28px 16px 18px;
+}
+
+.recruiter-registration-header .div-logo {
+    width: fit-content;
+    margin: 0 auto 12px;
+}
+
+.recruiter-registration-card {
+    width: min(100% - 32px, 560px);
+    padding: 28px 40px;
+    background: var(--white-font);
+    border-top: 4px solid var(--strong-green);
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0, 108, 73, 0.1);
+}
+
+.recruiter-registration-card form,
+.recruiter-login-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.field-group,
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reg-input,
+.login-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 8px;
+    background: var(--light-gray-form);
+    color: var(--dark-font);
+}
+
+.reg-input:focus,
+.login-input:focus {
+    outline: none;
+    border-color: var(--strong-green);
+}
+
+.textarea {
+    min-height: 88px;
+    resize: vertical;
+}
+
+.recruiter-submit-button {
+    width: 100%;
+    padding: 14px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--strong-green);
+    cursor: pointer;
+}
+
+.form-feedback {
+    color: var(--red);
+}
+
+.form-feedback[hidden] {
+    display: none;
+}
+
+.login-link {
+    margin-top: 18px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .recruiter-registration-card {
+        padding: 24px 20px;
+    }
+}

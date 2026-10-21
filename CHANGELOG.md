@@ -9,6 +9,11 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 
 ### Adicionado
 
+- Telas de cadastro, login e logout de recrutador, com validação de campos,
+  integração aos endpoints existentes, navegação dedicada e artefatos
+  TypeScript compilados. Credenciais são limpas após o envio e a sessão
+  persistida mantém somente a projeção segura do recrutador, sem senha, CPF ou
+  data de nascimento.
 - Modelos TypeScript do recrutador, convites, vagas atribuídas, candidatos
   anônimos, curtidas e matches, além do cliente HTTP com tratamento explícito
   de erros e do serviço de sessão por perfil. A sessão persistida usa apenas
