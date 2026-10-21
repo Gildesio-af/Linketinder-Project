@@ -31,6 +31,11 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Auditoria de curtidas de recrutadores por vaga e candidato, com chave
   primária composta para idempotência, histórico de remoção via `removed_at` e
   índices de consulta, preservando a unicidade existente de `matches`.
+- Garantia relacional entre convites e vagas: `company_id` deve corresponder ao
+  `publisher_id` da vaga, validada por trigger no PostgreSQL.
+- Compatibilidade com `companies_like` legado sem mistura de registros,
+  idempotência de convites ativos e curtidas, preservação do histórico de
+  remoção e estratégia consistente para criação e remoção de matches.
 
 ### Modificado
 

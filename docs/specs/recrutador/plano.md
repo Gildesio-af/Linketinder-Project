@@ -47,7 +47,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 3 — Verificar integridade relacional e compatibilidade do legado
 
-- [ ] **O que será feito:** definir na migração ou no contrato de persistência
+- [x] **O que será feito:** definir na migração ou no contrato de persistência
   a garantia de que `company_id` do convite corresponde a
   `jobs.publisher_id`, sem apagar nem misturar registros legados de
   `companies_like`; documentar a estratégia adotada para concorrência,
