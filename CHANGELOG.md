@@ -21,6 +21,10 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Contexto inicial da base existente: backend em Groovy com Gradle, persistência
   PostgreSQL via JDBC e Flyway, servidor HTTP com Tomcat embutido, testes Spock
   e frontend separado.
+- Migração Flyway V6 para criar o catálogo `recruitment_areas`, com seed inicial
+  de `TI`, `RH` e `Marketing`, e a especialização `recruiters`, incluindo
+  unicidade e validação estrutural do CPF, estados `ACTIVE`/`INACTIVE`,
+  relacionamentos com `users` e áreas de recrutamento e exclusão em cascata.
 
 ### Modificado
 

@@ -11,7 +11,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 1 — Criar o catálogo e a especialização de recrutadores
 
-- [ ] **O que será feito:** criar a migração Flyway versionada para as tabelas
+- [x] **O que será feito:** criar a migração Flyway versionada para as tabelas
   `recruitment_areas` e `recruiters`, incluindo UUID, chaves estrangeiras,
   unicidade de CPF, estados `ACTIVE`/`INACTIVE`, validações estruturais e seed
   inicial de `TI`, `RH` e `Marketing`. Não alterar migrações já aplicadas.
