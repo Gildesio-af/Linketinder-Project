@@ -4,7 +4,9 @@ export class StorageService {
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
         CURRENT_USER: "lt_current_user",
-        MATCHES: "lt_matches"
+        MATCHES: "lt_matches",
+        RECRUITER_SESSION: "lt_recruiter_session",
+        RECRUITER_INVITATIONS: "lt_recruiter_invitations"
     };
     static getCandidates() {
         const data = localStorage.getItem(this.KEYS.CANDIDATES);
@@ -91,6 +93,49 @@ export class StorageService {
     }
     static deleteCurrentUser() {
         localStorage.removeItem(this.KEYS.CURRENT_USER);
+    }
+    static getRecruiterSession() {
+        const data = localStorage.getItem(this.KEYS.RECRUITER_SESSION);
+        return data ? JSON.parse(data) : null;
+    }
+    static setRecruiterSession(session) {
+        const safeSession = {
+            userId: session.userId,
+            name: session.name,
+            email: session.email,
+            recruitmentAreaId: session.recruitmentAreaId,
+            recruitmentArea: session.recruitmentArea,
+            description: session.description,
+            status: session.status
+        };
+        localStorage.setItem(this.KEYS.RECRUITER_SESSION, JSON.stringify(safeSession));
+    }
+    static deleteRecruiterSession() {
+        localStorage.removeItem(this.KEYS.RECRUITER_SESSION);
+        this.clearRecruiterInvitationCache();
+    }
+    static getRecruiterInvitationCache() {
+        const data = localStorage.getItem(this.KEYS.RECRUITER_INVITATIONS);
+        if (!data)
+            return null;
+        try {
+            const cache = JSON.parse(data);
+            if (typeof cache.recruiterId !== "string" || !Array.isArray(cache.invitations)) {
+                this.clearRecruiterInvitationCache();
+                return null;
+            }
+            return { recruiterId: cache.recruiterId, invitations: cache.invitations };
+        }
+        catch {
+            this.clearRecruiterInvitationCache();
+            return null;
+        }
+    }
+    static setRecruiterInvitationCache(recruiterId, invitations) {
+        localStorage.setItem(this.KEYS.RECRUITER_INVITATIONS, JSON.stringify({ recruiterId, invitations }));
+    }
+    static clearRecruiterInvitationCache() {
+        localStorage.removeItem(this.KEYS.RECRUITER_INVITATIONS);
     }
     static getTopSkills(limit = 5) {
         const candidates = this.getCandidates();

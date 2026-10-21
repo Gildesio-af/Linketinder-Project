@@ -8,6 +8,7 @@ import type {
     RecruiterMatch,
     RecruiterRegistrationRequest
 } from "../../models/Domain.js";
+import { StorageService } from "../storage/StorageService.js";
 
 export class RecruiterHttpError extends Error {
     readonly status: number;
@@ -47,17 +48,17 @@ export class RecruiterService {
     }
 
     getInvitations(): Promise<RecruiterInvitation[]> {
-        return this.request<RecruiterInvitation[]>("/recruiters/invitations");
+        return this.request<RecruiterInvitation[]>("/recruiter-invitations/recruiter");
     }
 
     acceptInvitation(invitationId: string): Promise<RecruiterInvitation> {
-        return this.request<RecruiterInvitation>(`/recruiters/invitations/${encodeURIComponent(invitationId)}/accept`, {
+        return this.request<RecruiterInvitation>(`/recruiter-invitations/${encodeURIComponent(invitationId)}/accept`, {
             method: "POST"
         });
     }
 
     declineInvitation(invitationId: string): Promise<RecruiterInvitation> {
-        return this.request<RecruiterInvitation>(`/recruiters/invitations/${encodeURIComponent(invitationId)}/decline`, {
+        return this.request<RecruiterInvitation>(`/recruiter-invitations/${encodeURIComponent(invitationId)}/decline`, {
             method: "POST"
         });
     }
@@ -96,10 +97,10 @@ export class RecruiterService {
     ): Promise<T> {
         const requestInit: RequestInit = {
             method: options.method ?? "GET",
+            headers: this.authenticationHeaders(options.body !== undefined)
         };
 
         if (options.body) {
-            requestInit.headers = { "Content-Type": "application/json" };
             requestInit.body = JSON.stringify(options.body);
         }
 
@@ -107,6 +108,9 @@ export class RecruiterService {
         const responseBody = await response.text();
 
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                StorageService.clearRecruiterInvitationCache();
+            }
             throw new RecruiterHttpError(response.status, responseBody);
         }
 
@@ -119,5 +123,16 @@ export class RecruiterService {
         } catch {
             throw new Error("Recruiter request returned an invalid JSON response.");
         }
+    }
+
+    private authenticationHeaders(hasBody: boolean): Record<string, string> {
+        const session = StorageService.getRecruiterSession();
+        const headers: Record<string, string> = {};
+        if (hasBody) headers["Content-Type"] = "application/json";
+        if (session) {
+            headers["X-User-Id"] = session.userId;
+            headers["X-User-Role"] = "RECRUITER";
+        }
+        return headers;
     }
 }

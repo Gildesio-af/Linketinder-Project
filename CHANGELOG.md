@@ -103,6 +103,15 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
   acesso a perfis, convites, vagas, curtidas e matches não autorizados.
 - Testes Spock dos endpoints de recrutador, incluindo autenticação obrigatória
   e ausência de senha, CPF e data de nascimento nas respostas.
+- Painel de convites do recrutador com listagem dos convites próprios, aceite e
+  recusa de convites pendentes, atualização dos estados e tratamento de
+  convites cancelados ou revogados.
+- Integração do cliente de convites com os endpoints autenticados do backend,
+  incluindo invalidação do cache após ações e erros de autorização, sem
+  disponibilizar novamente ações obsoletas.
+- Página, estilos e artefatos JavaScript compilados do painel de convites,
+  exibindo somente identificadores de vaga/empresa e dados permitidos pelo
+  contrato, sem CPF, senha, data de nascimento ou diretório de recrutadores.
 
 ### Modificado
 

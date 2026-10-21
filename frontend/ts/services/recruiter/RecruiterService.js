@@ -1,3 +1,4 @@
+import { StorageService } from "../storage/StorageService.js";
 export class RecruiterHttpError extends Error {
     status;
     responseBody;
@@ -28,15 +29,15 @@ export class RecruiterService {
         });
     }
     getInvitations() {
-        return this.request("/recruiters/invitations");
+        return this.request("/recruiter-invitations/recruiter");
     }
     acceptInvitation(invitationId) {
-        return this.request(`/recruiters/invitations/${encodeURIComponent(invitationId)}/accept`, {
+        return this.request(`/recruiter-invitations/${encodeURIComponent(invitationId)}/accept`, {
             method: "POST"
         });
     }
     declineInvitation(invitationId) {
-        return this.request(`/recruiters/invitations/${encodeURIComponent(invitationId)}/decline`, {
+        return this.request(`/recruiter-invitations/${encodeURIComponent(invitationId)}/decline`, {
             method: "POST"
         });
     }
@@ -61,14 +62,17 @@ export class RecruiterService {
     async request(path, options = {}) {
         const requestInit = {
             method: options.method ?? "GET",
+            headers: this.authenticationHeaders(options.body !== undefined)
         };
         if (options.body) {
-            requestInit.headers = { "Content-Type": "application/json" };
             requestInit.body = JSON.stringify(options.body);
         }
         const response = await this.fetchFunction(`${this.baseUrl}${path}`, requestInit);
         const responseBody = await response.text();
         if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+                StorageService.clearRecruiterInvitationCache();
+            }
             throw new RecruiterHttpError(response.status, responseBody);
         }
         if (response.status === 204 || responseBody.trim() === "") {
@@ -80,6 +84,17 @@ export class RecruiterService {
         catch {
             throw new Error("Recruiter request returned an invalid JSON response.");
         }
+    }
+    authenticationHeaders(hasBody) {
+        const session = StorageService.getRecruiterSession();
+        const headers = {};
+        if (hasBody)
+            headers["Content-Type"] = "application/json";
+        if (session) {
+            headers["X-User-Id"] = session.userId;
+            headers["X-User-Role"] = "RECRUITER";
+        }
+        return headers;
     }
 }
 //# sourceMappingURL=RecruiterService.js.map

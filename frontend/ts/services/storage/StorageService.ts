@@ -7,7 +7,8 @@ export class StorageService {
         JOBS: "lt_jobs",
         CURRENT_USER: "lt_current_user",
         MATCHES: "lt_matches",
-        RECRUITER_SESSION: "lt_recruiter_session"
+        RECRUITER_SESSION: "lt_recruiter_session",
+        RECRUITER_INVITATIONS: "lt_recruiter_invitations"
     }
 
     static getCandidates(): Candidate[] {
@@ -147,6 +148,32 @@ export class StorageService {
 
     static deleteRecruiterSession(): void {
         localStorage.removeItem(this.KEYS.RECRUITER_SESSION);
+        this.clearRecruiterInvitationCache();
+    }
+
+    static getRecruiterInvitationCache(): { recruiterId: string; invitations: unknown[] } | null {
+        const data = localStorage.getItem(this.KEYS.RECRUITER_INVITATIONS);
+        if (!data) return null;
+
+        try {
+            const cache = JSON.parse(data) as { recruiterId?: string; invitations?: unknown[] };
+            if (typeof cache.recruiterId !== "string" || !Array.isArray(cache.invitations)) {
+                this.clearRecruiterInvitationCache();
+                return null;
+            }
+            return { recruiterId: cache.recruiterId, invitations: cache.invitations };
+        } catch {
+            this.clearRecruiterInvitationCache();
+            return null;
+        }
+    }
+
+    static setRecruiterInvitationCache(recruiterId: string, invitations: unknown[]): void {
+        localStorage.setItem(this.KEYS.RECRUITER_INVITATIONS, JSON.stringify({ recruiterId, invitations }));
+    }
+
+    static clearRecruiterInvitationCache(): void {
+        localStorage.removeItem(this.KEYS.RECRUITER_INVITATIONS);
     }
 
     static getTopSkills(limit: number = 5): { name: string, count: number }[] {

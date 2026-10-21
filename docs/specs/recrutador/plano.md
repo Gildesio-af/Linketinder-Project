@@ -319,7 +319,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 15 — Implementar painel de convites do recrutador
 
-- [ ] **O que será feito:** criar fluxo para listar convites destinados ao
+- [x] **O que será feito:** criar fluxo para listar convites destinados ao
   recrutador, aceitar/recusar convite próprio, atualizar estados e exibir
   somente vaga, empresa e dados permitidos pelo contrato. Tratar estados
   cancelado/revogado e erros de autorização sem deixar ações antigas
