@@ -71,6 +71,15 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Autorização no serviço antes da consulta de candidatos, bloqueando
   recrutadores sem vínculo aceito, com DTOs específicos e testes Spock para
   acesso autorizado, convites pendentes ou revogados e campos sensíveis.
+- Curtidas contextuais de recrutadores por vaga e candidato, com autorização
+  de vínculo aceito, idempotência, reativação e descurtida auditável via
+  `removed_at`.
+- Integração das curtidas de recrutadores com a reciprocidade de candidatos,
+  garantindo no máximo um match por candidato e vaga, preservando o match
+  enquanto houver uma autoria ativa e removendo-o após a última remoção.
+- Operação atômica de remoção condicional de match e DTO de resultado sem
+  dados identificadores ou credenciais, com cobertura Spock de autorização,
+  múltiplos recrutadores, reciprocidade e idempotência.
 
 ### Modificado
 

@@ -69,6 +69,21 @@ class MatchRepositoryJDBC implements MatchRepository {
     }
 
     @Override
+    void deleteMatchByCandidateAndJobIfNoActiveRecruiterLike(UUID candidateId, UUID jobId) {
+        sql.executeUpdate("""
+            DELETE FROM matches m
+            WHERE m.candidate_id = ? AND m.job_id = ?
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM recruiter_job_likes rjl
+                  WHERE rjl.job_id = m.job_id
+                    AND rjl.candidate_id = m.candidate_id
+                    AND rjl.removed_at IS NULL
+              )
+        """, [candidateId, jobId])
+    }
+
+    @Override
     void deleteMatchesByCandidateAndCompany(UUID candidateId, UUID companyId) {
         sql.executeUpdate('DELETE FROM matches WHERE candidate_id = ? AND company_id = ?', [candidateId, companyId])
     }

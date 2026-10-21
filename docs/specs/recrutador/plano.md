@@ -183,7 +183,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 9 — Implementar curtidas contextuais e regras de match
 
-- [ ] **O que será feito:** criar repositório, DTO e serviço para curtida de
+- [x] **O que foi feito:** criado repositório, DTO e serviço para curtida de
   recrutador por vaga/candidato, com idempotência, reativação, descurtida
   auditável e autorização de vínculo ativo. Integrar a curtida do candidato
   com a criação de um único match por candidato e vaga, mantendo o match

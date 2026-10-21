@@ -9,5 +9,6 @@ interface MatchRepository {
     List<Match> findMatchByJobId(UUID jobId)
     boolean existsMatch(UUID candidateId, UUID jobId)
     void deleteMatchByCandidateAndJob(UUID candidateId, UUID jobId)
+    void deleteMatchByCandidateAndJobIfNoActiveRecruiterLike(UUID candidateId, UUID jobId)
     void deleteMatchesByCandidateAndCompany(UUID candidateId, UUID companyId)
 }

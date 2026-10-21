@@ -35,6 +35,10 @@ class MatchService {
         matchRepository.deleteMatchByCandidateAndJob(candidateId, jobId)
     }
 
+    void deleteMatchIfNoActiveRecruiterLike(UUID candidateId, UUID jobId) {
+        matchRepository.deleteMatchByCandidateAndJobIfNoActiveRecruiterLike(candidateId, jobId)
+    }
+
     void deleteMatchesByCandidateAndCompany(UUID candidateId, UUID companyId) {
         matchRepository.deleteMatchesByCandidateAndCompany(candidateId, companyId)
     }

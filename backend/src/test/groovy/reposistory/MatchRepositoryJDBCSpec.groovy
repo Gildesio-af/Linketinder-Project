@@ -122,6 +122,15 @@ class MatchRepositoryJDBCSpec extends Specification {
         1 * sqlMock.executeUpdate('DELETE FROM matches WHERE candidate_id = ? AND job_id = ?', [candidateId, jobId])
     }
 
+    def "deleteMatchByCandidateAndJobIfNoActiveRecruiterLike removes only when no active authors remain"() {
+        when:
+        repository.deleteMatchByCandidateAndJobIfNoActiveRecruiterLike(candidateId, jobId)
+
+        then:
+        1 * sqlMock.executeUpdate({ it.contains('NOT EXISTS') && it.contains('removed_at IS NULL') },
+                [candidateId, jobId])
+    }
+
     def "deleteMatchesByCandidateAndCompany should execute delete with candidate and company ids"() {
         when:
         repository.deleteMatchesByCandidateAndCompany(candidateId, companyId)
