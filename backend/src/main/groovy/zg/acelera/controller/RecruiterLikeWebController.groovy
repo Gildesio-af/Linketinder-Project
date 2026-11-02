@@ -22,19 +22,19 @@ class RecruiterLikeWebController extends BaseWebController {
     private void like(HttpServletRequest req, HttpServletResponse resp) {
         UUID recruiterId = authenticatedUserId(req, "RECRUITER")
         answerJson(resp, HttpServletResponse.SC_OK,
-                likeService.like(recruiterId, pathUuid(req, 0), pathUuid(req, 1)))
+                likeService.like(recruiterId, pathUuid(req, 1), pathUuid(req, 3)))
     }
 
     private void unlike(HttpServletRequest req, HttpServletResponse resp) {
         UUID recruiterId = authenticatedUserId(req, "RECRUITER")
         answerJson(resp, HttpServletResponse.SC_OK,
-                likeService.unlike(recruiterId, pathUuid(req, 0), pathUuid(req, 1)))
+                likeService.unlike(recruiterId, pathUuid(req, 1), pathUuid(req, 3)))
     }
 
     private void match(HttpServletRequest req, HttpServletResponse resp) {
         UUID recruiterId = authenticatedUserId(req, "RECRUITER")
-        UUID candidateId = pathUuid(req, 0)
-        UUID jobId = pathUuid(req, 1)
+        UUID candidateId = pathUuid(req, 1)
+        UUID jobId = pathUuid(req, 2)
         answerJson(resp, HttpServletResponse.SC_OK,
                 matchService.getAuthorizedMatch(candidateId, jobId, recruiterId,
                         AuthResponseDTO.RECRUITER_ROLE, recruiterId))
