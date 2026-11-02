@@ -36,7 +36,9 @@ export class MatchService {
             if(!candidate.likedJobs.includes(jobName)) {
                 candidate.likedJobs.push(jobName);
                 StorageService.updateCandidate(candidate);
-
+                StorageService.getCompanies()
+                    .filter(company => (company.likedCandidates ?? []).includes(candidate.cpf))
+                    .forEach(company => this.saveMatch(company, candidate));
                 return true;
             }
         }
@@ -46,15 +48,21 @@ export class MatchService {
 
     private static saveMatch(company: Company, candidate: Candidate): boolean {
         const matches: Match[] = StorageService.getMatches();
-        const existsMatch: boolean = matches.some(match => match.cnpj === company.cnpj && match.cpf === candidate.cpf);
+        const matchingJobs = StorageService.getJobs()
+            .filter(job => (candidate.likedJobs ?? []).includes(job.name))
+            .map(job => job.name);
+        const existsMatch: boolean = matchingJobs.some(jobId =>
+            matches.some(match =>
+                match.cnpj === company.cnpj && match.cpf === candidate.cpf && match.jobId === jobId
+            )
+        );
         
-        if(!existsMatch) {
-            const match: Match = {
+        if (!existsMatch && matchingJobs.length > 0) {
+            matchingJobs.forEach(jobId => StorageService.saveMatch({
                 cnpj: company.cnpj,
-                cpf: candidate.cpf
-            };
-
-            StorageService.saveMatch(match);
+                cpf: candidate.cpf,
+                jobId
+            }));
             return true;
         }
         return false;

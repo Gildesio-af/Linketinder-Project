@@ -94,6 +94,20 @@ class JobService {
         return JobResponseDTO.fromDomain(createdJob, addressResponse)
     }
 
+    JobResponseDTO createJobWithSkillsId(JobCreateDTO newJob, AddressCreateDTO newAddress) {
+        AddressResponseDTO addressResponse = addressService.createAddress(newAddress, newJob.publisherId())
+        if (!addressResponse) throw new IllegalStateException("Failed to create address for the job.")
+
+        Job jobDomain = newJob.toDomain()
+        jobDomain.address = new Address(id: addressResponse.id())
+        List<UUID> skillsIds = newJob.skills()
+                .collect { UUID.fromString(it)}
+
+        Job createdJob = jobRepository.create(jobDomain, skillsIds)
+
+        return JobResponseDTO.fromDomain(createdJob, addressResponse)
+    }
+
     JobResponseDTO updateJob(JobUpdateDTO jobUpdateDTO, UUID jobId) {
         Job job = jobUpdateDTO.toDomain()
         job.id = jobId

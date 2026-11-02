@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/recruiter_dashboard.css">
+    <title>Painel do recrutador - Linketinder</title>
+</head>
+
+<body class="recruiter-dashboard-body">
+    <header class="recruiter-dashboard-header">
+        <div>
+            <p class="eyebrow">Área do recrutador</p>
+            <h1 class="title-font">Vagas aceitas e candidatos anônimos</h1>
+            <p id="recruiter-dashboard-description" class="description-m"></p>
+        </div>
+        <div class="header-actions">
+            <a id="recruiter-dashboard-invitations-link" class="outline-button" href="./recruiter_invitations.html">Convites</a>
+            <button id="recruiter-dashboard-logout" class="outline-button" type="button">Sair</button>
+        </div>
+    </header>
+
+    <main class="recruiter-dashboard-main">
+        <p id="recruiter-dashboard-feedback" class="form-feedback" role="alert" hidden></p>
+
+        <section class="dashboard-card" aria-labelledby="recruiter-dashboard-jobs-title">
+            <div class="section-heading">
+                <h2 id="recruiter-dashboard-jobs-title" class="title-font">Suas vagas</h2>
+                <button id="recruiter-dashboard-refresh" class="outline-button" type="button">Atualizar</button>
+            </div>
+            <p id="recruiter-dashboard-jobs-loading" class="description-m">Carregando vagas...</p>
+            <div id="recruiter-dashboard-jobs" class="jobs-list"></div>
+        </section>
+
+        <section class="dashboard-card" aria-labelledby="recruiter-dashboard-candidates-title">
+            <h2 id="recruiter-dashboard-candidates-title" class="title-font">Candidatos anônimos</h2>
+            <p id="recruiter-dashboard-candidates-hint" class="description-m">Selecione uma vaga para ver os candidatos.</p>
+            <p id="recruiter-dashboard-candidates-loading" class="description-m" hidden>Carregando candidatos...</p>
+            <div id="recruiter-dashboard-candidates" class="candidates-list"></div>
+        </section>
+
+        <section class="dashboard-card" aria-labelledby="recruiter-dashboard-matches-title">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Reciprocidade</p>
+                    <h2 id="recruiter-dashboard-matches-title" class="title-font">Matches das suas curtidas</h2>
+                </div>
+                <span class="matches-badge">Somente vínculos autorizados</span>
+            </div>
+            <p class="description-m matches-description">
+                Acompanhe os matches criados quando uma curtida sua coincide com o interesse do candidato.
+                Os dados abaixo são liberados somente aos participantes do match.
+            </p>
+            <p id="recruiter-dashboard-matches-loading" class="description-m">Carregando matches...</p>
+            <div id="recruiter-dashboard-matches" class="matches-list"></div>
+        </section>
+    </main>
+
+    <script type="module" src="../ts/pages/recruiter/RecruiterDashboard.js"></script>
+</body>
+
+</html>

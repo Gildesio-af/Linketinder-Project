@@ -5,9 +5,11 @@ import zg.acelera.domain.User
 import zg.acelera.dto.address.AddressCreateDTO
 import zg.acelera.dto.address.AddressResponseDTO
 import zg.acelera.dto.candidate.CandidateDTO
+import zg.acelera.dto.candidate.AnonymousCandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateResponseDTO
 import zg.acelera.dto.candidate.CandidateUpdateDTO
 import zg.acelera.dto.skill.SkillResponseDTO
+import zg.acelera.dto.job.RecruiterJobResponseDTO
 import zg.acelera.repository.candidate.CandidateRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 
@@ -55,6 +57,20 @@ class CandidateService {
         return candidateResponseDTOS
     }
 
+    List<RecruiterJobResponseDTO> listAcceptedJobsForRecruiter(UUID recruiterId) {
+        if (recruiterId == null)
+            throw new SecurityException("Recruiter authentication is required.")
+        repository.findAcceptedJobsByRecruiterId(recruiterId)
+    }
+
+    List<AnonymousCandidateResponseDTO> listAnonymousCandidatesForRecruiterJob(
+            UUID recruiterId, UUID jobId) {
+        requireRecruiterAndJobIds(recruiterId, jobId)
+        if (!repository.hasAcceptedJob(recruiterId, jobId))
+            throw new SecurityException("Recruiter is not authorized for this job.")
+        repository.findAnonymousCandidatesByJobId(jobId)
+    }
+
     CandidateResponseDTO registerCandidate(CandidateDTO candidateDTO, AddressCreateDTO addressDTO) {
         CandidateResponseDTO candidateResponse
         Candidate newCandidate = candidateDTO.toDomain()
@@ -86,12 +102,26 @@ class CandidateService {
         return candidateResponse
     }
 
-    private void deleteCandidateById(UUID id) {
+    CandidateResponseDTO updateCandidate(CandidateUpdateDTO candidateUpdate, UUID candidateId) {
+        Candidate updatedCandidate = repository.update(candidateUpdate.toCandidate(), candidateId)
+        CandidateResponseDTO candidateResponse = CandidateResponseDTO.fromDomain(updatedCandidate, addressService.getAddressesByUserId(candidateId))
+
+        return candidateResponse
+    }
+
+    void deleteCandidateById(UUID id) {
         repository.delete(id)
     }
 
     void deleteCandidate(String cpf) {
         Candidate candidate = repository.findByCpf(cpf) as Candidate
         deleteCandidateById(candidate.id)
+    }
+
+    private static void requireRecruiterAndJobIds(UUID recruiterId, UUID jobId) {
+        if (recruiterId == null)
+            throw new SecurityException("Recruiter authentication is required.")
+        if (jobId == null)
+            throw new IllegalArgumentException("Job ID is required.")
     }
 }

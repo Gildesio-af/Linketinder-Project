@@ -1,0 +1,211 @@
+.recruiter-dashboard-body {
+    min-height: 100vh;
+    background: var(--light-bg);
+}
+
+.recruiter-dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    width: min(100% - 32px, 1080px);
+    margin: 0 auto;
+    padding: 36px 0 24px;
+}
+
+.recruiter-dashboard-header h1,
+.recruiter-dashboard-body .section-heading h2,
+.dashboard-card > h2 {
+    margin: 0;
+}
+
+.recruiter-dashboard-header .description-m {
+    margin: 8px 0 0;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: var(--strong-green);
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.recruiter-dashboard-main {
+    display: grid;
+    gap: 24px;
+    width: min(100% - 32px, 1080px);
+    margin: 0 auto 48px;
+}
+
+.dashboard-card {
+    padding: 28px;
+    background: var(--white-font);
+    border-top: 4px solid var(--strong-green);
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0, 108, 73, 0.1);
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.outline-button {
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid var(--strong-green);
+    border-radius: 8px;
+    color: var(--strong-green);
+    background: var(--white-font);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.outline-button:disabled,
+.like-button:disabled,
+.job-select:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
+.form-feedback {
+    margin: 0;
+}
+
+.jobs-list,
+.candidates-list,
+.matches-list {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.job-card,
+.candidate-card,
+.match-card {
+    padding: 20px;
+    border: 1px solid var(--light-gray);
+    border-radius: 10px;
+}
+
+.job-card.selected {
+    border-color: var(--strong-green);
+    background: var(--light-bg);
+}
+
+.job-card h3,
+.candidate-card h3 {
+    margin: 0 0 10px;
+}
+
+.job-card p,
+.candidate-card p {
+    margin: 7px 0;
+}
+
+.skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.skill-tag {
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--strong-green);
+    background: var(--light-bg);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.job-select,
+.like-button {
+    margin-top: 14px;
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 7px;
+    color: var(--white-font);
+    background: var(--strong-green);
+    cursor: pointer;
+}
+
+.like-button.liked {
+    color: var(--dark-font);
+    background: var(--light-gray);
+}
+
+.empty-state {
+    padding: 12px 0;
+    color: var(--dark-font);
+}
+
+.matches-description {
+    margin: 8px 0 0;
+}
+
+.matches-badge,
+.match-status {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: var(--strong-green);
+    background: var(--light-bg);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.match-card {
+    border-left: 4px solid var(--strong-green);
+    background: linear-gradient(135deg, var(--white-font), var(--light-bg));
+}
+
+.match-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.match-card-header h3 {
+    margin: 0;
+}
+
+.match-detail,
+.match-date {
+    margin: 8px 0 0;
+}
+
+.match-detail {
+    color: var(--dark-font);
+}
+
+.match-date {
+    color: var(--strong-green);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .recruiter-dashboard-header,
+    .section-heading,
+    .match-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dashboard-card {
+        padding: 20px;
+    }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/recruiter_invitations.css">
+    <title>Convites do recrutador - Linketinder</title>
+</head>
+
+<body class="recruiter-invitations-body">
+    <header class="recruiter-invitations-header">
+        <div>
+            <p class="eyebrow">Área do recrutador</p>
+            <h1 class="title-font">Convites para vagas</h1>
+            <p id="recruiter-invitations-description" class="description-m"></p>
+        </div>
+        <button id="recruiter-invitations-logout" class="outline-button" type="button">Sair</button>
+    </header>
+
+    <main class="recruiter-invitations-main">
+        <section class="recruiter-invitations-card" aria-labelledby="recruiter-invitations-title">
+            <div class="section-heading">
+                <h2 id="recruiter-invitations-title" class="title-font">Seus convites</h2>
+                <button id="recruiter-invitations-refresh" class="outline-button" type="button">Atualizar</button>
+            </div>
+            <p id="recruiter-invitations-feedback" class="form-feedback" role="alert" hidden></p>
+            <p id="recruiter-invitations-loading" class="description-m">Carregando convites...</p>
+            <div id="recruiter-invitations-list" class="invitations-list"></div>
+        </section>
+    </main>
+
+    <script type="module" src="../ts/pages/recruiter/RecruiterInvitations.js"></script>
+</body>
+
+</html>

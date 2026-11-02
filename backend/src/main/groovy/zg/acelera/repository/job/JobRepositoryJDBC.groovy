@@ -93,7 +93,8 @@ class JobRepositoryJDBC implements JobRepository {
 
         sql.withTransaction {
             GroovyRowResult jobInsertedRow = insertJob(job)
-            if (skillIds) addSkillToJob(UUID.fromString(jobInsertedRow.id.toString()), skillIds as Set<UUID>)
+            if (skillIds)
+                insertSkillsForJob(UUID.fromString(jobInsertedRow.id.toString()), skillIds as Set<UUID>)
 
             jobWithSkillsRows = findJobWithSkills(jobInsertedRow)
         }
@@ -115,12 +116,7 @@ class JobRepositoryJDBC implements JobRepository {
     @Override
     void addSkillToJob(UUID jobId, Set<UUID> skillIds) {
         sql.withTransaction {
-            skillIds.each { skillId ->
-                sql.executeUpdate("""
-                    INSERT INTO jobs_skill (job_id, skill_id)
-                    VALUES (?, ?)
-                """, [jobId, skillId])
-            }
+            insertSkillsForJob(jobId, skillIds)
         }
     }
 
@@ -197,5 +193,14 @@ class JobRepositoryJDBC implements JobRepository {
             WHERE id = ?
             RETURNING *
         """, [job.name, job.description, job.id])
+    }
+
+    private void insertSkillsForJob(UUID jobId, Set<UUID> skillIds) {
+        skillIds.each { skillId ->
+            sql.executeUpdate("""
+            INSERT INTO jobs_skill (job_id, skill_id)
+            VALUES (?, ?)
+        """, [jobId, skillId])
+        }
     }
 }

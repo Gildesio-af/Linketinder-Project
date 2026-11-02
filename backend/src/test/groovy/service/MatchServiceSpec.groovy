@@ -125,6 +125,14 @@ class MatchServiceSpec extends Specification {
         1 * repositoryMock.deleteMatchByCandidateAndJob(candidateId, jobId)
     }
 
+    def "deleteMatchIfNoActiveRecruiterLike delegates atomic cleanup"() {
+        when:
+        service.deleteMatchIfNoActiveRecruiterLike(candidateId, jobId)
+
+        then:
+        1 * repositoryMock.deleteMatchByCandidateAndJobIfNoActiveRecruiterLike(candidateId, jobId)
+    }
+
     def "deleteMatchesByCandidateAndCompany should delegate to repository"() {
         when:
         service.deleteMatchesByCandidateAndCompany(candidateId, companyId)

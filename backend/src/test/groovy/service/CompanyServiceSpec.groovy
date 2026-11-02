@@ -114,7 +114,7 @@ class CompanyServiceSpec extends Specification {
                 "secret123", "A tech company", [skillId.toString()] as Set
         )
 
-        AddressCreateDTO addressDTO = new AddressCreateDTO(null, "12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
+        AddressCreateDTO addressDTO = new AddressCreateDTO("12345678", "Main St", "100", "São Paulo", "SP", null, "Downtown", countryId.toString(), null)
         Company savedCompany = createCompany()
         AddressResponseDTO addressResponse = createAddressResponse()
 

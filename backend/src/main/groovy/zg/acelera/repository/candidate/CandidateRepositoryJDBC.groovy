@@ -5,6 +5,9 @@ import groovy.sql.Sql
 import zg.acelera.domain.Candidate
 import zg.acelera.domain.User
 import zg.acelera.domain.Skill
+import zg.acelera.dto.candidate.AnonymousCandidateResponseDTO
+import zg.acelera.dto.job.RecruiterJobResponseDTO
+import zg.acelera.dto.skill.SkillResponseDTO
 import zg.acelera.repository.skill.SkillRepository
 import zg.acelera.utils.exception.EntityNotFoundException
 import zg.acelera.utils.mapper.SkillRowMapper
@@ -82,6 +85,67 @@ class CandidateRepositoryJDBC implements CandidateRepository {
         """, [skill])
 
         return getCandidatesWithSkillsFromRows(rows).toList() as List<User>
+    }
+
+    @Override
+    List<RecruiterJobResponseDTO> findAcceptedJobsByRecruiterId(UUID recruiterId) {
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT j.id, j.name, j.description,
+                   a.city, a.state, c.name AS country,
+                   s.id AS skill_id, s.name AS skill_name
+            FROM recruiter_job_invitations i
+            INNER JOIN jobs j ON j.id = i.job_id
+            INNER JOIN addresses a ON a.id = j.address_id
+            LEFT JOIN countries c ON c.id = a.country_id
+            LEFT JOIN jobs_skill js ON js.job_id = j.id
+            LEFT JOIN skills s ON s.id = js.skill_id
+            WHERE i.recruiter_id = ? AND i.status = 'ACCEPTED'
+            ORDER BY j.name
+        """, [recruiterId])
+
+        rows.groupBy { it.id }.collect { _, jobRows ->
+            GroovyRowResult row = jobRows.first()
+            new RecruiterJobResponseDTO(
+                    row.id as UUID,
+                    row.name,
+                    row.description,
+                    jobRows.findResults { skillRow(it) } as Set<SkillResponseDTO>,
+                    row.city,
+                    row.state,
+                    row.country
+            )
+        }
+    }
+
+    @Override
+    boolean hasAcceptedJob(UUID recruiterId, UUID jobId) {
+        sql.firstRow("""
+            SELECT 1
+            FROM recruiter_job_invitations
+            WHERE recruiter_id = ? AND job_id = ? AND status = 'ACCEPTED'
+        """, [recruiterId, jobId]) != null
+    }
+
+    @Override
+    List<AnonymousCandidateResponseDTO> findAnonymousCandidatesByJobId(UUID jobId) {
+        List<GroovyRowResult> rows = sql.rows("""
+            SELECT u.description, s.id AS skill_id, s.name AS skill_name
+            FROM jobs j
+            INNER JOIN jobs_like jl ON jl.job_id = j.id
+            INNER JOIN candidates ca ON ca.user_id = jl.candidate_id
+            INNER JOIN users u ON u.id = ca.user_id
+            LEFT JOIN users_skill us ON us.user_id = ca.user_id
+            LEFT JOIN skills s ON s.id = us.skill_id
+            WHERE j.id = ?
+            ORDER BY u.description
+        """, [jobId])
+
+        rows.groupBy { [it.description] }.collect { _, candidateRows ->
+            new AnonymousCandidateResponseDTO(
+                    candidateRows.first().description,
+                    candidateRows.findResults { skillRow(it) } as Set<SkillResponseDTO>
+            )
+        }
     }
 
     @Override
@@ -193,8 +257,10 @@ class CandidateRepositoryJDBC implements CandidateRepository {
     }
 
     private static Candidate getCandidateFromRow(GroovyRowResult row) {
+        Object userId = row.id ?: row.user_id
+
         return new Candidate(
-                id: UUID.fromString(row.id.toString()),
+                id: UUID.fromString(userId.toString()),
                 name: row.name,
                 email: row.email,
                 password: row.password,
@@ -207,5 +273,10 @@ class CandidateRepositoryJDBC implements CandidateRepository {
 
     private static Candidate getCandidateFromUserRowAndCandidateRow(GroovyRowResult userRow, GroovyRowResult candidateRow) {
         return getCandidateFromRow(userRow + candidateRow as GroovyRowResult)
+    }
+
+    private static SkillResponseDTO skillRow(GroovyRowResult row) {
+        if (!row.skill_id) return null
+        new SkillResponseDTO(row.skill_id as UUID, row.skill_name)
     }
 }

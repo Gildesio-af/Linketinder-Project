@@ -1,16 +1,46 @@
 import { StorageService } from "../storage/StorageService.js";
-import type { User, Company, Candidate } from "../../models/Domain.js";
+import { RecruiterService } from "../recruiter/RecruiterService.js";
+import { RecruiterSessionService } from "../recruiter/RecruiterSessionService.js";
+import type { User, Company, Candidate, RecruiterSession } from "../../models/Domain.js";
 
 
 const formLogin = document.getElementById("login-form") as HTMLFormElement;
+const recruiterService = new RecruiterService();
 
 if (formLogin) {
-    formLogin.addEventListener("submit", (event) => {
+    formLogin.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const user = (document.getElementById("login-user") as HTMLInputElement).value.replace(/\D/g, '');
+        const userInput = (document.getElementById("login-user") as HTMLInputElement).value.trim();
         const password = (document.getElementById("login-password") as HTMLInputElement).value;
 
+        if (userInput.includes("@")) {
+            try {
+                const { recruiter } = await recruiterService.login({
+                    email: userInput,
+                    password
+                });
+                const session: RecruiterSession = {
+                    userId: recruiter.userId,
+                    name: recruiter.name,
+                    email: recruiter.email,
+                    recruitmentAreaId: recruiter.recruitmentAreaId,
+                    recruitmentArea: recruiter.recruitmentArea ?? "",
+                    description: recruiter.description,
+                    status: recruiter.status
+                };
+
+                StorageService.deleteCurrentUser();
+                RecruiterSessionService.start(session);
+                (document.getElementById("login-password") as HTMLInputElement).value = "";
+                window.location.replace("./recruiter_dashboard.html");
+            } catch {
+                alert("Usuário ou senha inválidos");
+            }
+            return;
+        }
+
+        const user = userInput.replace(/\D/g, "");
         if(user.length == 11) {
             const candidates: Candidate[] = StorageService.getCandidates();
             const candidate: Candidate | undefined = candidates.find(c => c.cpf === user);
@@ -21,6 +51,7 @@ if (formLogin) {
             }
 
             StorageService.setCurrentUser(candidate);
+            RecruiterSessionService.clear();
             window.location.replace("./jobs.html")
 
         } else if(user.length == 14) {
@@ -33,12 +64,12 @@ if (formLogin) {
             }
 
             StorageService.setCurrentUser(company);
+            RecruiterSessionService.clear();
             window.location.replace("./company_menu.html")
         } else {
             throw new Error("User format invalid.");
         }
     })
 }
-
 
 

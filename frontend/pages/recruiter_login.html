@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/recruiter_login.css">
+    <title>Login de recrutador - Linketinder</title>
+</head>
+
+<body class="recruiter-login-body">
+    <header class="login-header">
+        <div class="div-logo">
+            <img src="../assets/logo.svg" alt="Logo">
+        </div>
+        <h1 class="logo-font-g">Linketinder</h1>
+    </header>
+    <main class="recruiter-login-main">
+        <section class="recruiter-login-card">
+            <div class="title-container">
+                <h2 class="title-font">Acesso do recrutador</h2>
+                <p class="description-m">Entre para acompanhar suas oportunidades.</p>
+            </div>
+            <form id="recruiter-login-form" novalidate>
+                <div class="input-group">
+                    <label class="description-sm" for="recruiter-login-email">E-mail</label>
+                    <input class="login-input" type="email" id="recruiter-login-email" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label class="description-sm" for="recruiter-login-password">Senha</label>
+                    <input class="login-input" type="password" id="recruiter-login-password" required
+                        autocomplete="current-password">
+                </div>
+                <p id="recruiter-login-feedback" class="form-feedback" role="alert" hidden></p>
+                <button class="submit-btn" type="submit"><span class="label-font-m">Entrar</span></button>
+            </form>
+            <button id="recruiter-logout" class="logout-button" type="button" hidden>Sair</button>
+            <p class="register-link description-sm">Ainda não possui cadastro? <a
+                    href="./recruiter_registration.html">Cadastre-se</a></p>
+        </section>
+    </main>
+    <script type="module" src="../ts/pages/recruiter/RecruiterLogin.js"></script>
+</body>
+
+</html>

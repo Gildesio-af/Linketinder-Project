@@ -33,4 +33,14 @@ record CompanyUpdateDTO(
                 .description(description)
                 .build()
     }
+
+    static CompanyUpdateDTO fromMap(Map<String, Object> map) {
+        return new CompanyUpdateDTO(
+                map.get("cnpj") as String ?: null,
+                map.get("name") as String ?: null,
+                map.get("email") as String?: null,
+                map.get("password") as String ?: null,
+                map.get("description") as String ?: null
+        )
+    }
 }

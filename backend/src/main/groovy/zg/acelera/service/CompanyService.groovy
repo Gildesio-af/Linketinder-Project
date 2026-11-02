@@ -28,6 +28,11 @@ class CompanyService {
         }
     }
 
+    CompanyResponseDTO listCompanyById(UUID companyId) {
+        Company companyById = companyRepository.findById(companyId) as Company
+        return CompanyResponseDTO.fromDomain(companyById, addressService.getAddressesByUserId(companyId))
+    }
+
     CompanyResponseDTO listCompanyByCnpj(String cnpj) {
         Company companyByCnpj = companyRepository.findByCnpj(cnpj) as Company
         return CompanyResponseDTO.fromDomain(companyByCnpj, addressService.getAddressesByUserId(companyByCnpj.id))

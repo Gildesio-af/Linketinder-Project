@@ -1,4 +1,4 @@
-import type { User, Candidate, Company, Job, Match } from "../../models/Domain";
+import type { User, Candidate, Company, Job, Match, RecruiterSession } from "../../models/Domain";
 
 export class StorageService {
     private static KEYS = {
@@ -6,7 +6,9 @@ export class StorageService {
         COMPANIES: "lt_companies",
         JOBS: "lt_jobs",
         CURRENT_USER: "lt_current_user",
-        MATCHES: "lt_matches"
+        MATCHES: "lt_matches",
+        RECRUITER_SESSION: "lt_recruiter_session",
+        RECRUITER_INVITATIONS: "lt_recruiter_invitations"
     }
 
     static getCandidates(): Candidate[] {
@@ -125,6 +127,55 @@ export class StorageService {
         localStorage.removeItem(this.KEYS.CURRENT_USER);
     }
 
+    static getRecruiterSession(): RecruiterSession | null {
+        const data = localStorage.getItem(this.KEYS.RECRUITER_SESSION);
+        return data ? JSON.parse(data) as RecruiterSession : null;
+    }
+
+    static setRecruiterSession(session: RecruiterSession): void {
+        const safeSession: RecruiterSession = {
+            userId: session.userId,
+            name: session.name,
+            email: session.email,
+            recruitmentAreaId: session.recruitmentAreaId,
+            recruitmentArea: session.recruitmentArea,
+            description: session.description,
+            status: session.status
+        };
+
+        localStorage.setItem(this.KEYS.RECRUITER_SESSION, JSON.stringify(safeSession));
+    }
+
+    static deleteRecruiterSession(): void {
+        localStorage.removeItem(this.KEYS.RECRUITER_SESSION);
+        this.clearRecruiterInvitationCache();
+    }
+
+    static getRecruiterInvitationCache(): { recruiterId: string; invitations: unknown[] } | null {
+        const data = localStorage.getItem(this.KEYS.RECRUITER_INVITATIONS);
+        if (!data) return null;
+
+        try {
+            const cache = JSON.parse(data) as { recruiterId?: string; invitations?: unknown[] };
+            if (typeof cache.recruiterId !== "string" || !Array.isArray(cache.invitations)) {
+                this.clearRecruiterInvitationCache();
+                return null;
+            }
+            return { recruiterId: cache.recruiterId, invitations: cache.invitations };
+        } catch {
+            this.clearRecruiterInvitationCache();
+            return null;
+        }
+    }
+
+    static setRecruiterInvitationCache(recruiterId: string, invitations: unknown[]): void {
+        localStorage.setItem(this.KEYS.RECRUITER_INVITATIONS, JSON.stringify({ recruiterId, invitations }));
+    }
+
+    static clearRecruiterInvitationCache(): void {
+        localStorage.removeItem(this.KEYS.RECRUITER_INVITATIONS);
+    }
+
     static getTopSkills(limit: number = 5): { name: string, count: number }[] {
     const candidates: Candidate[] = this.getCandidates();
     const skillCounts: Record<string, number> = {};
@@ -158,13 +209,21 @@ export class StorageService {
 
     static saveMatch(match: Match): void {
         const matches = this.getMatches();
+        const alreadyExists = matches.some(existing =>
+            existing.cnpj === match.cnpj
+            && existing.cpf === match.cpf
+            && existing.jobId === match.jobId
+        );
+        if (alreadyExists) return;
         matches.push(match);
         localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(matches));
     }
 
     static deleteMatch(match: Match): void {
         const matches = this.getMatches();
-        const filtered = matches.filter(m => m.cnpj !== match.cnpj && m.cpf !== match.cpf);
+        const filtered = matches.filter(m =>
+            !(m.cnpj === match.cnpj && m.cpf === match.cpf && m.jobId === match.jobId)
+        );
         localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(filtered));
     }
 }

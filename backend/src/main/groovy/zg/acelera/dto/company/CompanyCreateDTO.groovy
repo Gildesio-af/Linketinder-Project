@@ -38,4 +38,15 @@ record CompanyCreateDTO(
                 .skills(skillsId.collect { skillId -> new Skill(id: UUID.fromString(skillId)) } as Set)
                 .build()
     }
+
+    static CompanyCreateDTO fromMap(Map<String, Object> map) {
+        return new CompanyCreateDTO(
+                map.get("cnpj") as String,
+                map.get("name") as String,
+                map.get("email") as String,
+                map.get("password") as String,
+                map.get("description") as String,
+                (map.get("skillsId") as List<String>)?.toSet() ?: [] as Set<String>
+        )
+    }
 }

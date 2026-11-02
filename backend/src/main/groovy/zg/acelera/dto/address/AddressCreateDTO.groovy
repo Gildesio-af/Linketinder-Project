@@ -4,7 +4,6 @@ import zg.acelera.domain.Address
 import zg.acelera.domain.Country
 
 record AddressCreateDTO(
-        UUID id,
         String cep,
         String street,
         String number,
@@ -36,7 +35,6 @@ record AddressCreateDTO(
 
     Address toDomain() {
         return new Address(
-                id: this.id ? this.id : null,
                 cep: this.cep,
                 street: this.street,
                 number: this.number,
@@ -46,6 +44,20 @@ record AddressCreateDTO(
                 complement: this.complement ? this.complement : null,
                 neighborhood: this.neighborhood,
                 userId: this.userId
+        )
+    }
+
+    static AddressCreateDTO fromMap(Map map) {
+        return new AddressCreateDTO(
+                cep: map.cep as String,
+                street: map.street as String,
+                number: map.number as String,
+                city: map.city as String,
+                state: map.state as String,
+                complement: map.complement as String,
+                neighborhood: map.neighborhood as String,
+                countryId: map.countryId as String,
+                userId: map.userId as UUID
         )
     }
 }

@@ -5,6 +5,7 @@ import zg.acelera.domain.Candidate
 import zg.acelera.domain.Skill
 
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Builder
 record CandidateDTO(String cpf,
@@ -45,5 +46,18 @@ record CandidateDTO(String cpf,
                 .birthDate(birthDate)
                 .skills(skillsId.collect {skillId -> new Skill(id: UUID.fromString(skillId))} as Set)
                 .build()
+    }
+
+    static CandidateDTO fromMap(Map map) {
+        return new CandidateDTO(
+                cpf: map.cpf as String,
+                name: map.name as String,
+                email: map.email as String,
+                password: map.password as String,
+                description: map.description as String,
+                lastName: map.lastName as String,
+                birthDate: LocalDate.parse(map.birthDate as String, DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                skillsId: map.skills as Set<String>
+        )
     }
 }
