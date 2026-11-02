@@ -209,13 +209,21 @@ export class StorageService {
 
     static saveMatch(match: Match): void {
         const matches = this.getMatches();
+        const alreadyExists = matches.some(existing =>
+            existing.cnpj === match.cnpj
+            && existing.cpf === match.cpf
+            && existing.jobId === match.jobId
+        );
+        if (alreadyExists) return;
         matches.push(match);
         localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(matches));
     }
 
     static deleteMatch(match: Match): void {
         const matches = this.getMatches();
-        const filtered = matches.filter(m => m.cnpj !== match.cnpj && m.cpf !== match.cpf);
+        const filtered = matches.filter(m =>
+            !(m.cnpj === match.cnpj && m.cpf === match.cpf && m.jobId === match.jobId)
+        );
         localStorage.setItem(this.KEYS.MATCHES, JSON.stringify(filtered));
     }
 }

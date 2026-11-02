@@ -124,6 +124,17 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - Página, estilos e artefatos JavaScript compilados do painel de convites,
   exibindo somente identificadores de vaga/empresa e dados permitidos pelo
   contrato, sem CPF, senha, data de nascimento ou diretório de recrutadores.
+- Painel do recrutador para listar somente vagas com vínculo `ACCEPTED`,
+  consultar candidatos em projeção anônima e curtir ou descurtir candidatos
+  por vaga com idempotência. A interface não exibe identificadores antes do
+  match e atualiza a seleção e as listas quando a autorização falha ou o
+  vínculo é revogado.
+- Integração de matches autorizados no painel do recrutador, exibindo somente
+  matches decorrentes de vínculo `ACCEPTED`, curtida ativa e reciprocidade na
+  mesma vaga. O fluxo legado de candidato e empresa permanece compatível com
+  matches contextualizados por vaga, com persistência idempotente e sem
+  renderizar dados pessoais ou credenciais do recrutador em contexto
+  pré-match.
 
 ### Modificado
 

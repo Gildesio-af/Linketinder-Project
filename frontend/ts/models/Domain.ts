@@ -31,6 +31,7 @@ export interface Job {
 export interface Match {
     cnpj: string;
     cpf: string;
+    jobId?: string;
 }
 
 export type RecruiterStatus = "ACTIVE" | "INACTIVE";
@@ -67,34 +68,47 @@ export interface RecruiterInvitation {
     createdAt: string;
 }
 
-export interface AssignedJob {
-    jobId: string;
-    title: string;
-    description: string;
-    location: string;
-    skills: string[];
+export interface SkillReference {
+    id: string;
+    name: string;
 }
 
-export interface AnonymousCandidate {
-    candidateId: string;
+/** Vaga com vínculo ACCEPTED, sem dados da empresa (projeção anônima). */
+export interface AssignedJob {
+    id: string;
+    name: string;
     description: string;
-    experience?: string;
-    skills: string[];
+    skills: SkillReference[];
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
 }
+
+/**
+ * Projeção anônima pré-match: somente descrição genérica e competências.
+ * `candidateId` é um identificador opaco, usado apenas como alvo da curtida,
+ * nunca exibido; quando ausente, a curtida não está disponível.
+ */
+export interface AnonymousCandidate {
+    candidateId?: string;
+    description: string;
+    skills: SkillReference[];
+}
+
+export type RecruiterLikeStatus = "ACTIVE" | "REMOVED";
 
 export interface RecruiterLike {
+    recruiterId: string;
     jobId: string;
     candidateId: string;
-    active: boolean;
-    createdAt: string;
+    status: RecruiterLikeStatus;
+    removedAt?: string | null;
 }
 
 export interface RecruiterMatch {
     jobId: string;
     candidateId: string;
-    companyId: string;
-    candidateName?: string;
-    candidateEmail?: string;
+    companyId?: string;
     createdAt: string;
 }
 

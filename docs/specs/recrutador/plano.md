@@ -362,7 +362,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 17 — Implementar vagas aceitas, candidatos anônimos e curtidas
 
-- [ ] **O que será feito:** criar painel do recrutador com somente vagas de
+- [x] **O que será feito:** criar painel do recrutador com somente vagas de
   vínculo `ACCEPTED`, listagem de candidatos anônimos, ação idempotente de
   curtir/descurtir por vaga e atualização visual após erro de autorização ou
   revogação. Não exibir identificadores antes do match.
@@ -382,7 +382,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 18 — Integrar matches autorizados e preservar telas existentes
 
-- [ ] **O que será feito:** exibir no painel do recrutador apenas matches dos
+- [x] **O que será feito:** exibir no painel do recrutador apenas matches dos
   quais ele participa e apenas campos liberados; adaptar o fluxo de match do
   candidato/empresa às respostas do backend sem expor dados pré-match.
   Substituir somente chamadas de `localStorage` relacionadas ao fluxo novo e
