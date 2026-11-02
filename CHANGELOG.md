@@ -141,6 +141,10 @@ e este projeto segue o [Versionamento Semântico](https://semver.org/lang/pt-BR/
 - A skill `skills/feature-com-spec/SKILL.md` foi adaptada para armazenar
   especificações em `docs/specs/<nome-da-feature>/`, validar o Princípio do
   Anonimato e exigir atualizações deste changelog na seção `[Não lançado]`.
+- Tarefa 19 concluída com a validação ponta a ponta da feature de recrutador:
+  testes Spock e build completo do back-end, checagem TypeScript do front-end,
+  validação e migração Flyway executadas com sucesso, além da revisão dos
+  fluxos de autorização, regressão e preservação do Princípio do Anonimato.
 - Executada a regressão completa do back-end com `./gradlew test` e
   `./gradlew build`, cobrindo os fluxos existentes e a compatibilidade com
   recrutadores; os testes e o build foram aprovados sem ajustes adicionais,

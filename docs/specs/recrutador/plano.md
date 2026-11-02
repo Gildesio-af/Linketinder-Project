@@ -405,7 +405,7 @@ DTO completo em contexto pré-match. Em cada tarefa implementada, o
 
 ### Tarefa 19 — Validar a entrega ponta a ponta e a matriz de aceite
 
-- [ ] **O que será feito:** executar a validação final de todos os critérios
+- [x] **O que será feito:** executar a validação final de todos os critérios
   CA-01 a CA-18, registrar evidências dos testes de banco, serviços,
   repositórios, controladores e fluxos manuais, revisar regressões de
   candidato/empresa e confirmar documentação/changelog de cada tarefa.
