@@ -190,17 +190,21 @@
             <span class="close-modal-invitation close-modal">&times;</span>
             <h2 class="title-font" style="margin-bottom: 8px;">Convites de Recrutadores</h2>
             <p class="description-sm" style="margin-bottom: 20px;">
-                Convide um recrutador já cadastrado informando o e-mail exato. A busca não lista perfis.
+                Selecione uma vaga da empresa e um recrutador ativo para enviar o convite.
             </p>
             <form id="form-recruiter-invitation" autocomplete="off">
                 <div class="field-row">
                     <div class="field-group">
-                        <label class="description-sm" for="recruiter-invitation-email">E-mail do recrutador</label>
-                        <input class="reg-input" type="email" id="recruiter-invitation-email" placeholder="recrutador@exemplo.com" required>
+                        <label class="description-sm" for="recruiter-invitation-recruiter">Recrutador disponível</label>
+                        <select class="reg-input recruiter-invitation-select" id="recruiter-invitation-recruiter" required>
+                            <option value="">Carregando recrutadores...</option>
+                        </select>
                     </div>
                     <div class="field-group">
-                        <label class="description-sm" for="recruiter-invitation-job">ID da vaga</label>
-                        <input class="reg-input" type="text" id="recruiter-invitation-job" placeholder="UUID de uma vaga sua" required>
+                        <label class="description-sm" for="recruiter-invitation-job">Nome da vaga</label>
+                        <select class="reg-input recruiter-invitation-select" id="recruiter-invitation-job" required>
+                            <option value="">Carregando vagas...</option>
+                        </select>
                     </div>
                 </div>
                 <button type="submit" class="btn-company-register label-font-m" id="recruiter-invitation-submit">Enviar Convite</button>

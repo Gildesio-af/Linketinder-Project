@@ -1,7 +1,6 @@
 import { StorageService } from "../../services/storage/StorageService.js";
 import { RecruiterHttpError, RecruiterService } from "../../services/recruiter/RecruiterService.js";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STATUS_LABELS = {
     PENDING: "Pendente",
     ACCEPTED: "Aceito",
@@ -13,7 +12,7 @@ export class RecruiterInvitationManagement {
     service;
     modal;
     form;
-    emailInput;
+    recruiterInput;
     jobInput;
     feedback;
     list;
@@ -21,7 +20,7 @@ export class RecruiterInvitationManagement {
         this.service = service;
         this.modal = document.getElementById("recruiter-invitation-modal");
         this.form = document.getElementById("form-recruiter-invitation");
-        this.emailInput = document.getElementById("recruiter-invitation-email");
+        this.recruiterInput = document.getElementById("recruiter-invitation-recruiter");
         this.jobInput = document.getElementById("recruiter-invitation-job");
         this.feedback = document.getElementById("recruiter-invitation-feedback");
         this.list = document.getElementById("recruiter-invitation-list");
@@ -47,21 +46,21 @@ export class RecruiterInvitationManagement {
     close() {
         this.modal.style.display = "none";
     }
-    /** Lê o identificador da empresa autenticada; nunca usa CNPJ como credencial. */
+    /** Identificador local da empresa logada (CNPJ do cadastro em localStorage). */
     companyId() {
         const user = StorageService.getCurrentUser();
-        return user && typeof user.id === "string" && UUID_PATTERN.test(user.id) ? user.id : null;
+        return user && typeof user.cnpj === "string" && user.cnpj ? user.cnpj : null;
     }
     async submit() {
         const companyId = this.companyId();
-        const recruiterEmail = this.emailInput.value.trim().toLowerCase();
+        const recruiterEmail = this.recruiterInput.value.trim().toLowerCase();
         const jobId = this.jobInput.value.trim();
         if (!companyId)
-            return this.setFeedback("Sessão da empresa sem identificador válido.", "error");
+            return this.setFeedback("Faça login como empresa para enviar convites.", "error");
         if (!EMAIL_PATTERN.test(recruiterEmail))
             return this.setFeedback("Informe um e-mail válido.", "error");
-        if (!UUID_PATTERN.test(jobId))
-            return this.setFeedback("Informe o identificador de uma vaga sua.", "error");
+        if (!jobId)
+            return this.setFeedback("Selecione uma vaga cadastrada pela empresa.", "error");
         try {
             await this.service.inviteRecruiter(companyId, { recruiterEmail, jobId });
             this.form.reset();
@@ -81,15 +80,43 @@ export class RecruiterInvitationManagement {
         }
         try {
             const invitations = await this.service.getCompanyInvitations(companyId);
-            if (invitations.length === 0) {
-                this.list.appendChild(this.emptyItem("Nenhum convite enviado."));
-                return;
+            this.renderSelects(invitations);
+            if (invitations.length > 0) {
+                invitations.forEach((invitation) => this.list.appendChild(this.renderItem(companyId, invitation)));
             }
-            invitations.forEach((invitation) => this.list.appendChild(this.renderItem(companyId, invitation)));
+            else {
+                this.list.appendChild(this.emptyItem("Nenhum convite enviado."));
+            }
         }
         catch (error) {
             this.list.appendChild(this.emptyItem(this.errorMessage(error)));
         }
+    }
+    renderSelects(invitations) {
+        const jobs = StorageService.getJobs();
+        const currentJob = this.jobInput.value;
+        const currentRecruiter = this.recruiterInput.value;
+        this.jobInput.replaceChildren(this.option("Selecione uma vaga", ""));
+        jobs.forEach((job) => this.jobInput.appendChild(this.option(job.name, job.name)));
+        this.jobInput.value = jobs.some((job) => job.name === currentJob) ? currentJob : "";
+        void this.service.getAvailableRecruiters().then((recruiters) => {
+            this.recruiterInput.replaceChildren(this.option("Selecione um recrutador", ""));
+            recruiters.forEach((recruiter) => {
+                const label = `Recrutador disponível · ${recruiter.recruitmentArea}`;
+                this.recruiterInput.appendChild(this.option(label, recruiter.email));
+            });
+            this.recruiterInput.value = recruiters.some((recruiter) => recruiter.email === currentRecruiter)
+                ? currentRecruiter
+                : "";
+        }).catch(() => {
+            this.recruiterInput.replaceChildren(this.option("Não foi possível carregar recrutadores", ""));
+        });
+    }
+    option(label, value) {
+        const option = document.createElement("option");
+        option.textContent = label;
+        option.value = value;
+        return option;
     }
     /** Renderiza somente campos administrativos mínimos. Usa textContent para evitar injeção de HTML. */
     renderItem(companyId, invitation) {

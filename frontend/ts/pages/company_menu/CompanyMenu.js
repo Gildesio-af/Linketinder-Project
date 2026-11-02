@@ -1,5 +1,6 @@
 import { StorageService } from "../../services/storage/StorageService.js";
 import { MatchService } from "../../services/match/MatchService.js";
+import { RecruiterService } from "../../services/recruiter/RecruiterService.js";
 import { RecruiterInvitationManagement } from "./RecruiterInvitationManagement.js";
 const profileBtn = document.getElementById("profile-btn");
 const btnUpdateData = document.getElementById("btn-update-data");
@@ -240,12 +241,36 @@ export function renderMatches() {
     const matches = StorageService.getMatches().filter(m => m.cnpj === currentUser.cnpj);
     const candidates = StorageService.getCandidates();
     const matchedCandidates = candidates.filter(candidate => matches.some(m => m.cpf === candidate.cpf));
-    if (matchedCandidates.length === 0) {
-        candidatesPanel.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhum match encontrado.</p>';
-        return;
-    }
     matchedCandidates.forEach((candidate, index) => {
         candidatesPanel.appendChild(createCandidateCard(candidate, index, true));
+    });
+    void new RecruiterService().getCompanyMatches(currentUser.cnpj)
+        .then((recruiterMatches) => {
+        const existingKeys = new Set(matches.map((match) => `${match.jobId ?? ""}:${match.cpf}`));
+        const recruiterCandidates = recruiterMatches
+            .filter((match) => !existingKeys.has(`${match.jobId}:${match.candidateId}`))
+            .map((match) => ({
+            name: match.candidateName ?? "Candidato",
+            email: match.candidateEmail ?? "",
+            password: "",
+            description: match.candidateDescription ?? "",
+            localization: "",
+            skills: match.candidateSkills ?? [],
+            cpf: "",
+            age: 0,
+            likedJobs: []
+        }));
+        recruiterCandidates.forEach((candidate, index) => {
+            candidatesPanel.appendChild(createCandidateCard(candidate, matchedCandidates.length + index, true));
+        });
+        if (matchedCandidates.length === 0 && recruiterCandidates.length === 0) {
+            candidatesPanel.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Nenhum match encontrado.</p>';
+        }
+    })
+        .catch(() => {
+        if (matchedCandidates.length === 0) {
+            candidatesPanel.innerHTML = '<p class="description-m" style="text-align: center; margin-top: 2rem;">Não foi possível carregar os matches.</p>';
+        }
     });
 }
 renderCandidates();

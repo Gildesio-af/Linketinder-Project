@@ -19,10 +19,27 @@ const clearCredentials = (): void => {
 if (form) {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!form.checkValidity()) {
-            form.reportValidity();
+        const labels: Record<string, string> = {
+            "recruiter-name": "Nome",
+            "recruitment-area-id": "Área de recrutamento (UUID)",
+            "recruiter-description": "Descrição",
+            "recruiter-email": "E-mail",
+            "recruiter-cpf": "CPF",
+            "recruiter-birth-date": "Data de nascimento",
+            "recruiter-password": "Senha (mínimo de 6 caracteres)",
+            "recruiter-password-confirmation": "Confirmação de senha (mínimo de 6 caracteres)"
+        };
+        const invalidField = Array.from(form.elements).find(
+            (element): element is HTMLInputElement | HTMLTextAreaElement =>
+                (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)
+                && !element.checkValidity()
+        );
+        if (invalidField) {
+            invalidField.focus();
+            showError(`Verifique o campo: ${labels[invalidField.id] ?? invalidField.id}.`);
             return;
         }
+        if (feedback) feedback.hidden = true;
 
         const password = (document.getElementById("recruiter-password") as HTMLInputElement).value;
         const confirmation = (document.getElementById("recruiter-password-confirmation") as HTMLInputElement).value;
@@ -40,7 +57,7 @@ if (form) {
         }
 
         try {
-            await new RecruiterService("").register({
+            await new RecruiterService().register({
                 name: (document.getElementById("recruiter-name") as HTMLInputElement).value.trim(),
                 recruitmentAreaId: (document.getElementById("recruitment-area-id") as HTMLInputElement).value.trim(),
                 description: (document.getElementById("recruiter-description") as HTMLTextAreaElement).value.trim(),

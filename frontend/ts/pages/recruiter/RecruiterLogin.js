@@ -1,9 +1,9 @@
-import { RecruiterHttpError } from "../../services/recruiter/RecruiterService.js";
+import { RecruiterHttpError, RecruiterService } from "../../services/recruiter/RecruiterService.js";
 import { RecruiterSessionService } from "../../services/recruiter/RecruiterSessionService.js";
 const form = document.getElementById("recruiter-login-form");
 const feedback = document.getElementById("recruiter-login-feedback");
 const logout = document.getElementById("recruiter-logout");
-const apiBaseUrl = "";
+const service = new RecruiterService();
 const showError = (message) => {
     if (!feedback)
         return;
@@ -15,14 +15,9 @@ const clearPassword = () => {
     if (password)
         password.value = "";
 };
-const loadProfile = async (id) => {
-    const response = await fetch(`${apiBaseUrl}/recruiters/${encodeURIComponent(id)}`, {
-        headers: { "X-User-Id": id, "X-User-Role": "RECRUITER" }
-    });
-    if (!response.ok)
-        throw new RecruiterHttpError(response.status, await response.text());
-    return await response.json();
-};
+if (RecruiterSessionService.getCurrent()?.status === "ACTIVE") {
+    window.location.replace("./recruiter_dashboard.html");
+}
 if (logout) {
     logout.hidden = !RecruiterSessionService.getCurrent();
     logout.addEventListener("click", () => {
@@ -33,28 +28,24 @@ if (logout) {
 if (form) {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!form.checkValidity()) {
-            form.reportValidity();
+        const emailField = document.getElementById("recruiter-login-email");
+        const passwordField = document.getElementById("recruiter-login-password");
+        if (!emailField.value.trim() || !emailField.checkValidity()) {
+            showError("Informe um e-mail válido.");
+            emailField.focus();
+            return;
+        }
+        if (!passwordField.value) {
+            showError("Informe a senha.");
+            passwordField.focus();
             return;
         }
         const password = document.getElementById("recruiter-login-password").value;
         const email = document.getElementById("recruiter-login-email").value.trim().toLowerCase();
         try {
-            const authResponse = await fetch(`${apiBaseUrl}/auth/`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: email, password })
-            });
-            if (!authResponse.ok)
-                throw new RecruiterHttpError(authResponse.status, await authResponse.text());
-            const auth = await authResponse.json();
-            if (auth.role !== "RECRUITER")
-                throw new Error("This account is not a recruiter.");
-            const recruiter = await loadProfile(auth.id);
-            if (recruiter.status !== "ACTIVE")
-                throw new Error("Inactive recruiter accounts cannot start a session.");
+            const { recruiter } = await service.login({ email, password });
             const session = {
-                userId: auth.id,
+                userId: recruiter.userId,
                 name: recruiter.name,
                 email: recruiter.email,
                 recruitmentAreaId: recruiter.recruitmentAreaId,
@@ -64,7 +55,7 @@ if (form) {
             };
             RecruiterSessionService.start(session);
             clearPassword();
-            window.location.replace("./recruiter_login.html");
+            window.location.replace("./recruiter_dashboard.html");
         }
         catch (error) {
             clearPassword();

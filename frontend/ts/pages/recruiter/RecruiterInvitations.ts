@@ -4,7 +4,7 @@ import { StorageService } from "../../services/storage/StorageService.js";
 import type { RecruiterInvitation } from "../../models/Domain.js";
 
 const session = RecruiterSessionService.getCurrent();
-const service = new RecruiterService("");
+const service = new RecruiterService();
 const feedback = document.getElementById("recruiter-invitations-feedback") as HTMLParagraphElement | null;
 const loading = document.getElementById("recruiter-invitations-loading") as HTMLParagraphElement | null;
 const list = document.getElementById("recruiter-invitations-list") as HTMLDivElement | null;

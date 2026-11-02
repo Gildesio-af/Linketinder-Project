@@ -2,7 +2,7 @@ import { RecruiterHttpError, RecruiterService } from "../../services/recruiter/R
 import { RecruiterSessionService } from "../../services/recruiter/RecruiterSessionService.js";
 import { StorageService } from "../../services/storage/StorageService.js";
 const session = RecruiterSessionService.getCurrent();
-const service = new RecruiterService("");
+const service = new RecruiterService();
 const feedback = document.getElementById("recruiter-invitations-feedback");
 const loading = document.getElementById("recruiter-invitations-loading");
 const list = document.getElementById("recruiter-invitations-list");

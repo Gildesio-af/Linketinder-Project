@@ -26,8 +26,12 @@
             </div>
             <div class="field-group">
                 <label class="description-sm" for="recruitment-area-id">Área de recrutamento</label>
-                <input class="reg-input" type="text" id="recruitment-area-id"
-                    placeholder="UUID da área (TI, RH ou Marketing)" required>
+                <select class="reg-input" id="recruitment-area-id" required>
+                    <option value="">Selecione a área</option>
+                    <option value="746f34a8-0602-4b86-8426-eac894be1f03">TI</option>
+                    <option value="a62f518f-e4bb-49c4-a0c2-740ba38c328f">RH</option>
+                    <option value="0e62da83-e188-4e7b-b5ae-be4a9a2d1f93">Marketing</option>
+                </select>
             </div>
             <div class="field-group">
                 <label class="description-sm" for="recruiter-description">Descrição</label>

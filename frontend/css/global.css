@@ -171,6 +171,16 @@ label:hover {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.recruiter-invitation-select {
+    color: #1f2937;
+    background-color: #ffffff;
+}
+
+.recruiter-invitation-select option {
+    color: #1f2937;
+    background-color: #ffffff;
+}
+
 .invitation-item:hover {
     box-shadow: 0 4px 14px rgba(0, 108, 73, 0.12);
     transform: translateY(-1px);
@@ -181,6 +191,10 @@ label:hover {
     flex-direction: column;
     flex: 1;
     min-width: 0;
+}
+
+.invitation-info strong {
+    color: var(--dark-gray-font);
 }
 
 .invitation-status {

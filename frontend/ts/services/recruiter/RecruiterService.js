@@ -174,6 +174,45 @@ export class RecruiterService {
             });
         });
     }
+    getCompanyMatches(companyId) {
+        return this.run(() => {
+            if (!companyId)
+                this.fail(401, "Empresa não autenticada.");
+            const acceptedInvitations = RecruiterLocalStore.getInvitations()
+                .filter((invitation) => invitation.companyId === companyId && invitation.status === "ACCEPTED");
+            const acceptedJobs = new Set(acceptedInvitations.map((invitation) => invitation.jobId));
+            const candidates = StorageService.getCandidates();
+            const candidateById = new Map(candidates.map((candidate) => [this.opaqueCandidateId(candidate.cpf), candidate]));
+            const grouped = new Map();
+            RecruiterLocalStore.getLikes()
+                .filter((like) => like.status === "ACTIVE"
+                && acceptedJobs.has(like.jobId)
+                && candidateById.get(like.candidateId)?.likedJobs.includes(like.jobId) === true)
+                .forEach((like) => {
+                const candidate = candidateById.get(like.candidateId);
+                if (!candidate)
+                    return;
+                const key = `${like.jobId}:${like.candidateId}`;
+                const existing = grouped.get(key);
+                if (existing) {
+                    existing.recruiterIds = [...(existing.recruiterIds ?? []), like.recruiterId];
+                    return;
+                }
+                grouped.set(key, {
+                    jobId: like.jobId,
+                    candidateId: like.candidateId,
+                    companyId,
+                    recruiterIds: [like.recruiterId],
+                    createdAt: like.createdAt,
+                    candidateName: candidate.name,
+                    candidateEmail: candidate.email,
+                    candidateDescription: candidate.description,
+                    candidateSkills: candidate.skills ?? []
+                });
+            });
+            return [...grouped.values()];
+        });
+    }
     inviteRecruiter(companyId, request) {
         return this.run(() => {
             const email = request.recruiterEmail.trim().toLowerCase();
@@ -215,6 +254,14 @@ export class RecruiterService {
                 .filter((item) => item.companyId === companyId)
                 .map((item) => this.toCompanyInvitation(item));
         });
+    }
+    getAvailableRecruiters() {
+        return this.run(() => RecruiterLocalStore.getRecruiters()
+            .filter((recruiter) => recruiter.status === "ACTIVE")
+            .map((recruiter) => ({
+            email: recruiter.email,
+            recruitmentArea: recruiter.recruitmentArea
+        })));
     }
     cancelInvitation(companyId, invitationId) {
         return this.changeCompanyInvitation(companyId, invitationId, "PENDING", "CANCELLED");
