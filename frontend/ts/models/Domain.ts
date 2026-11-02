@@ -110,6 +110,9 @@ export interface RecruiterMatch {
     candidateId: string;
     companyId?: string;
     createdAt: string;
+    candidateName?: string;
+    candidateEmail?: string;
+    candidateDescription?: string;
 }
 
 export interface RecruiterRegistrationRequest {

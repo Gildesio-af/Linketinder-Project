@@ -129,6 +129,16 @@ export class RecruiterService {
             }));
         });
     }
+    getActiveLikeCandidateIds(jobId) {
+        return this.runAsRecruiter((recruiter) => {
+            this.requireAcceptedJob(recruiter.userId, jobId);
+            return RecruiterLocalStore.getLikes()
+                .filter((like) => like.recruiterId === recruiter.userId
+                && like.jobId === jobId
+                && like.status === "ACTIVE")
+                .map((like) => like.candidateId);
+        });
+    }
     likeCandidate(jobId, candidateId) {
         return this.setLike(jobId, candidateId, true);
     }
@@ -149,11 +159,19 @@ export class RecruiterService {
             return activeLikes
                 .filter((like) => candidateLikes.get(like.candidateId)?.has(like.jobId) === true)
                 .filter((like) => invitationByJob.has(like.jobId))
-                .map((like) => ({
-                jobId: like.jobId,
-                candidateId: like.candidateId,
-                createdAt: like.createdAt
-            }));
+                .flatMap((like) => {
+                const candidate = StorageService.getCandidates().find((item) => this.opaqueCandidateId(item.cpf) === like.candidateId);
+                if (!candidate)
+                    return [];
+                return [{
+                        jobId: like.jobId,
+                        candidateId: like.candidateId,
+                        createdAt: like.createdAt,
+                        candidateName: candidate.name,
+                        candidateEmail: candidate.email,
+                        candidateDescription: candidate.description
+                    }];
+            });
         });
     }
     inviteRecruiter(companyId, request) {

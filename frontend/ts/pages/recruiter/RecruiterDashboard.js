@@ -104,6 +104,7 @@ const createLikeButton = (jobId, candidateId) => {
                 likedCandidates.add(candidateId);
             }
             sync();
+            await loadMatches();
             button.disabled = false;
         }
         catch (error) {
@@ -161,20 +162,40 @@ const renderMatches = (matches) => {
     if (matches.length === 0) {
         const empty = document.createElement("p");
         empty.className = "empty-state";
-        empty.textContent = "Nenhum match autorizado encontrado.";
+        empty.textContent = "Quando uma curtida sua coincidir com o interesse do candidato, o match aparecerá aqui.";
         matchesList.appendChild(empty);
         return;
     }
     matches.forEach((match) => {
         const card = document.createElement("article");
         card.className = "match-card";
+        const header = document.createElement("div");
+        header.className = "match-card-header";
         const title = document.createElement("h3");
-        title.textContent = "Match confirmado";
+        title.textContent = "Match gerado pela sua curtida";
+        const status = document.createElement("span");
+        status.className = "match-status";
+        status.textContent = "Ativo";
+        header.append(title, status);
         const job = document.createElement("p");
+        job.className = "match-detail";
         job.textContent = `Vaga: ${match.jobId}`;
         const candidate = document.createElement("p");
-        candidate.textContent = "Candidato identificado somente pelo vínculo autorizado.";
-        card.append(title, job, candidate);
+        candidate.className = "match-detail";
+        candidate.textContent = `Candidato: ${match.candidateName ?? "Identificação autorizada"}`;
+        const email = document.createElement("p");
+        email.className = "match-detail";
+        email.textContent = `E-mail: ${match.candidateEmail ?? "Não informado"}`;
+        const candidateDescription = document.createElement("p");
+        candidateDescription.className = "match-detail";
+        candidateDescription.textContent = match.candidateDescription || "Sem descrição informada.";
+        const createdAt = document.createElement("p");
+        createdAt.className = "match-date";
+        createdAt.textContent = `Criado em: ${new Intl.DateTimeFormat("pt-BR", {
+            dateStyle: "short",
+            timeStyle: "short"
+        }).format(new Date(match.createdAt))}`;
+        card.append(header, job, candidate, email, candidateDescription, createdAt);
         matchesList.appendChild(card);
     });
 };
@@ -205,6 +226,10 @@ const loadCandidates = async (jobId) => {
     candidatesLoading.hidden = false;
     try {
         const candidates = await service.getAnonymousCandidates(jobId);
+        likedCandidates.clear();
+        (await service.getActiveLikeCandidateIds(jobId)).forEach((candidateId) => {
+            likedCandidates.add(candidateId);
+        });
         renderCandidates(jobId, candidates);
         await loadJobs(false);
     }
