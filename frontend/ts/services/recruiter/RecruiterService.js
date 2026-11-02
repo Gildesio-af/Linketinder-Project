@@ -260,7 +260,8 @@ export class RecruiterService {
             .filter((recruiter) => recruiter.status === "ACTIVE")
             .map((recruiter) => ({
             email: recruiter.email,
-            recruitmentArea: recruiter.recruitmentArea
+            recruitmentArea: recruiter.recruitmentArea,
+            description: recruiter.description
         })));
     }
     cancelInvitation(companyId, invitationId) {

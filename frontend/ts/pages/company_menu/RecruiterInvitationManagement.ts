@@ -119,7 +119,12 @@ export class RecruiterInvitationManagement {
             this.recruiterInput.replaceChildren(this.option("Selecione um recrutador", ""));
             recruiters
                 .forEach((recruiter) => {
-                    const label = `Recrutador disponível · ${recruiter.recruitmentArea}`;
+                    const profile = recruiter.description?.trim();
+                    const label = [
+                        recruiter.email,
+                        `Área: ${recruiter.recruitmentArea}`,
+                        profile ? `Competências: ${profile}` : ""
+                    ].filter(Boolean).join(" · ");
                     this.recruiterInput.appendChild(this.option(label, recruiter.email));
                 });
             this.recruiterInput.value = recruiters.some((recruiter) => recruiter.email === currentRecruiter)
@@ -146,7 +151,7 @@ export class RecruiterInvitationManagement {
         info.className = "invitation-info";
 
         const title = document.createElement("strong");
-        title.className = "label-font-m";
+        title.className = "invitation-job-title";
         title.textContent = invitation.jobTitle ?? `Vaga ${invitation.jobId.slice(0, 8)}`;
 
         const meta = document.createElement("span");

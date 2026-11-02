@@ -58,6 +58,7 @@ export interface CompanyInvitationRequest {
 export interface AvailableRecruiter {
     email: string;
     recruitmentArea: string;
+    description: string;
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -334,7 +335,8 @@ export class RecruiterService {
             .filter((recruiter) => recruiter.status === "ACTIVE")
             .map((recruiter) => ({
                 email: recruiter.email,
-                recruitmentArea: recruiter.recruitmentArea
+                recruitmentArea: recruiter.recruitmentArea,
+                description: recruiter.description
             })));
     }
 

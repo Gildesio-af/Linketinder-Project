@@ -197,6 +197,11 @@ label:hover {
     color: var(--dark-gray-font);
 }
 
+.invitation-job-title {
+    font: 600 18px/22px 'Inter', sans-serif;
+    color: var(--dark-gray-font);
+}
+
 .invitation-status {
     padding: 4px 10px;
     border-radius: 999px;
